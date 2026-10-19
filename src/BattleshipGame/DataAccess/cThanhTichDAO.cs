@@ -15,16 +15,11 @@ namespace BattleshipGame.DataAccess
         SoLuotItNhat
     }
 
-    /// <summary>
-    /// Data Access Object (DAO) quản lý việc Đọc / Ghi file thanhtichs.txt
-    /// - Retry Pattern chống mất dữ liệu khi file bị khóa tức thời (Transient Lockout).
-    /// - Sử dụng UTF8Encoding(false) không chèn BOM gây lỗi ngày tháng.
-    /// - Lọc và sắp xếp chuẩn hóa không bị sai lệch dữ liệu.
-    /// </summary>
+    // Xu ly doc ghi file thanhtichs.txt
     public class cThanhTichDAO
     {
-        private static readonly object _fileLock = new object();
-        private static readonly UTF8Encoding Utf8NoBom = new UTF8Encoding(false);
+        private static readonly object _lock = new object();
+        private static readonly UTF8Encoding _utf8 = new UTF8Encoding(false);
         private static string _filePath = null;
 
         public static string LoiGanNhat { get; private set; } = null;
@@ -36,16 +31,16 @@ namespace BattleshipGame.DataAccess
                 if (string.IsNullOrEmpty(_filePath))
                 {
                     string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                    string primaryPath = Path.Combine(baseDir, "Assets", "Data", "thanhtichs.txt");
-                    string fallbackPath = Path.Combine(baseDir, "thanhtichs.txt");
+                    string path1 = Path.Combine(baseDir, "Assets", "Data", "thanhtichs.txt");
+                    string path2 = Path.Combine(baseDir, "thanhtichs.txt");
 
-                    if (File.Exists(primaryPath))
+                    if (File.Exists(path1))
                     {
-                        _filePath = primaryPath;
+                        _filePath = path1;
                     }
-                    else if (File.Exists(fallbackPath))
+                    else if (File.Exists(path2))
                     {
-                        _filePath = fallbackPath;
+                        _filePath = path2;
                     }
                     else
                     {
@@ -53,34 +48,31 @@ namespace BattleshipGame.DataAccess
                         {
                             string dir = Path.Combine(baseDir, "Assets", "Data");
                             if (!Directory.Exists(dir))
-                            {
                                 Directory.CreateDirectory(dir);
-                            }
-                            _filePath = primaryPath;
-                            KhoiTaoFileMauNeuChuaCo(_filePath);
+
+                            _filePath = path1;
+                            TaoFileMau(_filePath);
                         }
                         catch
                         {
-                            _filePath = fallbackPath;
-                            KhoiTaoFileMauNeuChuaCo(_filePath);
+                            _filePath = path2;
+                            TaoFileMau(_filePath);
                         }
                     }
                 }
                 return _filePath;
             }
-            set
-            {
-                _filePath = value;
-            }
+            set => _filePath = value;
         }
 
-        private static void KhoiTaoFileMauNeuChuaCo(string path)
+        // Tao san vai dong mau neu chua co file
+        private static void TaoFileMau(string path)
         {
             try
             {
                 if (!File.Exists(path))
                 {
-                    using (StreamWriter sw = new StreamWriter(path, false, Utf8NoBom))
+                    using (StreamWriter sw = new StreamWriter(path, false, _utf8))
                     {
                         sw.WriteLine("2026-10-18 14:20:15|DoDocHaiQuan|1850|24|115|PvE - Nâng cao|Thắng");
                         sw.WriteLine("2026-10-18 16:05:40|ThuyenTruongTri|1620|28|145|PvE - Dễ|Thắng");
@@ -93,39 +85,34 @@ namespace BattleshipGame.DataAccess
             catch (Exception ex)
             {
                 LoiGanNhat = ex.Message;
-                System.Diagnostics.Debug.WriteLine("Lỗi khởi tạo file mẫu: " + ex.Message);
             }
         }
 
-        /// <summary>
-        /// Đọc toàn bộ danh sách thành tích từ file thanhtichs.txt
-        /// </summary>
+        // Doc danh sach tu file
         public static List<ThanhTichItem> DocDanhSach()
         {
-            List<ThanhTichItem> danhSach = new List<ThanhTichItem>();
+            List<ThanhTichItem> list = new List<ThanhTichItem>();
             LoiGanNhat = null;
 
-            lock (_fileLock)
+            lock (_lock)
             {
                 try
                 {
                     string path = DuongDanFile;
                     if (!File.Exists(path))
-                    {
-                        KhoiTaoFileMauNeuChuaCo(path);
-                    }
+                        TaoFileMau(path);
 
                     if (File.Exists(path))
                     {
-                        FileInfo fi = new FileInfo(path);
-                        if (fi.Length > 10 * 1024 * 1024)
+                        // File lon hon 10MB thi thoi khong doc
+                        if (new FileInfo(path).Length > 10 * 1024 * 1024)
                         {
-                            LoiGanNhat = "Kích thước tập tin thành tích vượt quá giới hạn an toàn (10MB).";
-                            return danhSach;
+                            LoiGanNhat = "File vuot qua 10MB";
+                            return list;
                         }
 
                         using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                        using (StreamReader sr = new StreamReader(fs, Utf8NoBom))
+                        using (StreamReader sr = new StreamReader(fs, _utf8))
                         {
                             string line;
                             while ((line = sr.ReadLine()) != null)
@@ -133,79 +120,67 @@ namespace BattleshipGame.DataAccess
                                 if (string.IsNullOrWhiteSpace(line)) continue;
                                 try
                                 {
-                                    ThanhTichItem item = new ThanhTichItem(line);
-                                    danhSach.Add(item);
+                                    list.Add(new ThanhTichItem(line));
                                 }
-                                catch (Exception exParse)
-                                {
-                                    System.Diagnostics.Debug.WriteLine("Bỏ qua dòng lỗi định dạng: " + exParse.Message);
-                                }
+                                catch { }
                             }
                         }
                     }
                 }
-                catch (IOException ioEx)
+                catch (IOException ex)
                 {
-                    LoiGanNhat = "Tập tin đang bị khóa bởi tiến trình khác: " + ioEx.Message;
-                    System.Diagnostics.Debug.WriteLine(LoiGanNhat);
+                    LoiGanNhat = "File dang ban: " + ex.Message;
                 }
                 catch (Exception ex)
                 {
-                    LoiGanNhat = "Lỗi khi đọc tập tin thành tích: " + ex.Message;
-                    System.Diagnostics.Debug.WriteLine(LoiGanNhat);
+                    LoiGanNhat = "Loi doc file: " + ex.Message;
                 }
             }
 
-            return SapXep(danhSach, TieuChiSapXep.DiemCaoNhat);
+            return SapXep(list, TieuChiSapXep.DiemCaoNhat);
         }
 
-        /// <summary>
-        /// Ghi thêm 1 bản ghi mới với cơ chế Retry Pattern chống mất mát dữ liệu do xung đột khóa file
-        /// </summary>
+        // Ghi them 1 tran moi vao cuoi file
         public static bool LuuThanhTich(ThanhTichItem item)
         {
             if (item == null) return false;
             LoiGanNhat = null;
 
-            lock (_fileLock)
+            lock (_lock)
             {
-                int maxRetries = 4;
-                int delayMs = 50;
+                int retries = 4;
+                int delay = 50;
 
-                while (maxRetries > 0)
+                while (retries > 0)
                 {
                     try
                     {
                         string path = DuongDanFile;
                         string dir = Path.GetDirectoryName(path);
                         if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                        {
                             Directory.CreateDirectory(dir);
-                        }
 
                         using (FileStream fs = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Read))
-                        using (StreamWriter sw = new StreamWriter(fs, Utf8NoBom))
+                        using (StreamWriter sw = new StreamWriter(fs, _utf8))
                         {
                             sw.WriteLine(item.ToString());
                         }
                         return true;
                     }
-                    catch (IOException ioEx)
+                    catch (IOException)
                     {
-                        maxRetries--;
-                        if (maxRetries <= 0)
+                        retries--;
+                        if (retries <= 0)
                         {
-                            LoiGanNhat = "Tập tin thành tích bị khóa sau nhiều lần thử: " + ioEx.Message;
-                            System.Diagnostics.Debug.WriteLine(LoiGanNhat);
+                            LoiGanNhat = "File dang bi khoa boi app khac";
                             return false;
                         }
-                        Thread.Sleep(delayMs);
-                        delayMs *= 2; // Exponential Backoff: 50ms, 100ms, 200ms...
+                        Thread.Sleep(delay);
+                        delay *= 2;
                     }
                     catch (Exception ex)
                     {
-                        LoiGanNhat = "Lỗi không xác định khi lưu thành tích: " + ex.Message;
-                        System.Diagnostics.Debug.WriteLine(LoiGanNhat);
+                        LoiGanNhat = ex.Message;
                         return false;
                     }
                 }
@@ -213,24 +188,22 @@ namespace BattleshipGame.DataAccess
             return false;
         }
 
-        /// <summary>
-        /// Sắp xếp danh sách thành tích (Ưu tiên các trận Thắng lên đầu)
-        /// </summary>
-        public static List<ThanhTichItem> SapXep(List<ThanhTichItem> danhSach, TieuChiSapXep tieuChi)
+        // Sap xep danh sach
+        public static List<ThanhTichItem> SapXep(List<ThanhTichItem> list, TieuChiSapXep tieuChi)
         {
-            if (danhSach == null) return new List<ThanhTichItem>();
+            if (list == null) return new List<ThanhTichItem>();
 
             switch (tieuChi)
             {
                 case TieuChiSapXep.DiemCaoNhat:
-                    return danhSach
+                    return list
                         .OrderByDescending(t => t.DiemSo)
                         .ThenBy(t => t.ThoiGianGiay)
                         .ThenBy(t => t.SoLuotBan)
                         .ToList();
 
                 case TieuChiSapXep.ThoiGianNganNhat:
-                    return danhSach
+                    return list
                         .OrderByDescending(t => (t.KetQua != null && t.KetQua.IndexOf("Thắng", StringComparison.OrdinalIgnoreCase) >= 0) ? 1 : 0)
                         .ThenBy(t => t.ThoiGianGiay)
                         .ThenByDescending(t => t.DiemSo)
@@ -238,7 +211,7 @@ namespace BattleshipGame.DataAccess
                         .ToList();
 
                 case TieuChiSapXep.SoLuotItNhat:
-                    return danhSach
+                    return list
                         .OrderByDescending(t => (t.KetQua != null && t.KetQua.IndexOf("Thắng", StringComparison.OrdinalIgnoreCase) >= 0) ? 1 : 0)
                         .ThenBy(t => t.SoLuotBan)
                         .ThenByDescending(t => t.DiemSo)
@@ -246,20 +219,18 @@ namespace BattleshipGame.DataAccess
                         .ToList();
 
                 default:
-                    return danhSach;
+                    return list;
             }
         }
 
-        /// <summary>
-        /// Lọc danh sách theo chế độ chơi với so khớp tiền tố/chính xác, tránh nhầm lẫn chuỗi con
-        /// </summary>
-        public static List<ThanhTichItem> LocTheoCheDo(List<ThanhTichItem> danhSach, string cheDo)
+        // Loc theo che do choi
+        public static List<ThanhTichItem> LocTheoCheDo(List<ThanhTichItem> list, string cheDo)
         {
-            if (danhSach == null) return new List<ThanhTichItem>();
+            if (list == null) return new List<ThanhTichItem>();
             if (string.IsNullOrWhiteSpace(cheDo) || cheDo.Equals("Tất cả", StringComparison.OrdinalIgnoreCase))
-                return danhSach;
+                return list;
 
-            return danhSach
+            return list
                 .Where(t => t != null && !string.IsNullOrEmpty(t.CheDo) &&
                             (t.CheDo.Equals(cheDo, StringComparison.OrdinalIgnoreCase) ||
                              t.CheDo.StartsWith(cheDo + " -", StringComparison.OrdinalIgnoreCase) ||

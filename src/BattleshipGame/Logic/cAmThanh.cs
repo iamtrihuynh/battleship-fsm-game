@@ -7,24 +7,18 @@ using System.Threading.Tasks;
 
 namespace BattleshipGame.Logic
 {
-    /// <summary>
-    /// Lớp quản lý toàn bộ hệ thống âm thanh của trò chơi
-    /// - Nhạc nền (BGM): Chạy trên luồng Task nền bất đồng bộ (Non-blocking UI), sử dụng mciSendStringW (Unicode).
-    /// - Hiệu ứng âm thanh (SFX): Sử dụng Dictionary Caching có giới hạn số lượng phần tử chống rò rỉ RAM.
-    /// - Thread-safe & Exception Handling toàn diện.
-    /// </summary>
+    // Quan ly phat nhac nen va hieu ung am thanh
     public static class cAmThanh
     {
         [DllImport("winmm.dll", EntryPoint = "mciSendStringW", CharSet = CharSet.Unicode)]
-        private static extern int mciSendString(string strCommand, string strReturn, int iReturnLength, IntPtr hwndCallback);
+        private static extern int mciSendString(string cmd, string ret, int len, IntPtr hwnd);
 
-        private static readonly object _audioLock = new object();
-        private static readonly Dictionary<string, SoundPlayer> _soundCache = new Dictionary<string, SoundPlayer>(StringComparer.OrdinalIgnoreCase);
-        private const int MaxCacheEntries = 30;
+        private static readonly object _lock = new object();
+        private static readonly Dictionary<string, SoundPlayer> _cache = new Dictionary<string, SoundPlayer>(StringComparer.OrdinalIgnoreCase);
 
         public static bool DaBatAmThanh { get; set; } = true;
-
         private static string _audioDir = null;
+        private static string _currentBgm = null;
 
         public static string ThuMucAudio
         {
@@ -33,159 +27,111 @@ namespace BattleshipGame.Logic
                 if (string.IsNullOrEmpty(_audioDir))
                 {
                     string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                    string primaryDir = Path.Combine(baseDir, "Assets", "Audio");
-                    string fallbackDir = Path.Combine(baseDir, "bg");
+                    string path1 = Path.Combine(baseDir, "Assets", "Audio");
+                    string path2 = Path.Combine(baseDir, "bg");
 
-                    if (Directory.Exists(primaryDir))
-                    {
-                        _audioDir = primaryDir;
-                    }
-                    else if (Directory.Exists(fallbackDir))
-                    {
-                        _audioDir = fallbackDir;
-                    }
-                    else
-                    {
-                        _audioDir = primaryDir;
-                    }
+                    if (Directory.Exists(path1)) _audioDir = path1;
+                    else if (Directory.Exists(path2)) _audioDir = path2;
+                    else _audioDir = path1;
                 }
                 return _audioDir;
             }
-            set
-            {
-                _audioDir = value;
-            }
+            set => _audioDir = value;
         }
 
-        #region 1. QUẢN LÝ NHẠC NỀN (BGM) - NON-BLOCKING TASK
-
-        private static string _currentBgmFile = null;
-
-        /// <summary>
-        /// Phát nhạc nền bất đồng bộ trên luồng Task nền, không gây đứng hình giao diện
-        /// </summary>
-        public static void PhatNhacNen(string fileName = "bgm_battle.wav")
+        // Phat nhac nen loop vo tan bang MCI
+        public static void PhatNhacNen(string file = "bgm_battle.wav")
         {
             if (!DaBatAmThanh) return;
 
             Task.Run(() =>
             {
-                lock (_audioLock)
+                lock (_lock)
                 {
                     try
                     {
-                        string cleanFileName = (fileName ?? "bgm_battle.wav").Replace("\"", "").Trim();
-                        string filePath = Path.Combine(ThuMucAudio, cleanFileName);
-                        if (!File.Exists(filePath))
-                        {
-                            System.Diagnostics.Debug.WriteLine("Không tìm thấy file nhạc nền: " + filePath);
-                            return;
-                        }
+                        string ten = (file ?? "bgm_battle.wav").Replace("\"", "").Trim();
+                        string path = Path.Combine(ThuMucAudio, ten);
+                        if (!File.Exists(path)) return;
 
-                        _currentBgmFile = cleanFileName;
+                        _currentBgm = ten;
                         mciSendString("close bgm", null, 0, IntPtr.Zero);
 
-                        string openCmd = string.Format("open \"{0}\" type mpegvideo alias bgm", filePath);
-                        int errOpen = mciSendString(openCmd, null, 0, IntPtr.Zero);
-                        if (errOpen == 0)
+                        if (mciSendString(string.Format("open \"{0}\" type mpegvideo alias bgm", path), null, 0, IntPtr.Zero) == 0)
                         {
                             mciSendString("play bgm repeat", null, 0, IntPtr.Zero);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine("Lỗi phát nhạc nền: " + ex.Message);
-                    }
+                    catch { }
                 }
             });
         }
 
-        /// <summary>
-        /// Dừng phát nhạc nền trên luồng Task nền
-        /// </summary>
         public static void DungNhacNen()
         {
             Task.Run(() =>
             {
-                lock (_audioLock)
+                lock (_lock)
                 {
                     try
                     {
                         mciSendString("stop bgm", null, 0, IntPtr.Zero);
                         mciSendString("close bgm", null, 0, IntPtr.Zero);
                     }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine("Lỗi dừng nhạc nền: " + ex.Message);
-                    }
+                    catch { }
                 }
             });
         }
 
-        #endregion
-
-        #region 2. QUẢN LÝ HIỆU ỨNG ÂM THANH (SFX - CACHE CÓ GIỚI HẠN)
-
-        private static SoundPlayer LayHoacTaoPlayer(string fileName)
+        // Lay player tu cache hoac tao moi neu chua co
+        private static SoundPlayer LayPlayer(string file)
         {
-            if (string.IsNullOrWhiteSpace(fileName)) return null;
-            string cleanFileName = fileName.Replace("\"", "").Trim();
+            if (string.IsNullOrWhiteSpace(file)) return null;
+            string ten = file.Replace("\"", "").Trim();
 
-            lock (_soundCache)
+            lock (_cache)
             {
-                if (_soundCache.TryGetValue(cleanFileName, out SoundPlayer cachedPlayer))
-                {
-                    return cachedPlayer;
-                }
+                if (_cache.TryGetValue(ten, out SoundPlayer p))
+                    return p;
 
-                // Bảo vệ bộ nhớ: Nếu cache vượt quá số lượng tối đa, giải phóng và xóa bớt
-                if (_soundCache.Count >= MaxCacheEntries)
+                if (_cache.Count >= 30)
                 {
-                    foreach (var p in _soundCache.Values)
+                    foreach (var item in _cache.Values)
                     {
-                        try { p?.Dispose(); } catch { }
+                        try { item?.Dispose(); } catch { }
                     }
-                    _soundCache.Clear();
+                    _cache.Clear();
                 }
 
-                string filePath = Path.Combine(ThuMucAudio, cleanFileName);
-                if (File.Exists(filePath))
+                string path = Path.Combine(ThuMucAudio, ten);
+                if (File.Exists(path))
                 {
                     try
                     {
-                        SoundPlayer newPlayer = new SoundPlayer(filePath);
-                        newPlayer.LoadAsync();
-                        _soundCache[cleanFileName] = newPlayer;
-                        return newPlayer;
+                        SoundPlayer sp = new SoundPlayer(path);
+                        sp.LoadAsync();
+                        _cache[ten] = sp;
+                        return sp;
                     }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine("Lỗi khởi tạo SoundPlayer cho " + cleanFileName + ": " + ex.Message);
-                    }
+                    catch { }
                 }
             }
             return null;
         }
 
-        public static void PhatSFX(string fileName)
+        // Phat hieu ung am thanh
+        public static void PhatSFX(string file)
         {
             if (!DaBatAmThanh) return;
 
             try
             {
-                SoundPlayer player = LayHoacTaoPlayer(fileName);
-                if (player != null)
-                {
-                    player.Play();
-                }
-                else
-                {
-                    SystemSounds.Beep.Play();
-                }
+                SoundPlayer p = LayPlayer(file);
+                if (p != null) p.Play();
+                else SystemSounds.Beep.Play();
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine("Lỗi phát SFX: " + ex.Message);
                 try { SystemSounds.Beep.Play(); } catch { }
             }
         }
@@ -209,45 +155,27 @@ namespace BattleshipGame.Logic
             PhatSFX("defeat.wav");
         }
 
-        #endregion
-
-        #region 3. ĐIỀU KHIỂN BẬT / TẮT ÂM THANH
-
         public static bool BatTatAmThanh()
         {
             DaBatAmThanh = !DaBatAmThanh;
-            if (!DaBatAmThanh)
-            {
-                DungNhacNen();
-            }
-            else
-            {
-                PhatNhacNen(_currentBgmFile ?? "bgm_battle.wav");
-            }
+            if (!DaBatAmThanh) DungNhacNen();
+            else PhatNhacNen(_currentBgm ?? "bgm_battle.wav");
             return DaBatAmThanh;
         }
 
-        /// <summary>
-        /// Giải phóng toàn bộ tài nguyên âm thanh khi đóng Form hoặc thoát trò chơi
-        /// </summary>
+        // Giai phong khi tat game
         public static void GiaiPhong()
         {
-            try
-            {
-                DungNhacNen();
-            }
-            catch { }
+            try { DungNhacNen(); } catch { }
 
-            lock (_soundCache)
+            lock (_cache)
             {
-                foreach (var player in _soundCache.Values)
+                foreach (var p in _cache.Values)
                 {
-                    try { player?.Dispose(); } catch { }
+                    try { p?.Dispose(); } catch { }
                 }
-                _soundCache.Clear();
+                _cache.Clear();
             }
         }
-
-        #endregion
     }
 }

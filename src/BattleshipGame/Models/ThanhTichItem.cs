@@ -3,17 +3,10 @@ using System.Globalization;
 
 namespace BattleshipGame.Models
 {
-    /// <summary>
-    /// Thực thể đại diện cho một bản ghi thành tích của người chơi
-    /// Định dạng file: {NgayChoi}|{TenNguoiChoi}|{DiemSo}|{SoLuotBan}|{ThoiGianGiay}|{CheDo}|{KetQua}
-    /// Tích hợp cơ chế bảo vệ:
-    /// - Chống Delimiter Injection (loại bỏ ký tự '|')
-    /// - Chống CRLF / Newline Injection (loại bỏ ký tự '\r', '\n' ngăn chặn chèn bản ghi giả mạo)
-    /// - Xử lý bóc tách ký tự BOM ('\uFEFF') và Culture-invariant ngày tháng
-    /// </summary>
+    // luu thanh tich
     public class ThanhTichItem
     {
-        private string _tenNguoiChoi = "VoDanh";
+        private string _ten = "VoDanh";
         private string _cheDo = "PvE";
         private string _ketQua = "Thắng";
 
@@ -21,8 +14,8 @@ namespace BattleshipGame.Models
 
         public string TenNguoiChoi
         {
-            get => _tenNguoiChoi;
-            set => _tenNguoiChoi = SanitizeInput(value, "VoDanh");
+            get => _ten;
+            set => _ten = ChuanHoa(value, "VoDanh");
         }
 
         public int DiemSo { get; set; }
@@ -32,13 +25,13 @@ namespace BattleshipGame.Models
         public string CheDo
         {
             get => _cheDo;
-            set => _cheDo = SanitizeInput(value, "PvE");
+            set => _cheDo = ChuanHoa(value, "PvE");
         }
 
         public string KetQua
         {
             get => _ketQua;
-            set => _ketQua = SanitizeInput(value, "Thắng");
+            set => _ketQua = ChuanHoa(value, "Thắng");
         }
 
         public ThanhTichItem()
@@ -52,93 +45,64 @@ namespace BattleshipGame.Models
             KetQua = "Thắng";
         }
 
-        public ThanhTichItem(DateTime ngayChoi, string tenNguoiChoi, int diemSo, int soLuotBan, int thoiGianGiay, string cheDo, string ketQua)
+        public ThanhTichItem(DateTime ngay, string ten, int diem, int luot, int giay, string cheDo, string ketQua)
         {
-            NgayChoi = ngayChoi;
-            TenNguoiChoi = tenNguoiChoi;
-            DiemSo = Math.Max(0, diemSo);
-            SoLuotBan = Math.Max(0, soLuotBan);
-            ThoiGianGiay = Math.Max(0, thoiGianGiay);
+            NgayChoi = ngay;
+            TenNguoiChoi = ten;
+            DiemSo = Math.Max(0, diem);
+            SoLuotBan = Math.Max(0, luot);
+            ThoiGianGiay = Math.Max(0, giay);
             CheDo = cheDo;
             KetQua = ketQua;
         }
 
-        /// <summary>
-        /// Khởi tạo đối tượng từ 1 dòng chuỗi phân tách bằng ký tự '|'
-        /// </summary>
-        public ThanhTichItem(string rawLine)
+        // Parse dong tu file txt
+        public ThanhTichItem(string line)
         {
-            if (string.IsNullOrWhiteSpace(rawLine))
-                throw new ArgumentException("Dòng dữ liệu không được để trống.");
+            if (string.IsNullOrWhiteSpace(line))
+                throw new ArgumentException("Du lieu rong");
 
-            string[] parts = rawLine.Split('|');
-            if (parts.Length < 7)
-                throw new FormatException(string.Format("Dữ liệu dòng thành tích không đúng định dạng (có {0}/7 trường).", parts.Length));
+            string[] arr = line.Split('|');
+            if (arr.Length < 7)
+                throw new FormatException("Khong du 7 truong du lieu");
 
-            // Bóc tách ký tự BOM '\uFEFF' (nếu có) trước khi parse ngày tháng
-            string dateStr = parts[0].Trim().Trim('\uFEFF');
-            DateTime dt;
-            if (DateTime.TryParseExact(dateStr, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
-            {
+            string dStr = arr[0].Trim().Trim('\uFEFF');
+            if (DateTime.TryParseExact(dStr, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
                 NgayChoi = dt;
-            }
-            else if (DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
-            {
+            else if (DateTime.TryParse(dStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                 NgayChoi = dt;
-            }
             else
-            {
                 NgayChoi = DateTime.Now;
-            }
 
-            TenNguoiChoi = parts[1];
+            TenNguoiChoi = arr[1];
 
-            int diem;
-            DiemSo = int.TryParse(parts[2].Trim(), out diem) ? Math.Max(0, diem) : 0;
+            DiemSo = int.TryParse(arr[2].Trim(), out int d) ? Math.Max(0, d) : 0;
+            SoLuotBan = int.TryParse(arr[3].Trim(), out int l) ? Math.Max(0, l) : 0;
+            ThoiGianGiay = int.TryParse(arr[4].Trim(), out int g) ? Math.Max(0, g) : 0;
 
-            int luot;
-            SoLuotBan = int.TryParse(parts[3].Trim(), out luot) ? Math.Max(0, luot) : 0;
-
-            int tg;
-            ThoiGianGiay = int.TryParse(parts[4].Trim(), out tg) ? Math.Max(0, tg) : 0;
-
-            CheDo = parts[5];
-            KetQua = parts[6];
+            CheDo = arr[5];
+            KetQua = arr[6];
         }
 
-        /// <summary>
-        /// Làm sạch chuỗi đầu vào: loại bỏ dấu '|' và các ký tự ngắt dòng '\r', '\n'
-        /// </summary>
-        private static string SanitizeInput(string input, string defaultValue)
+        // Xoa ky tu | va xuong dong tranh loi file
+        private static string ChuanHoa(string s, string def)
         {
-            if (string.IsNullOrWhiteSpace(input))
-                return defaultValue;
-
-            // Xóa ký tự phân tách và ký tự ngắt dòng
-            string cleaned = input.Replace("|", "-")
-                                  .Replace("\r", "")
-                                  .Replace("\n", " ")
-                                  .Trim();
-
-            return string.IsNullOrWhiteSpace(cleaned) ? defaultValue : cleaned;
+            if (string.IsNullOrWhiteSpace(s)) return def;
+            string res = s.Replace("|", "-").Replace("\r", "").Replace("\n", " ").Trim();
+            return string.IsNullOrWhiteSpace(res) ? def : res;
         }
 
-        /// <summary>
-        /// Định dạng thời gian theo kiểu mm:ss để hiển thị lên bảng xếp hạng
-        /// </summary>
+        // Dinh dang phut:giay len bang
         public string ThoiGianHienThi
         {
             get
             {
-                int safeSeconds = Math.Max(0, ThoiGianGiay);
-                TimeSpan ts = TimeSpan.FromSeconds(safeSeconds);
+                int s = Math.Max(0, ThoiGianGiay);
+                TimeSpan ts = TimeSpan.FromSeconds(s);
                 return string.Format("{0:D2}:{1:D2}", (int)ts.TotalMinutes, ts.Seconds);
             }
         }
 
-        /// <summary>
-        /// Xuất định dạng chuỗi chuẩn để lưu vào tập tin thanhtichs.txt
-        /// </summary>
         public override string ToString()
         {
             return string.Format("{0:yyyy-MM-dd HH:mm:ss}|{1}|{2}|{3}|{4}|{5}|{6}",

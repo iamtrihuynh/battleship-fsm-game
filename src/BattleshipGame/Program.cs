@@ -7,22 +7,15 @@ namespace BattleshipGame
 {
     internal static class Program
     {
-        /// <summary>
-        /// Điểm khởi nhập chính cho ứng dụng Battleship MiniGame.
-        /// </summary>
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Tự động thu hồi tài nguyên unmanaged (âm thanh, MCI) khi thoát ứng dụng
-            Application.ApplicationExit += (sender, e) =>
-            {
-                cAmThanh.GiaiPhong();
-            };
+            Application.ApplicationExit += (s, e) => cAmThanh.GiaiPhong();
 
-            // Khởi chạy Bảng thành tích (hoặc đổi thành frmMenu khi Thành viên 2 tích hợp)
+            // Tam thoi chay thang vao bang thanh tich de test
             Application.Run(new frmThanhTich());
         }
     }
