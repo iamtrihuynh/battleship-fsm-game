@@ -6,5 +6,9 @@
   <ItemGroup>
     <Compile Include="..\..\src\BattleshipGame\Models\ThanhTichItem.cs" Link="Models\ThanhTichItem.cs" />
     <Compile Include="..\..\src\BattleshipGame\DataAccess\cThanhTichDAO.cs" Link="DataAccess\cThanhTichDAO.cs" />
+    <Compile Include="..\..\src\BattleshipGame\Models\Enums.cs" Link="Models\Enums.cs" />
+    <Compile Include="..\..\src\BattleshipGame\Models\cO.cs" Link="Models\cO.cs" />
+    <Compile Include="..\..\src\BattleshipGame\Models\cTau.cs" Link="Models\cTau.cs" />
+    <Compile Include="..\..\src\BattleshipGame\Logic\cBanCo.cs" Link="Logic\cBanCo.cs" />
   </ItemGroup>
 </Project>
