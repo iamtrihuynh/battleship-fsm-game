@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>BattleshipGame</RootNamespace>
+    <AssemblyName>BattleshipGame</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <ApplicationIcon />
+    <StartupObject>BattleshipGame.Program</StartupObject>
+  </PropertyGroup>
+
+  <!-- Đảm bảo tự động copy thư mục Audio và Data vào thư mục chạy (bin/Debug) -->
+  <ItemGroup>
+    <None Update="Assets\Audio\*.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Data\thanhtichs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

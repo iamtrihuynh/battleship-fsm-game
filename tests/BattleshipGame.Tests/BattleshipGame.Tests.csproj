@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\BattleshipGame\Models\ThanhTichItem.cs" Link="Models\ThanhTichItem.cs" />
+    <Compile Include="..\..\src\BattleshipGame\DataAccess\cThanhTichDAO.cs" Link="DataAccess\cThanhTichDAO.cs" />
+  </ItemGroup>
+</Project>

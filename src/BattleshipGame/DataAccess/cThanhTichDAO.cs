@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 using BattleshipGame.Models;
 
 namespace BattleshipGame.DataAccess
@@ -36,7 +35,7 @@ namespace BattleshipGame.DataAccess
             {
                 if (string.IsNullOrEmpty(_filePath))
                 {
-                    string baseDir = Application.StartupPath;
+                    string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                     string primaryPath = Path.Combine(baseDir, "Assets", "Data", "thanhtichs.txt");
                     string fallbackPath = Path.Combine(baseDir, "thanhtichs.txt");
 

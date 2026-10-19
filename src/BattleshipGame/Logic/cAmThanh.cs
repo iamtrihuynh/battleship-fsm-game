@@ -4,7 +4,6 @@ using System.IO;
 using System.Media;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace BattleshipGame.Logic
 {
@@ -33,7 +32,7 @@ namespace BattleshipGame.Logic
             {
                 if (string.IsNullOrEmpty(_audioDir))
                 {
-                    string baseDir = Application.StartupPath;
+                    string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                     string primaryDir = Path.Combine(baseDir, "Assets", "Audio");
                     string fallbackDir = Path.Combine(baseDir, "bg");
 
