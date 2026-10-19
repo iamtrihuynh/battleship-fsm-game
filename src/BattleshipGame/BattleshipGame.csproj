@@ -11,7 +11,6 @@
     <StartupObject>BattleshipGame.Program</StartupObject>
   </PropertyGroup>
 
-  <!-- Đảm bảo tự động copy thư mục Audio và Data vào thư mục chạy (bin/Debug) -->
   <ItemGroup>
     <None Update="Assets\Audio\*.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

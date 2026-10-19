@@ -226,7 +226,7 @@ namespace BattleshipGame.Views
             this.dgvThanhTich.Size = new System.Drawing.Size(920, 390);
             this.dgvThanhTich.TabIndex = 2;
             // 
-            // colHang (Khoa SortMode = NotSortable de giu co dinh icon Huy chuong)
+            // colHang
             // 
             this.colHang.HeaderText = "Hạng";
             this.colHang.Name = "colHang";

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BattleshipGame.Logic
 {
-    // Quan ly phat nhac nen va hieu ung am thanh
+    // quan ly nhac nen, am thanh
     public static class cAmThanh
     {
         [DllImport("winmm.dll", EntryPoint = "mciSendStringW", CharSet = CharSet.Unicode)]
@@ -39,7 +39,6 @@ namespace BattleshipGame.Logic
             set => _audioDir = value;
         }
 
-        // Phat nhac nen loop vo tan bang MCI
         public static void PhatNhacNen(string file = "bgm_battle.wav")
         {
             if (!DaBatAmThanh) return;

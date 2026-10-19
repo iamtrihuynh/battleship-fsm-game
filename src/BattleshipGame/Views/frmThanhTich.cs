@@ -46,7 +46,7 @@ namespace BattleshipGame.Views
         private void frmThanhTich_Load(object sender, EventArgs e)
         {
             if (cboCheDo.Items.Count > 0)
-                cboCheDo.SelectedIndex = 0; // Tat ca
+                cboCheDo.SelectedIndex = 0; 
 
             _daLoad = true;
             TaiDuLieuTuFile();
@@ -74,7 +74,6 @@ namespace BattleshipGame.Views
             List<ThanhTichItem> listLoc = cThanhTichDAO.LocTheoCheDo(_listGoc, cheDo);
             List<ThanhTichItem> listSort = cThanhTichDAO.SapXep(listLoc, _sortType);
 
-            // Lay toi da 100 dong cho nhe
             const int maxRows = 100;
             List<ThanhTichItem> listShow = listSort.Count > maxRows
                 ? listSort.GetRange(0, maxRows)
@@ -90,7 +89,6 @@ namespace BattleshipGame.Views
                     ThanhTichItem item = listShow[i];
                     if (item == null) continue;
 
-                    // top 3 them icon
                     string rank = (i + 1).ToString();
                     if (i == 0) rank = "🥇 " + rank;
                     else if (i == 1) rank = "🥈 " + rank;
@@ -109,11 +107,9 @@ namespace BattleshipGame.Views
 
                     DataGridViewRow row = dgvThanhTich.Rows[idx];
 
-                    // mau diem
                     row.Cells[3].Style.ForeColor = Color.FromArgb(100, 255, 218);
                     row.Cells[3].Style.Font = _fontDiem;
 
-                    // mau ket qua
                     string kq = item.KetQua ?? "";
                     if (kq.IndexOf("Thắng", StringComparison.OrdinalIgnoreCase) >= 0)
                         row.Cells[7].Style.ForeColor = Color.FromArgb(52, 211, 153);

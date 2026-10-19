@@ -15,7 +15,7 @@ namespace BattleshipGame.DataAccess
         SoLuotItNhat
     }
 
-    // Xu ly doc ghi file thanhtichs.txt
+    // doc ghi thanhtichs.txt
     public class cThanhTichDAO
     {
         private static readonly object _lock = new object();
@@ -104,7 +104,6 @@ namespace BattleshipGame.DataAccess
 
                     if (File.Exists(path))
                     {
-                        // File lon hon 10MB thi thoi khong doc
                         if (new FileInfo(path).Length > 10 * 1024 * 1024)
                         {
                             LoiGanNhat = "File vuot qua 10MB";

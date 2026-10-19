@@ -15,7 +15,6 @@ namespace BattleshipGame
 
             Application.ApplicationExit += (s, e) => cAmThanh.GiaiPhong();
 
-            // Tam thoi chay thang vao bang thanh tich de test
             Application.Run(new frmThanhTich());
         }
     }
