@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -17,8 +18,8 @@ namespace BattleshipGame.Views
         // Mảng trạng thái giao diện nội bộ (0: Nước, 1: Tàu mẫu, 2: Trúng, 3: Trượt, 4: Chìm)
         private readonly int[,] _displayMatrix = new int[10, 10];
 
-        public event Action<int, int> KhiClickO;
-        public event Action<int, int> KhiHoverO;
+        public event Action<int, int>? KhiClickO;
+        public event Action<int, int>? KhiHoverO;
 
         private Point _hoverO = new Point(-1, -1);
         private const int LeTren = 34;

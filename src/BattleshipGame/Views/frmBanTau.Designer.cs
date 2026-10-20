@@ -18,7 +18,7 @@ namespace BattleshipGame.Views
         // Khu vực chính 3 cột
         private Panel pnlLeftBoardContainer;
         private Label lblLeftBoardTitle;
-        private TacticalBoardControl boardPlayer;
+        private Panel pnlPlayerBoard;
 
         private Panel pnlCenterDashboard;
         private Label lblTurnIndicator;
@@ -56,7 +56,7 @@ namespace BattleshipGame.Views
         // Bàn cờ bên phải
         private Panel pnlRightBoardContainer;
         private Label lblRightBoardTitle;
-        private TacticalBoardControl boardRadar;
+        private Panel pnlRadarBoard;
 
         // Màn che sương mù chuyển lượt PvP Hotseat
         private Panel pnlFogOverlay;
@@ -93,7 +93,7 @@ namespace BattleshipGame.Views
 
             this.pnlLeftBoardContainer = new Panel();
             this.lblLeftBoardTitle = new Label();
-            this.boardPlayer = new TacticalBoardControl();
+            this.pnlPlayerBoard = new Panel();
 
             this.pnlCenterDashboard = new Panel();
             this.lblTurnIndicator = new Label();
@@ -128,7 +128,7 @@ namespace BattleshipGame.Views
 
             this.pnlRightBoardContainer = new Panel();
             this.lblRightBoardTitle = new Label();
-            this.boardRadar = new TacticalBoardControl();
+            this.pnlRadarBoard = new Panel();
 
             this.pnlFogOverlay = new Panel();
             this.lblFogTitle = new Label();
@@ -155,6 +155,7 @@ namespace BattleshipGame.Views
             this.KeyPreview = true;
             this.KeyDown += new KeyEventHandler(this.frmBanTau_KeyDown);
             this.Resize += new EventHandler(this.frmBanTau_Resize);
+            this.Load += new EventHandler(this.frmBanTau_Load);
 
             // 
             // pnlTopBar
@@ -227,11 +228,11 @@ namespace BattleshipGame.Views
             this.lblLeftBoardTitle.Text = "🛡️ VÙNG BIỂN CỦA BẠN (HẠM ĐỘI)";
             this.pnlLeftBoardContainer.Controls.Add(this.lblLeftBoardTitle);
 
-            this.boardPlayer.Location = new Point(10, 36);
-            this.boardPlayer.Size = new Size(400, 430);
-            this.boardPlayer.LaBanCoRadar = false;
-            this.boardPlayer.KhiClickO += new Action<int, int>(this.boardPlayer_KhiClickO);
-            this.pnlLeftBoardContainer.Controls.Add(this.boardPlayer);
+            this.pnlPlayerBoard.Location = new Point(10, 36);
+            this.pnlPlayerBoard.Size = new Size(400, 434);
+            this.pnlPlayerBoard.BackColor = UITheme.HeaderBackground;
+            this.pnlPlayerBoard.BorderStyle = BorderStyle.FixedSingle;
+            this.pnlLeftBoardContainer.Controls.Add(this.pnlPlayerBoard);
 
             // 
             // pnlRightBoardContainer (Bàn cờ Radar Đối phương)
@@ -251,11 +252,11 @@ namespace BattleshipGame.Views
             this.lblRightBoardTitle.Text = "🎯 RADAR KHAI HỎA (ĐỐI PHƯƠNG)";
             this.pnlRightBoardContainer.Controls.Add(this.lblRightBoardTitle);
 
-            this.boardRadar.Location = new Point(10, 36);
-            this.boardRadar.Size = new Size(400, 430);
-            this.boardRadar.LaBanCoRadar = true;
-            this.boardRadar.KhiClickO += new Action<int, int>(this.boardRadar_KhiClickO);
-            this.pnlRightBoardContainer.Controls.Add(this.boardRadar);
+            this.pnlRadarBoard.Location = new Point(10, 36);
+            this.pnlRadarBoard.Size = new Size(400, 434);
+            this.pnlRadarBoard.BackColor = UITheme.HeaderBackground;
+            this.pnlRadarBoard.BorderStyle = BorderStyle.FixedSingle;
+            this.pnlRightBoardContainer.Controls.Add(this.pnlRadarBoard);
 
             // 
             // pnlCenterDashboard (Trung tâm điều khiển ở giữa)
