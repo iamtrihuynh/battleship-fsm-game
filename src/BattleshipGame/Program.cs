@@ -15,7 +15,7 @@ namespace BattleshipGame
 
             Application.ApplicationExit += (s, e) => cAmThanh.GiaiPhong();
 
-            Application.Run(new frmThanhTich());
+            Application.Run(new frmMenu());
         }
     }
 }
