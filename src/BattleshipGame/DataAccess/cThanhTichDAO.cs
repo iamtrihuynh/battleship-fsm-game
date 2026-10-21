@@ -55,8 +55,26 @@ namespace BattleshipGame.DataAccess
                         }
                         catch
                         {
-                            _filePath = path2;
-                            TaoFileMau(_filePath);
+                            try
+                            {
+                                _filePath = path2;
+                                TaoFileMau(_filePath);
+                            }
+                            catch
+                            {
+                                try
+                                {
+                                    string appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BattleshipGame");
+                                    if (!Directory.Exists(appData))
+                                        Directory.CreateDirectory(appData);
+                                    _filePath = Path.Combine(appData, "thanhtichs.txt");
+                                    TaoFileMau(_filePath);
+                                }
+                                catch
+                                {
+                                    _filePath = path2;
+                                }
+                            }
                         }
                     }
                 }

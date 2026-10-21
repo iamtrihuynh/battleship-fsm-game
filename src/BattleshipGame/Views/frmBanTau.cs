@@ -30,6 +30,16 @@ namespace BattleshipGame.Views
         private bool _tranDauKetThuc = false;
         private bool _dangXuLyBan = false;
 
+        private enum CheDoKyNang
+        {
+            KhongCo,
+            RadarTrinhSat,
+            PhaoKichDienRong
+        }
+        private CheDoKyNang _kyNangHienTai = CheDoKyNang.KhongCo;
+        private bool _daDungSkillRadar = false;
+        private bool _daDungSkillBomb = false;
+
         // Ban co logic
         private readonly cBanCo _banCoTa = new cBanCo(10);
         private readonly cBanCo _banCoDoiThu = new cBanCo(10);
@@ -64,6 +74,7 @@ namespace BattleshipGame.Views
             InitializeComponent();
             DoubleBuffered = true;
             StartPosition = FormStartPosition.CenterScreen;
+            MinimumSize = new Size(1180, 720);
             Text = "Trận Địa Hải Chiến - Bắn Tàu (Giao Diện Bàn Cờ Động Ngày 2 - TV2)";
 
             _cheDoChoi = cheDoChoi;
@@ -530,6 +541,17 @@ namespace BattleshipGame.Views
             btnStartBattle.Enabled = false;
             btnStartBattle.BackColor = UITheme.PanelBackground;
             btnStartBattle.ForeColor = UITheme.MissGray;
+
+            _daDungSkillRadar = false;
+            _daDungSkillBomb = false;
+            _kyNangHienTai = CheDoKyNang.KhongCo;
+            btnSkillRadar.Enabled = true;
+            btnSkillRadar.BackColor = UITheme.PanelBackground;
+            btnSkillRadar.ForeColor = UITheme.PrimaryCyan;
+            btnSkillCrossBomb.Enabled = true;
+            btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
+            btnSkillCrossBomb.ForeColor = UITheme.AccentNeon;
+
             lblPlayerFleetStatus.Text = "Hạm đội ta: 0/5 tàu (0 ô)";
             lblTurnIndicator.Text = "GIAI ĐOẠN: BỐ TRÍ HẠM ĐỘI";
             lblTurnIndicator.ForeColor = UITheme.PrimaryCyan;
@@ -684,6 +706,18 @@ namespace BattleshipGame.Views
 
             int col = pt.X;
             int row = pt.Y;
+
+            if (_kyNangHienTai == CheDoKyNang.RadarTrinhSat)
+            {
+                ThucHienQuetRadar(col, row);
+                return;
+            }
+
+            if (_kyNangHienTai == CheDoKyNang.PhaoKichDienRong)
+            {
+                ThucHienPhaoKich(col, row);
+                return;
+            }
 
             if (_maTranRadar[row, col] != 0)
             {
@@ -922,29 +956,192 @@ namespace BattleshipGame.Views
 
         private void btnSkillRadar_Click(object? sender, EventArgs e)
         {
-            MessageBox.Show(
-                "📡 Kỹ năng Radar trinh sát 3x3 đã sẵn sàng kết nối.",
-                "Kỹ năng đặc biệt",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
+            if (_giaiDoanXepTau || _tranDauKetThuc) return;
+
+            if (_daDungSkillRadar)
+            {
+                MessageBox.Show("Kỹ năng Radar trinh sát 3x3 đã được sử dụng trong trận này!", "Kỹ năng đặc biệt", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (_kyNangHienTai == CheDoKyNang.RadarTrinhSat)
+            {
+                _kyNangHienTai = CheDoKyNang.KhongCo;
+                btnSkillRadar.BackColor = UITheme.PanelBackground;
+                btnSkillRadar.ForeColor = UITheme.PrimaryCyan;
+                lblTurnMessage.Text = "Đã hủy kích hoạt kỹ năng Radar.";
+                lblTurnMessage.ForeColor = UITheme.TextSecondary;
+            }
+            else
+            {
+                _kyNangHienTai = CheDoKyNang.RadarTrinhSat;
+                btnSkillRadar.BackColor = Color.FromArgb(20, 80, 120);
+                btnSkillRadar.ForeColor = Color.White;
+                lblTurnMessage.Text = "📡 CHẾ ĐỘ TRINH SÁT RADAR: Hãy click 1 ô trên Radar để quét vùng 3x3 quanh ô đó!";
+                lblTurnMessage.ForeColor = UITheme.AccentNeon;
+            }
         }
 
         private void btnSkillCrossBomb_Click(object? sender, EventArgs e)
         {
+            if (_giaiDoanXepTau || _tranDauKetThuc) return;
+
+            if (_daDungSkillBomb)
+            {
+                MessageBox.Show("Kỹ năng Pháo kích diện rộng (+) đã được sử dụng trong trận này!", "Kỹ năng đặc biệt", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (_kyNangHienTai == CheDoKyNang.PhaoKichDienRong)
+            {
+                _kyNangHienTai = CheDoKyNang.KhongCo;
+                btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
+                btnSkillCrossBomb.ForeColor = UITheme.AccentNeon;
+                lblTurnMessage.Text = "Đã hủy kích hoạt kỹ năng Pháo kích.";
+                lblTurnMessage.ForeColor = UITheme.TextSecondary;
+            }
+            else
+            {
+                _kyNangHienTai = CheDoKyNang.PhaoKichDienRong;
+                btnSkillCrossBomb.BackColor = Color.FromArgb(120, 30, 30);
+                btnSkillCrossBomb.ForeColor = Color.White;
+                lblTurnMessage.Text = "💥 CHẾ ĐỘ PHÁO KÍCH DIỆN RỘNG (+): Hãy click 1 ô tâm để nã pháo 5 ô!";
+                lblTurnMessage.ForeColor = UITheme.DangerRed;
+            }
+        }
+
+        private void ThucHienQuetRadar(int centerCol, int centerRow)
+        {
+            _daDungSkillRadar = true;
+            _kyNangHienTai = CheDoKyNang.KhongCo;
+            btnSkillRadar.Enabled = false;
+            btnSkillRadar.BackColor = UITheme.PanelBackground;
+            btnSkillRadar.ForeColor = UITheme.MissGray;
+
+            cAmThanh.PhatRadar();
+
+            int soOTauPhatHien = 0;
+            for (int r = centerRow - 1; r <= centerRow + 1; r++)
+            {
+                for (int c = centerCol - 1; c <= centerCol + 1; c++)
+                {
+                    if (c >= 0 && c < 10 && r >= 0 && r < 10)
+                    {
+                        if (_banCoDoiThu.MaTranO[c, r].CoTau)
+                        {
+                            soOTauPhatHien++;
+                        }
+                    }
+                }
+            }
+
+            lblTurnMessage.Text = $"📡 Radar quét khu vực {((char)('A' + centerRow))}{centerCol + 1} (3x3): Phát hiện {soOTauPhatHien} ô chiến hạm địch!";
+            lblTurnMessage.ForeColor = soOTauPhatHien > 0 ? UITheme.AccentNeon : UITheme.TextSecondary;
+
             MessageBox.Show(
-                "💥 Kỹ năng Pháo kích diện rộng (+) 5 ô đã sẵn sàng kết nối.",
-                "Kỹ năng đặc biệt",
+                $"📡 KẾT QUẢ TRINH SÁT RADAR 3x3 quanh tọa độ {((char)('A' + centerRow))}{centerCol + 1}:\n\n" +
+                $"Số ô chiến hạm địch phát hiện: {soOTauPhatHien} ô.",
+                "Radar Trinh Sát",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
         }
 
+        private void ThucHienPhaoKich(int centerCol, int centerRow)
+        {
+            _daDungSkillBomb = true;
+            _kyNangHienTai = CheDoKyNang.KhongCo;
+            btnSkillCrossBomb.Enabled = false;
+            btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
+            btnSkillCrossBomb.ForeColor = UITheme.MissGray;
+
+            cAmThanh.PhatAirstrike();
+
+            Point[] mucTieu = new Point[]
+            {
+                new Point(centerCol, centerRow),
+                new Point(centerCol - 1, centerRow),
+                new Point(centerCol + 1, centerRow),
+                new Point(centerCol, centerRow - 1),
+                new Point(centerCol, centerRow + 1)
+            };
+
+            int soPhatTrungPhao = 0;
+            foreach (var pt in mucTieu)
+            {
+                if (pt.X >= 0 && pt.X < 10 && pt.Y >= 0 && pt.Y < 10)
+                {
+                    if (_maTranRadar[pt.Y, pt.X] == 0)
+                    {
+                        _tongPhatBan++;
+                        KetQuaBan kq = _banCoDoiThu.TiepNhanPhatBan(pt, out cTau tauBiBan);
+                        var b = _btnRadarGrid[pt.Y, pt.X];
+
+                        if (kq == KetQuaBan.Hit || kq == KetQuaBan.Sunk)
+                        {
+                            _soPhatTrung++;
+                            soPhatTrungPhao++;
+                            _maTranRadar[pt.Y, pt.X] = 2;
+                            b.BackColor = UITheme.DangerRed;
+                            b.ForeColor = Color.Yellow;
+                            b.Text = "✕";
+
+                            if (kq == KetQuaBan.Sunk && tauBiBan != null)
+                            {
+                                foreach (Point p in tauBiBan.DanhSachToaDo)
+                                {
+                                    if (p.Y >= 0 && p.Y < 10 && p.X >= 0 && p.X < 10)
+                                    {
+                                        _btnRadarGrid[p.Y, p.X].BackColor = UITheme.SunkDarkRed;
+                                        _btnRadarGrid[p.Y, p.X].Text = "💀";
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            _maTranRadar[pt.Y, pt.X] = 3;
+                            b.BackColor = Color.FromArgb(45, 58, 76);
+                            b.ForeColor = UITheme.MissGray;
+                            b.Text = "•";
+                        }
+                    }
+                }
+            }
+
+            lblShotCounts.Text = $"Phát bắn: {_tongPhatBan} (Trúng: {_soPhatTrung} • Trượt: {_tongPhatBan - _soPhatTrung})";
+            double tiLe = _tongPhatBan > 0 ? (_soPhatTrung * 100.0 / _tongPhatBan) : 0;
+            lblAccuracy.Text = $"Độ chính xác: {tiLe:F1}%";
+
+            lblTurnMessage.Text = $"💥 Pháo kích diện rộng hoàn tất! Đánh trúng {soPhatTrungPhao} mục tiêu.";
+            lblTurnMessage.ForeColor = UITheme.DangerRed;
+
+            if (_banCoDoiThu.TatCaTauDaChim)
+            {
+                XuLyKetThucTran(true);
+            }
+            else if (_cheDoChoi.StartsWith("PvE", StringComparison.OrdinalIgnoreCase))
+            {
+                MayBanTra();
+            }
+        }
+
         private void btnPauseGame_Click(object? sender, EventArgs e)
         {
-            tmrMatch.Enabled = !tmrMatch.Enabled;
-            tmrTurnCountdown.Enabled = !tmrTurnCountdown.Enabled;
-            btnPauseGame.Text = tmrMatch.Enabled ? "⏸ Tạm dừng" : "▶ Tiếp tục";
+            if (_giaiDoanXepTau || _tranDauKetThuc) return;
+
+            bool dangChay = tmrMatch.Enabled;
+            bool tiepTuc = !dangChay;
+
+            tmrMatch.Enabled = tiepTuc;
+            tmrTurnCountdown.Enabled = tiepTuc;
+            pnlRadarBoard.Enabled = tiepTuc;
+
+            btnPauseGame.Text = tiepTuc ? "⏸ Tạm dừng" : "▶ Tiếp tục";
+            lblTurnMessage.Text = tiepTuc
+                ? "▶ Trận đấu tiếp tục!"
+                : "⏸ Trận đấu đang tạm dừng. Hãy bấm 'Tiếp tục' để chơi tiếp.";
+            lblTurnMessage.ForeColor = tiepTuc ? UITheme.AccentNeon : UITheme.WarningYellow;
         }
 
         private void btnSurrender_Click(object? sender, EventArgs e)
