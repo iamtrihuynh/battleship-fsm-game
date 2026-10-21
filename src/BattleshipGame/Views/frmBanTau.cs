@@ -468,7 +468,8 @@ namespace BattleshipGame.Views
                 }
             }
 
-            // Đồng bộ trạng thái kỹ năng cho người chơi hiện tại
+            // Đồng bộ trạng thái kỹ năng cho người chơi hiện tại và hủy arm kỹ năng cũ
+            _kyNangHienTai = CheDoKyNang.KhongCo;
             btnSkillRadar.Enabled = !DaDungSkillRadarHienTai && !_giaiDoanXepTau && !_tranDauKetThuc;
             btnSkillRadar.BackColor = UITheme.PanelBackground;
             btnSkillRadar.ForeColor = DaDungSkillRadarHienTai ? UITheme.MissGray : UITheme.PrimaryCyan;
@@ -485,6 +486,7 @@ namespace BattleshipGame.Views
         {
             if (pnlFogOverlay == null) return;
 
+            _kyNangHienTai = CheDoKyNang.KhongCo;
             // [BUG FIX] Dừng ngay timer đếm ngược lượt khi sương mù phủ, khóa bàn cờ để chống trôi thời gian
             tmrTurnCountdown.Stop();
             pnlRadarBoard.Enabled = false;
@@ -642,6 +644,7 @@ namespace BattleshipGame.Views
 
         private void btnRotateShip_Click(object? sender, EventArgs e)
         {
+            if (!_giaiDoanXepTau) return;
             DoiHuongTau();
             if (_oDangHover.X >= 0 && _oDangHover.Y >= 0)
             {
@@ -1099,48 +1102,54 @@ namespace BattleshipGame.Views
         {
             if (_banCoTa.TatCaTauDaChim || _tranDauKetThuc) return;
 
-            Point banO = _botAI.ChonToaDoBan();
-            if (banO.X < 0 || banO.Y < 0 || banO.X >= 10 || banO.Y >= 10) return;
-
-            _cacOBotDaBan.Add(banO);
-
-            KetQuaBan kq = _banCoTa.TiepNhanPhatBan(banO, out cTau? tauBiBan);
-            _botAI.CapNhatKetQua(banO, kq, tauBiBan);
-            var btnO = _btnPlayerGrid[banO.Y, banO.X];
-
-            if (kq == KetQuaBan.Hit || kq == KetQuaBan.Sunk)
+            const int maxRetries = 20;
+            for (int attempt = 0; attempt < maxRetries; attempt++)
             {
-                XuLyDoHoa_OTrung(btnO);
-                if (kq == KetQuaBan.Sunk && tauBiBan != null)
-                {
-                    cAmThanh.PhatSunk();
-                    var buttonsTau = new List<Button>();
-                    foreach (Point p in tauBiBan.DanhSachToaDo)
-                    {
-                        if (p.Y >= 0 && p.Y < 10 && p.X >= 0 && p.X < 10)
-                        {
-                            buttonsTau.Add(_btnPlayerGrid[p.Y, p.X]);
-                        }
-                    }
-                    XuLyDoHoa_TauChim(buttonsTau);
-                }
-                else
-                {
-                    cAmThanh.PhatHit();
-                }
+                Point banO = _botAI.ChonToaDoBan();
+                if (banO.X < 0 || banO.Y < 0 || banO.X >= 10 || banO.Y >= 10) return;
 
-                if (_banCoTa.TatCaTauDaChim)
+                _cacOBotDaBan.Add(banO);
+
+                KetQuaBan kq = _banCoTa.TiepNhanPhatBan(banO, out cTau? tauBiBan);
+                _botAI.CapNhatKetQua(banO, kq, tauBiBan);
+                var btnO = _btnPlayerGrid[banO.Y, banO.X];
+
+                if (kq == KetQuaBan.Hit || kq == KetQuaBan.Sunk)
                 {
-                    XuLyKetThucTran(false);
+                    XuLyDoHoa_OTrung(btnO);
+                    if (kq == KetQuaBan.Sunk && tauBiBan != null)
+                    {
+                        cAmThanh.PhatSunk();
+                        var buttonsTau = new List<Button>();
+                        foreach (Point p in tauBiBan.DanhSachToaDo)
+                        {
+                            if (p.Y >= 0 && p.Y < 10 && p.X >= 0 && p.X < 10)
+                            {
+                                buttonsTau.Add(_btnPlayerGrid[p.Y, p.X]);
+                            }
+                        }
+                        XuLyDoHoa_TauChim(buttonsTau);
+                    }
+                    else
+                    {
+                        cAmThanh.PhatHit();
+                    }
+
+                    if (_banCoTa.TatCaTauDaChim)
+                    {
+                        XuLyKetThucTran(false);
+                        return;
+                    }
+
+                    MayBanTra();
                     return;
                 }
-
-                MayBanTra();
-            }
-            else if (kq == KetQuaBan.Miss)
-            {
-                XuLyDoHoa_OTruot(btnO);
-                cAmThanh.PhatMiss();
+                else if (kq == KetQuaBan.Miss)
+                {
+                    XuLyDoHoa_OTruot(btnO);
+                    cAmThanh.PhatMiss();
+                    return;
+                }
             }
         }
 
@@ -1222,13 +1231,14 @@ namespace BattleshipGame.Views
                 dlg.CancelButton = btnCancel;
 
                 var res = dlg.ShowDialog(this);
-                if (res == DialogResult.OK && !string.IsNullOrWhiteSpace(txtName.Text))
+                if (res == DialogResult.OK)
                 {
-                    return txtName.Text.Trim();
+                    return string.IsNullOrWhiteSpace(txtName.Text) ? tenMacDinh : txtName.Text.Trim();
                 }
+                return null;
             }
             catch { }
-            return tenMacDinh;
+            return null;
         }
 
         private void XuLyKetThucTran(bool nguoiChoiThang)
@@ -1273,13 +1283,21 @@ namespace BattleshipGame.Views
             }
 
             // [NGÀY 4 - TV3] Bật hộp thoại nhập tên người chơi để ghi danh
-            string tenNguoiChoi = HienThiHopThoaiNhapTen(tenMacDinh, diem, nguoiChoiThang);
+            string? tenNguoiChoi = HienThiHopThoaiNhapTen(tenMacDinh, diem, nguoiChoiThang);
 
-            // [NGÀY 4 - TV3] Luu ket qua tran dau vao thanhtichs.txt va kiem tra ket qua
-            bool luuOk = cThanhTichDAO.LuuThanhTich(tenNguoiChoi, diem, shotCount, _matchSeconds, _cheDoChoi, ketQua);
-            string thongBaoLuu = luuOk
-                ? "Thành tích đã được lưu vào hệ thống!"
-                : $"⚠️ Không thể lưu thành tích ({cThanhTichDAO.LoiGanNhat ?? "File bận"}).";
+            string thongBaoLuu;
+            if (!string.IsNullOrEmpty(tenNguoiChoi))
+            {
+                bool luuOk = cThanhTichDAO.LuuThanhTich(tenNguoiChoi, diem, shotCount, _matchSeconds, _cheDoChoi, ketQua);
+                thongBaoLuu = luuOk
+                    ? "Thành tích đã được lưu vào hệ thống!"
+                    : $"⚠️ Không thể lưu thành tích ({cThanhTichDAO.LoiGanNhat ?? "File bận"}).";
+            }
+            else
+            {
+                thongBaoLuu = "ℹ️ Đã bỏ qua lưu thành tích theo yêu cầu.";
+                tenNguoiChoi = tenMacDinh;
+            }
 
             string thongBaoTieuDe = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
                 ? (nguoiChoiThang ? $"🎉 NGƯỜI CHƠI {_nguoiChoiHienTai} CHIẾN THẮNG!" : "☠️ TRẬN ĐẤU KẾT THÚC!")
@@ -1482,6 +1500,29 @@ namespace BattleshipGame.Views
 
         private void ThucHienPhaoKich(int centerCol, int centerRow)
         {
+            Point[] mucTieu = new Point[]
+            {
+                new Point(centerCol, centerRow),
+                new Point(centerCol - 1, centerRow),
+                new Point(centerCol + 1, centerRow),
+                new Point(centerCol, centerRow - 1),
+                new Point(centerCol, centerRow + 1)
+            };
+
+            bool coOMucTieuHopLe = mucTieu.Any(pt => pt.X >= 0 && pt.X < 10 && pt.Y >= 0 && pt.Y < 10 && MaTranRadarHienTai[pt.Y, pt.X] == 0);
+            if (!coOMucTieuHopLe)
+            {
+                lblTurnMessage.Text = "⚠️ Toàn bộ ô quanh tọa độ này đều đã bắn! Hãy chọn tọa độ khác.";
+                lblTurnMessage.ForeColor = UITheme.DangerRed;
+                MessageBox.Show(
+                    "⚠️ Toàn bộ các ô trong khu vực pháo kích này đều đã được bắn trước đó!\nVui lòng chọn tọa độ mục tiêu khác để không lãng phí kỹ năng.",
+                    "Pháo Kích Diện Rộng",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
+
             _dangXuLyBan = true;
             try
             {
@@ -1493,15 +1534,6 @@ namespace BattleshipGame.Views
                 btnSkillCrossBomb.ForeColor = UITheme.MissGray;
 
                 cAmThanh.PhatAirstrike();
-
-                Point[] mucTieu = new Point[]
-                {
-                    new Point(centerCol, centerRow),
-                    new Point(centerCol - 1, centerRow),
-                    new Point(centerCol + 1, centerRow),
-                    new Point(centerCol, centerRow - 1),
-                    new Point(centerCol, centerRow + 1)
-                };
 
                 int soPhatTrungPhao = 0;
                 foreach (var pt in mucTieu)
@@ -1608,7 +1640,17 @@ namespace BattleshipGame.Views
             if (res == DialogResult.Yes)
             {
                 cAmThanh.DungNhacNen();
-                XuLyKetThucTran(false);
+                if (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase))
+                {
+                    int nguoiDauHang = _nguoiChoiHienTai;
+                    int nguoiThang = (nguoiDauHang == 1) ? 2 : 1;
+                    _nguoiChoiHienTai = nguoiThang;
+                    XuLyKetThucTran(true);
+                }
+                else
+                {
+                    XuLyKetThucTran(false);
+                }
                 Close();
             }
             else
@@ -1658,6 +1700,7 @@ namespace BattleshipGame.Views
             else
             {
                 _turnSeconds = 30;
+                _kyNangHienTai = CheDoKyNang.KhongCo;
                 lblTurnMessage.Text = "⏰ Hết 30 giây! Bạn bị mất lượt.";
                 lblTurnMessage.ForeColor = UITheme.DangerRed;
 
@@ -1714,6 +1757,21 @@ namespace BattleshipGame.Views
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            if (!_giaiDoanXepTau && !_tranDauKetThuc && e.CloseReason == CloseReason.UserClosing)
+            {
+                var res = MessageBox.Show(
+                    "Trận đấu đang diễn ra. Bạn có chắc chắn muốn thoát khỏi ván đấu?",
+                    "Xác nhận thoát",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                );
+                if (res != DialogResult.Yes)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
             try
             {
                 tmrMatch?.Stop();

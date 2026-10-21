@@ -574,6 +574,45 @@ namespace BattleshipGame.Tests
                 pvpMgr.Nguoi1Ban(new Point(9, 9), out _); // Miss -> Luot sang P2
                 Assert(pvpMgr.SoPhatBanNguoi1 == 1 && pvpMgr.SoPhatBanNguoi2 == 0,
                     "TC-70: Quản lý ván đấu tách biệt số phát bắn độc lập giữa Người 1 và Người 2");
+
+                // Test 71: cMayBanAI khong bi khoa truc ao khi bi goi trung toa do Hit
+                var botDedup = new cMayBanAI(DoKhoAI.Kho, 10);
+                botDedup.CapNhatKetQua(new Point(5, 5), KetQuaBan.Hit);
+                botDedup.CapNhatKetQua(new Point(5, 5), KetQuaBan.Hit); // Duplicate
+                Point pDedup = botDedup.ChonToaDoBan();
+                Assert(Math.Abs(pDedup.X - 5) + Math.Abs(pDedup.Y - 5) == 1,
+                    "TC-71: cMayBanAI lọc bỏ tọa độ trùng lặp và không khóa trục ảo");
+
+                // Test 72: cAmThanh.BatTatAmThanh() bao toan track BGM khi mute va unmute trong tran dau
+                cAmThanh.PhatNhacNen("bgm_battle.wav");
+                cAmThanh.BatTatAmThanh(); // Mute
+                Assert(!cAmThanh.DaBatAmThanh, "TC-72a: Mute âm thanh thành công");
+                cAmThanh.BatTatAmThanh(); // Unmute
+                Assert(cAmThanh.DaBatAmThanh, "TC-72b: Unmute khôi phục trạng thái âm thanh");
+                cAmThanh.DungNhacNen();
+
+                // Test 73: cQuanLyVanDau.TinhDiemNguoi2() va TinhDiem(int) tinh chuan diem cho Nguoi 2 khi chien thang
+                var qlP2Win = new cQuanLyVanDau(CheDoChoi.PvP_Hotseat);
+                qlP2Win.BatDauTranDau();
+                var tauP2Living = qlP2Win.BanCoNguoi2.DanhSachTau[0];
+                qlP2Win.BanCoNguoi2.DatTau(tauP2Living, new Point(0, 0), HuongTau.Ngang);
+                qlP2Win.DauHang(1); // Nguoi 1 dau hang -> Nguoi 2 thang
+                int scoreP2 = qlP2Win.TinhDiemNguoi2();
+                Assert(qlP2Win.NguoiThang == 2 && scoreP2 > 0,
+                    "TC-73: cQuanLyVanDau tính điểm chính xác cho Người 2 khi Người 1 đầu hàng");
+
+                // Test 74: cThanhTichDAO.TinhDiem() kep bien so tau con song toi da 5 tau
+                int diemMaxFleet = cThanhTichDAO.TinhDiem(true, 5, 20, 50);
+                int diemOverFleet = cThanhTichDAO.TinhDiem(true, 1000, 20, 50); // Gian lận 1000 tàu
+                Assert(diemMaxFleet == diemOverFleet,
+                    "TC-74: cThanhTichDAO.TinhDiem() kẹp biên số tàu còn sống tối đa là 5 (chống gian lận)");
+
+                // Test 75: cThanhTichDAO.TaoFileMau tu dong tao thu muc cha neu chua ton tai
+                string nestedDirFile = Path.Combine(tempTestDir, "Deep", "Folder", "thanhtichs.txt");
+                cThanhTichDAO.DuongDanFile = nestedDirFile;
+                var docNested = cThanhTichDAO.DocDanhSach();
+                Assert(File.Exists(nestedDirFile) && docNested.Count > 0,
+                    "TC-75: cThanhTichDAO tự động sinh thư mục cha lồng nhau khi đường dẫn chưa tồn tại");
             }
             finally
             {

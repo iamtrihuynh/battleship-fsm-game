@@ -90,6 +90,10 @@ namespace BattleshipGame.DataAccess
             {
                 if (!File.Exists(path))
                 {
+                    string dir = Path.GetDirectoryName(path);
+                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                        Directory.CreateDirectory(dir);
+
                     using (StreamWriter sw = new StreamWriter(path, false, _utf8))
                     {
                         sw.WriteLine("2026-10-18 14:20:15|DoDocHaiQuan|1850|24|115|PvE - Nâng cao|Thắng");
@@ -297,7 +301,7 @@ namespace BattleshipGame.DataAccess
         public static int TinhDiem(bool thang, int soTauConSong, int soPhatBan, int thoiGianGiay)
         {
             if (!thang) return 0;
-            long soTau = Math.Max(0, soTauConSong);
+            long soTau = Math.Max(0, Math.Min(5, soTauConSong));
             long phatBan = Math.Max(0, soPhatBan);
             long giay = Math.Max(0, thoiGianGiay);
 

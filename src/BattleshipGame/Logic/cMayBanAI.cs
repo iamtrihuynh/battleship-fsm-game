@@ -108,7 +108,10 @@ namespace BattleshipGame.Logic
 
             if (kq == KetQuaBan.Hit)
             {
-                _cacOTrungHienTai.Add(p);
+                if (!_cacOTrungHienTai.Contains(p))
+                {
+                    _cacOTrungHienTai.Add(p);
+                }
 
                 if (_cacOTrungHienTai.Count == 1)
                 {
@@ -126,10 +129,7 @@ namespace BattleshipGame.Logic
                 if (tauBiBan != null && tauBiBan.DanhSachToaDo != null && tauBiBan.DanhSachToaDo.Count > 0)
                 {
                     // Loai bo cac toa do cua con tau da chim khoi danh sach o dang theo doi
-                    foreach (var pt in tauBiBan.DanhSachToaDo)
-                    {
-                        _cacOTrungHienTai.Remove(pt);
-                    }
+                    _cacOTrungHienTai.RemoveAll(pt => tauBiBan.DanhSachToaDo.Contains(pt));
                 }
                 else
                 {

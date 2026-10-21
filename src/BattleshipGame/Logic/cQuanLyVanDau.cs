@@ -137,11 +137,17 @@ namespace BattleshipGame.Logic
             return kq;
         }
 
-        public int TinhDiemNguoi1()
+        public int TinhDiemNguoi1() => TinhDiem(1);
+
+        public int TinhDiemNguoi2() => TinhDiem(2);
+
+        public int TinhDiem(int nguoiChoi)
         {
-            if (NguoiThang != 1) return 0;
-            int soTauConSong = BanCoNguoi1.DanhSachTau.Count(t => !t.DaChim);
-            return cThanhTichDAO.TinhDiem(true, soTauConSong, SoPhatBanNguoi1, ThoiGianGiay);
+            if (NguoiThang != nguoiChoi) return 0;
+            cBanCo banCo = (nguoiChoi == 1) ? BanCoNguoi1 : BanCoNguoi2;
+            int soPhatBan = (nguoiChoi == 1) ? SoPhatBanNguoi1 : SoPhatBanNguoi2;
+            int soTauConSong = banCo.DanhSachTau.Count(t => !t.DaChim);
+            return cThanhTichDAO.TinhDiem(true, soTauConSong, soPhatBan, ThoiGianGiay);
         }
 
         public void TamDungHoacTiepTuc()

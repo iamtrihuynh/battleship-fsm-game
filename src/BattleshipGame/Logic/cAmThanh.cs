@@ -102,10 +102,10 @@ namespace BattleshipGame.Logic
             });
         }
 
-        public static void DungNhacNen()
+        public static void DungNhacNen(bool donSachTrack = true)
         {
             DangPhatNhacNen = false;
-            _currentBgm = null;
+            if (donSachTrack) _currentBgm = null;
             SoLanDungNhacNen++;
 
             Task.Run(() =>
@@ -199,7 +199,7 @@ namespace BattleshipGame.Logic
         {
             DaBatAmThanh = !DaBatAmThanh;
             if (!DaBatAmThanh)
-                DungNhacNen();
+                DungNhacNen(donSachTrack: false);
             else if (!string.IsNullOrEmpty(_currentBgm))
                 PhatNhacNen(_currentBgm);
             return DaBatAmThanh;
