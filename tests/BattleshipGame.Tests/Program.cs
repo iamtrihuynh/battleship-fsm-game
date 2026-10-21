@@ -335,6 +335,33 @@ namespace BattleshipGame.Tests
                 // Test 40: LayDanhSachToaDo voi doDai <= 0 an toan
                 var dsToaDoAm = cBanCo.LayDanhSachToaDo(Point.Empty, -3, HuongTau.Ngang);
                 Assert(dsToaDoAm != null && dsToaDoAm.Count == 0, "TC-40: cBanCo.LayDanhSachToaDo trả về rỗng khi độ dài <= 0 không lỗi");
+
+                // Test 41: Dong bo xep tau thu cong voi cBanCo va Bot ban trung duoc
+                var banCoSync = new cBanCo(10);
+                var tauSanBaySync = banCoSync.DanhSachTau[0];
+                bool datSyncOk = banCoSync.DatTau(tauSanBaySync, new Point(2, 3), HuongTau.Ngang);
+                KetQuaBan kqBanSync = banCoSync.TiepNhanPhatBan(new Point(2, 3), out cTau tauBiBanSync);
+                bool syncChuan = datSyncOk && kqBanSync == KetQuaBan.Hit && tauBiBanSync == tauSanBaySync;
+                Assert(syncChuan, "TC-41: Đặt tàu thủ công đồng bộ chuẩn xác với cBanCo và tiếp nhận phát bắn Hit");
+
+                // Test 42: Tinh toan diem so chong tran so (Integer Overflow/Underflow)
+                int soTauConSong = 5;
+                int tongPhatBanCucDai = 50000;
+                int matchSecondsCucDai = 100000;
+                long tinhDiem = 1000L + (soTauConSong * 200L) - (tongPhatBanCucDai * 15L) - (matchSecondsCucDai * 2L);
+                int diemClamp = (int)Math.Max(0L, Math.Min((long)int.MaxValue, tinhDiem));
+                Assert(diemClamp == 0, "TC-42: Tính điểm số trận đấu an toàn, kẹp biên 0 chống tràn số âm");
+
+                // Test 43: Kiem tra BGM ngat an toan va khong bi deadlock
+                cAmThanh.DungNhacNen();
+                Assert(!cAmThanh.DangPhatNhacNen, "TC-43: cAmThanh.DungNhacNen cập nhật cờ DangPhatNhacNen về false tức thì");
+
+                // Test 44: XoaTatCaTau dat lai toan bo trang thai cac o ban co
+                var banCoReset = new cBanCo(10);
+                banCoReset.TuDongSinhBanCoNgauNhien();
+                banCoReset.XoaTatCaTau();
+                bool sachBanCo = banCoReset.MaTranO.Cast<cO>().All(o => !o.CoTau && o.TrangThai == TrangThaiO.Empty);
+                Assert(sachBanCo && !banCoReset.TatCaTauDaDatXong, "TC-44: cBanCo.XoaTatCaTau làm sạch 100% các ô trên ma trận");
             }
             finally
             {

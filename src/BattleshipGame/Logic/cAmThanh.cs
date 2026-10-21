@@ -81,12 +81,16 @@ namespace BattleshipGame.Logic
                 {
                     try
                     {
+                        if (!DangPhatNhacNen) return;
                         _currentBgm = ten;
                         mciSendString("close bgm", null, 0, IntPtr.Zero);
 
                         if (mciSendString(string.Format("open \"{0}\" type mpegvideo alias bgm", path), null, 0, IntPtr.Zero) == 0)
                         {
-                            mciSendString("play bgm repeat", null, 0, IntPtr.Zero);
+                            if (DangPhatNhacNen)
+                                mciSendString("play bgm repeat", null, 0, IntPtr.Zero);
+                            else
+                                mciSendString("close bgm", null, 0, IntPtr.Zero);
                         }
                     }
                     catch { }
