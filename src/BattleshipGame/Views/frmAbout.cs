@@ -1,83 +1,702 @@
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace BattleshipGame.Views
 {
+    /// <summary>
+    /// [NGÀY 4 - THÀNH VIÊN 2: TRẦN TRỌNG HƯNG - FRONTEND & UI/UX LEAD]
+    /// Form Hướng Dẫn Và Giới Thiệu (frmAbout) phong cách Hải quân hiện đại (Dark Theme):
+    /// Bấm vào mục nào sẽ hiển thị tức thời thông tin phong phú của mục đó:
+    /// 1. 🎯 Luật chơi (có minh họa đồ họa vector trực quan 3 phát bắn Trượt/Trúng/Chìm)
+    /// 2. 🚢 Thông tin hạm đội (Đồ họa 5 loại chiến hạm với đầy đủ kích thước, HP, vai trò)
+    /// 3. ⚡ Mẹo chiến thuật (Bàn cờ Parity so le chẵn lẻ, Target Mode, Màn che sương mù)
+    /// 4. 👥 Thành viên nhóm (Thẻ thông tin 3 thành viên kèm MSSV và phân công WBS chi tiết)
+    /// </summary>
     public partial class frmAbout : Form
     {
+        private int _currentTabIndex = 0; // 0: Rules, 1: Ships, 2: Tactics, 3: Team
+
         public frmAbout()
         {
             InitializeComponent();
-            NapDuLieuNoiDung();
+            DoubleBuffered = true;
+            SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+
+            // Bật double buffering và cấu hình vùng cuộn cho 4 Panel nội dung
+            EnableDoubleBuffering(pnlRulesView);
+            EnableDoubleBuffering(pnlShipsView);
+            EnableDoubleBuffering(pnlTacticsView);
+            EnableDoubleBuffering(pnlTeamView);
+
+            pnlRulesView.AutoScrollMinSize = new Size(960, 590);
+            pnlShipsView.AutoScrollMinSize = new Size(960, 650);
+            pnlTacticsView.AutoScrollMinSize = new Size(960, 520);
+            pnlTeamView.AutoScrollMinSize = new Size(960, 560);
+
+            pnlRulesView.Resize += (s, e) => pnlRulesView.Invalidate();
+            pnlShipsView.Resize += (s, e) => pnlShipsView.Invalidate();
+            pnlTacticsView.Resize += (s, e) => pnlTacticsView.Invalidate();
+            pnlTeamView.Resize += (s, e) => pnlTeamView.Invalidate();
+
+            // Đảm bảo nút đóng luôn hiển thị đúng góc trên bên phải khi thay đổi kích thước
+            pnlHeader.Resize += (s, e) => {
+                btnClose.Location = new Point(pnlHeader.ClientSize.Width - btnClose.Width - 16, 8);
+            };
+            this.KeyPreview = true;
+            this.KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) this.Close(); };
+            this.CancelButton = btnClose;
+
+            // Mặc định chọn Tab 1: Luật chơi có minh họa
+            ChonMucHienThi(0);
         }
 
-        private void NapDuLieuNoiDung()
+        protected override void OnLoad(EventArgs e)
         {
-            rtbRules.Text =
-@"QUY TẮC CHIẾN ĐẤU BẮN TÀU (BATTLESHIP RULES):
-
-1. BÀN CỜ VÀ HẠM ĐỘI:
-- Mỗi bên chỉ huy một vùng biển quy chuẩn 10x10 ô tọa độ (A-J, 1-10).
-- Sở hữu 5 chiến hạm có chiều dài từ 2 đến 5 ô (Tổng cộng 17 ô tàu).
-- Các chiến hạm được bố trí bí mật, không được chồng lấn nhau và không được vượt ra ngoài biên bàn cờ.
-
-2. LƯỢT KHAI HỎA & KẾT QUẢ:
-- Hai bên luân phiên nhau chọn tọa độ trên radar đối phương để khai hỏa.
-- Trượt (Miss): Bắn vào ô nước trống. Mất lượt, quyền bắn chuyển sang đối thủ.
-- Trúng (Hit): Bắn trúng một phần thân tàu địch. ĐƯỢC THƯỞNG BẮN TIẾP MỘT LƯỢT NỮA!
-- Chìm (Sunk): Bắn trúng ô cuối cùng của một con tàu, chiến hạm đó bị tiêu diệt hoàn toàn. ĐƯỢC BẮN TIẾP!
-
-3. THỜI GIAN & ĐIỀU KIỆN THẮNG:
-- Mỗi lượt có tối đa 30 giây để ngắm bắn. Hết 30 giây sẽ tự động mất lượt.
-- Bên nào bắn chìm toàn bộ 5 chiến hạm (17 ô) của đối phương trước sẽ giành chiến thắng chung cuộc!";
-
-            rtbShips.Text =
-@"THÔNG SỐ 5 LOẠI CHIẾN HẠM HẢI QUÂN:
-
-1. TÀU SÂN BAY (Aircraft Carrier):
-   - Kích thước: 5 ô liên tiếp.
-   - Vai trò: Pháo đài nổi chủ lực của hạm đội. Chiếm diện tích lớn nhất, dễ bị radar phát hiện nhất.
-
-2. THIẾT GIÁP HẠM (Battleship):
-   - Kích thước: 4 ô liên tiếp.
-   - Vai trò: Tàu bọc thép hỏa lực mạnh, là mục tiêu săn đuổi hàng đầu.
-
-3. TÀU NGẦM (Submarine):
-   - Kích thước: 3 ô liên tiếp.
-   - Vai trò: Sát thủ ngầm dưới lòng đại dương, di chuyển lẩn khuất.
-
-4. TÀU KHU TRỤC (Destroyer):
-   - Kích thước: 3 ô liên tiếp.
-   - Vai trò: Cơ động cao, bảo vệ sườn hạm đội.
-
-5. TÀU TUẦN TRA (Patrol Boat):
-   - Kích thước: 2 ô liên tiếp.
-   - Vai trò: Tàu trinh sát nhỏ nhất, khó phát hiện nhất trên bàn cờ 100 ô.";
-
-            rtbTactics.Text =
-@"MẸO CHIẾN THUẬT TỪ CÁC ĐÔ ĐỐC:
-
-1. CHIẾN THUẬT BẮN SO LE CHẴN LẺ (PARITY HUNTING):
-   - Con tàu nhỏ nhất có kích thước là 2 ô. Do đó, bất kỳ con tàu nào cũng bắt buộc phải đè lên ít nhất một ô có tính chất (X + Y) % 2 == 0.
-   - Hãy bắn theo các ô như bàn cờ vua để tiết kiệm 50% số phát bắn và nhanh chóng tìm ra tàu địch!
-
-2. CHIẾN THUẬT BÁM ĐUỔI THẲNG HÀNG (TARGET MODE):
-   - Ngay khi bắn trúng 1 ô, hãy bắn 4 hướng xung quanh (Trên, Dưới, Trái, Phải).
-   - Khi trúng phát thứ 2, bạn đã xác định được tàu nằm ngang hay nằm dọc. Hãy tập trung bắn dọc theo trục đó cho đến khi nghe tiếng còi báo tàu chìm!
-
-3. TẬN DỤNG KỸ NĂNG ĐẶC BIỆT:
-   - Dùng Radar trinh sát 3x3 khi bạn nghi ngờ một góc bàn cờ có tàu ẩn nấp.
-   - Dùng Pháo kích diện rộng (+) khi cần dọn sạch các vùng biển rộng lớn.";
-
-            rtbTeam.Text =
-@"BẮN TÀU - NHÓM WINDOWN (BATTLESHIP TACTICAL WARFARE)
-
-DANH SÁCH THÀNH VIÊN NHÓM:
-
-1. Huỳnh Minh Trí - 51.01.104.105 (Thành viên 1 - Trưởng nhóm / Backend & AI Lead)
-2. Trần Trọng Hưng - 51.01.104.132 (Thành viên 2 - Frontend & UI/UX Lead)
-3. Trần Vũ Hòa Phát - 51.01.104.072 (Thành viên 3 - System I/O, Audio & QA/Tester)";
+            base.OnLoad(e);
+            btnClose.Location = new Point(pnlHeader.ClientSize.Width - btnClose.Width - 16, 8);
+            btnClose.BringToFront();
         }
+
+        private static void EnableDoubleBuffering(Control c)
+        {
+            try
+            {
+                typeof(Control).InvokeMember(
+                    "DoubleBuffered",
+                    System.Reflection.BindingFlags.SetProperty | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
+                    null,
+                    c,
+                    new object[] { true }
+                );
+            }
+            catch { }
+        }
+
+        #region ĐIỀU HƯỚNG DANH MỤC (TAB NAVIGATION)
+        private void btnTabRules_Click(object sender, EventArgs e) => ChonMucHienThi(0);
+        private void btnTabShips_Click(object sender, EventArgs e) => ChonMucHienThi(1);
+        private void btnTabTactics_Click(object sender, EventArgs e) => ChonMucHienThi(2);
+        private void btnTabTeam_Click(object sender, EventArgs e) => ChonMucHienThi(3);
+
+        /// <summary>
+        /// Kích hoạt danh mục được chọn, đổi màu nút nổi bật và hiển thị panel tương ứng
+        /// </summary>
+        private void ChonMucHienThi(int index)
+        {
+            _currentTabIndex = index;
+
+            // Đổi giao diện nút bấm
+            CapNhatTrangThaiNut(btnTabRules, index == 0, UITheme.AccentNeon);
+            CapNhatTrangThaiNut(btnTabShips, index == 1, UITheme.PrimaryCyan);
+            CapNhatTrangThaiNut(btnTabTactics, index == 2, UITheme.WarningAmber);
+            CapNhatTrangThaiNut(btnTabTeam, index == 3, Color.FromArgb(250, 204, 21));
+
+            // Hiển thị panel tương ứng
+            pnlRulesView.Visible = (index == 0);
+            pnlShipsView.Visible = (index == 1);
+            pnlTacticsView.Visible = (index == 2);
+            pnlTeamView.Visible = (index == 3);
+
+            // Refresh vẽ lại
+            switch (index)
+            {
+                case 0: pnlRulesView.Invalidate(); break;
+                case 1: pnlShipsView.Invalidate(); break;
+                case 2: pnlTacticsView.Invalidate(); break;
+                case 3: pnlTeamView.Invalidate(); break;
+            }
+        }
+
+        private void CapNhatTrangThaiNut(TacticalButton btn, bool isActive, Color activeColor)
+        {
+            if (isActive)
+            {
+                btn.BaseFillColor = Color.FromArgb(28, 44, 72);
+                btn.BorderColor = activeColor;
+                btn.NormalTextColor = activeColor;
+            }
+            else
+            {
+                btn.BaseFillColor = Color.FromArgb(16, 26, 46);
+                btn.BorderColor = UITheme.BorderDefault;
+                btn.NormalTextColor = UITheme.TextSecondary;
+            }
+            btn.Invalidate();
+        }
+        #endregion
+
+        #region MỤC 1: LUẬT CHƠI (CÓ MINH HỌA ĐỒ HỌA TRỰC QUAN)
+        private void pnlRulesView_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.TranslateTransform(pnlRulesView.AutoScrollPosition.X, pnlRulesView.AutoScrollPosition.Y);
+            UITheme.SetHighQuality(g);
+
+            int viewWidth = Math.Max(930, pnlRulesView.ClientSize.Width - 30);
+            int cardW = (viewWidth - 24) / 3;
+            int cardH = 245;
+            int topY = 16;
+
+            // 1. MINH HỌA 3 PHÁT BẮN (TRƯỢT, TRÚNG, CHÌM)
+            Rectangle rectMiss = new Rectangle(12, topY, cardW, cardH);
+            Rectangle rectHit = new Rectangle(rectMiss.Right + 12, topY, cardW, cardH);
+            Rectangle rectSunk = new Rectangle(rectHit.Right + 12, topY, cardW, cardH);
+
+            VeCardMinhHoaPhatBan(
+                g,
+                rectMiss,
+                "🌊 PHÁT BẮN TRƯỢT (MISS)",
+                "•",
+                UITheme.MissRippleBackground,
+                UITheme.MissRippleBorder,
+                UITheme.MissRippleText,
+                "⛔  MẤT LƯỢT KHAI HỎA",
+                Color.FromArgb(148, 163, 184),
+                "• Bắn vào ô nước biển trống (không có tàu).\n" +
+                "• Giao diện đổi thành ô sóng nước xanh lam kèm ký tự '•'.\n" +
+                "• Mất quyền bắn, lượt ngay lập tức chuyển sang cho đối thủ."
+            );
+
+            VeCardMinhHoaPhatBan(
+                g,
+                rectHit,
+                "💥 PHÁT BẮN TRÚNG (HIT)",
+                "X",
+                UITheme.HitFireBackground,
+                UITheme.HitFireBorder,
+                UITheme.HitFireText,
+                "🔥  THƯỞNG LƯỢT BẮN (+1)",
+                UITheme.AccentNeon,
+                "• Bắn trúng 1 ô bộ phận của chiến hạm đối phương.\n" +
+                "• Giao diện đổi sang màu đỏ rực lửa chiến kèm ký tự 'X'.\n" +
+                "• ĐƯỢC THƯỞNG BẮN TIẾP MỘT LƯỢT NỮA (Quy tắc quốc tế)!"
+            );
+
+            VeCardMinhHoaTauChim(
+                g,
+                rectSunk,
+                "☠️ BẮN CHÌM TÀU (SUNK)",
+                "🏆  BẮN HẠ TÀU",
+                UITheme.DangerRed,
+                "• Bắn trúng ô cuối cùng của một chiến hạm.\n" +
+                "• Toàn bộ các ô của tàu đổi sang xám tro, viền đậm 2px 'X'.\n" +
+                "• Còi hụ báo hiệu tàu chìm & ĐƯỢC BẮN TIẾP LƯỢT MỚI!"
+            );
+
+            // 2. CARD QUY TẮC CHIẾN TRƯỜNG & ĐIỀU KIỆN THẮNG
+            int ruleTop = rectMiss.Bottom + 16;
+            Rectangle rectRuleBox = new Rectangle(12, ruleTop, rectSunk.Right - 12, 285);
+
+            using (GraphicsPath path = UITheme.CreateRoundedPath(rectRuleBox, 8))
+            {
+                using (SolidBrush bg = new SolidBrush(Color.FromArgb(15, 23, 42))) g.FillPath(bg, path);
+                using (Pen pen = new Pen(UITheme.PrimaryCyan, 1.2f)) g.DrawPath(pen, path);
+            }
+
+            using (Font titleFont = new Font("Segoe UI Black", 12f, FontStyle.Bold))
+            {
+                Rectangle tRect = new Rectangle(rectRuleBox.X + 16, rectRuleBox.Y + 12, rectRuleBox.Width - 32, 26);
+                TextRenderer.DrawText(g, "🎯 QUY TẮC TÁC CHIẾN BẮN TÀU & ĐIỀU KIỆN TOÀN THẮNG", titleFont, tRect, UITheme.AccentNeon, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+            }
+
+            var rules = new (string Icon, string Title, string Desc)[]
+            {
+                ("🗺️", "VÙNG BIỂN QUY CHUẨN", "Mỗi bên sở hữu bàn cờ 10x10 = 100 ô tọa độ (Hàng A - J, Cột 1 - 10). Bố trí bí mật hạm đội, không chồng lấn và không vượt biên."),
+                ("⚓", "HẠM ĐỘI THAM CHIẾN", "Gồm 5 chiến hạm từ 2 đến 5 ô (Tàu sân bay: 5 ô, Thiết giáp hạm: 4 ô, Tàu ngầm: 3 ô, Tàu khu trục: 3 ô, Tàu tuần tra: 2 ô). Tổng cộng 17 ô máu."),
+                ("⏳", "ĐỒNG HỒ ĐẾM NGƯỢC 30S", "Mỗi lượt khai hỏa có tối đa 30 giây để ngắm bắn. Nếu hết 30 giây mà không bắn, hệ thống sẽ tự động tính là mất lượt và chuyển quyền bắn."),
+                ("🏆", "ĐIỀU KIỆN CHIẾN THẮNG", "Bên nào tiêu diệt toàn bộ 5 chiến hạm (bắn chìm đủ 17/17 ô tàu) của đối phương trước sẽ giành CHIẾN THẮNG TUYỆT ĐỐI chung cuộc!")
+            };
+
+            int startY = rectRuleBox.Y + 46;
+            for (int i = 0; i < rules.Length; i++)
+            {
+                var (icon, rTitle, rDesc) = rules[i];
+                Rectangle lineRect = new Rectangle(rectRuleBox.X + 16, startY + i * 56, rectRuleBox.Width - 32, 50);
+
+                using (Font iFont = new Font("Segoe UI", 14f))
+                using (Font hFont = new Font("Segoe UI", 10.5f, FontStyle.Bold))
+                using (Font dFont = new Font("Segoe UI", 9.5f, FontStyle.Regular))
+                {
+                    TextRenderer.DrawText(g, icon, iFont, new Rectangle(lineRect.X, lineRect.Y, 32, 32), Color.White, TextFormatFlags.Left);
+                    TextRenderer.DrawText(g, rTitle, hFont, new Rectangle(lineRect.X + 36, lineRect.Y, lineRect.Width - 36, 20), UITheme.PrimaryCyan, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+                    TextRenderer.DrawText(g, rDesc, dFont, new Rectangle(lineRect.X + 36, lineRect.Y + 22, lineRect.Width - 36, 28), UITheme.TextPrimary, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix);
+                }
+            }
+        }
+
+        private void VeCardMinhHoaPhatBan(
+            Graphics g,
+            Rectangle rect,
+            string title,
+            string symbol,
+            Color cellBg,
+            Color cellBorder,
+            Color symbolColor,
+            string badgeText,
+            Color badgeColor,
+            string description)
+        {
+            using (GraphicsPath path = UITheme.CreateRoundedPath(rect, 8))
+            {
+                using (SolidBrush bg = new SolidBrush(Color.FromArgb(15, 23, 42))) g.FillPath(bg, path);
+                using (Pen pen = new Pen(cellBorder, 1.2f)) g.DrawPath(pen, path);
+            }
+
+            // Tiêu đề thẻ
+            using (Font titleFont = new Font("Segoe UI", 10.5f, FontStyle.Bold))
+            {
+                Rectangle tRect = new Rectangle(rect.X + 12, rect.Y + 10, rect.Width - 24, 24);
+                TextRenderer.DrawText(g, title, titleFont, tRect, cellBorder, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+            }
+
+            // Ô cờ minh họa
+            Rectangle sampleCell = new Rectangle(rect.X + 16, rect.Y + 40, 52, 52);
+            using (SolidBrush brush = new SolidBrush(cellBg)) g.FillRectangle(brush, sampleCell);
+            using (Pen pen = new Pen(cellBorder, 1.5f)) g.DrawRectangle(pen, sampleCell);
+            using (Font symFont = new Font("Segoe UI", symbol == "•" ? 22f : 16f, FontStyle.Bold))
+            {
+                TextRenderer.DrawText(g, symbol, symFont, sampleCell, symbolColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            }
+
+            // Badge trạng thái
+            int badgeW = Math.Max(120, rect.Right - sampleCell.Right - 26);
+            Rectangle badgeRect = new Rectangle(sampleCell.Right + 12, rect.Y + 44, badgeW, 28);
+            using (GraphicsPath bPath = UITheme.CreateRoundedPath(badgeRect, 4))
+            {
+                using (SolidBrush bBg = new SolidBrush(Color.FromArgb(24, 38, 60))) g.FillPath(bBg, bPath);
+                using (Pen bPen = new Pen(badgeColor, 1f)) g.DrawPath(bPen, bPath);
+            }
+            using (Font bFont = new Font("Segoe UI", 9f, FontStyle.Bold))
+            {
+                TextRenderer.DrawText(g, badgeText, bFont, badgeRect, badgeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
+            }
+
+            // Mô tả
+            Rectangle descRect = new Rectangle(rect.X + 14, sampleCell.Bottom + 12, rect.Width - 28, 130);
+            using (Font descFont = new Font("Segoe UI", 9f, FontStyle.Regular))
+            {
+                TextRenderer.DrawText(g, description, descFont, descRect, UITheme.TextPrimary, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix);
+            }
+        }
+
+        private void VeCardMinhHoaTauChim(Graphics g, Rectangle rect, string title, string badgeText, Color badgeColor, string description)
+        {
+            using (GraphicsPath path = UITheme.CreateRoundedPath(rect, 8))
+            {
+                using (SolidBrush bg = new SolidBrush(Color.FromArgb(15, 23, 42))) g.FillPath(bg, path);
+                using (Pen pen = new Pen(UITheme.DangerRed, 1.5f)) g.DrawPath(pen, path);
+            }
+
+            using (Font titleFont = new Font("Segoe UI", 10.5f, FontStyle.Bold))
+            {
+                Rectangle tRect = new Rectangle(rect.X + 12, rect.Y + 10, rect.Width - 24, 24);
+                TextRenderer.DrawText(g, title, titleFont, tRect, UITheme.DangerRed, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+            }
+
+            // Vẽ 3 ô tàu chìm liền nhau
+            int startX = rect.X + 14;
+            int startY = rect.Y + 44;
+            int cellSize = 28;
+            for (int i = 0; i < 3; i++)
+            {
+                Rectangle cell = new Rectangle(startX + i * (cellSize + 3), startY, cellSize, cellSize);
+                using (SolidBrush brush = new SolidBrush(UITheme.SunkAshBackground)) g.FillRectangle(brush, cell);
+                using (Pen pen = new Pen(UITheme.SunkThickBorder, 2f)) g.DrawRectangle(pen, cell); // Viền đậm 2px
+                using (Font symFont = new Font("Segoe UI", 11f, FontStyle.Bold))
+                {
+                    TextRenderer.DrawText(g, "X", symFont, cell, UITheme.SunkAshText, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                }
+            }
+
+            // Badge (được giới hạn hoàn toàn bên trong thẻ, không tràn ra ngoài)
+            int badgeX = startX + 3 * (cellSize + 3) + 8;
+            int badgeW = Math.Max(100, rect.Right - badgeX - 14);
+            Rectangle badgeRect = new Rectangle(badgeX, startY + 2, badgeW, 28);
+            using (GraphicsPath bPath = UITheme.CreateRoundedPath(badgeRect, 4))
+            {
+                using (SolidBrush bBg = new SolidBrush(Color.FromArgb(40, 20, 24))) g.FillPath(bBg, bPath);
+                using (Pen bPen = new Pen(badgeColor, 1f)) g.DrawPath(bPen, bPath);
+            }
+            using (Font bFont = new Font("Segoe UI", 8.5f, FontStyle.Bold))
+            {
+                TextRenderer.DrawText(g, badgeText, bFont, badgeRect, badgeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
+            }
+
+            // Mô tả
+            Rectangle descRect = new Rectangle(rect.X + 14, startY + cellSize + 16, rect.Width - 28, 130);
+            using (Font descFont = new Font("Segoe UI", 9f, FontStyle.Regular))
+            {
+                TextRenderer.DrawText(g, description, descFont, descRect, UITheme.TextPrimary, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix);
+            }
+        }
+        #endregion
+
+        #region MỤC 2: THÔNG TIN HẠM ĐỘI (5 CHIẾN HẠM CÓ ĐỒ HỌA VECTOR)
+        private void pnlShipsView_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.TranslateTransform(pnlShipsView.AutoScrollPosition.X, pnlShipsView.AutoScrollPosition.Y);
+            UITheme.SetHighQuality(g);
+
+            var danhSachTau = new (string TenVN, string TenEN, int Size, string VaiTro, string Icon, Color AccentColor)[]
+            {
+                ("TÀU SÂN BAY", "Aircraft Carrier", 5, "Soái hạm nổi đầu não của hạm đội, chở tiêm kích phòng không. Kích thước 5 ô lớn nhất, là mục tiêu săn lùng hàng đầu.", "✈️", Color.FromArgb(56, 189, 248)),
+                ("THIẾT GIÁP HẠM", "Battleship", 4, "Tàu pháo bọc thép hạng nặng, sở hữu đại bác hạm đội công phá tầm xa cực kỳ uy lực.", "💣", Color.FromArgb(245, 158, 11)),
+                ("TÀU NGẦM", "Submarine", 3, "Sát thủ lặn sâu tàng hình dưới lòng đại dương, di chuyển lẩn khuất, khó phán đoán tọa độ.", "🌊", Color.FromArgb(16, 185, 129)),
+                ("TÀU KHU TRỤC", "Destroyer", 3, "Tàu hộ tống cơ động cao, bệ phóng tên lửa hành trình, chuyên săn lùng tàu ngầm và bảo vệ hạm đội.", "🚀", Color.FromArgb(168, 85, 247)),
+                ("TÀU TUẦN TRA", "Patrol Boat", 2, "Trinh sát cao tốc nhỏ nhất (chỉ 2 ô). Cực kỳ khó phát hiện trên bàn cờ 100 ô, là chìa khóa quyết định thắng bại!", "⚡", Color.FromArgb(244, 63, 94))
+            };
+
+            int startY = 14;
+            int cardW = Math.Max(930, pnlShipsView.ClientSize.Width - 30);
+            int cardH = 112;
+
+            for (int i = 0; i < danhSachTau.Length; i++)
+            {
+                var (tenVN, tenEN, size, vaiTro, icon, accentColor) = danhSachTau[i];
+                Rectangle cardRect = new Rectangle(12, startY + i * (cardH + 12), cardW, cardH);
+
+                // Khung card
+                using (GraphicsPath path = UITheme.CreateRoundedPath(cardRect, 8))
+                {
+                    using (SolidBrush bgBrush = new SolidBrush(Color.FromArgb(15, 23, 42))) g.FillPath(bgBrush, path);
+                    using (Pen borderPen = new Pen(accentColor, 1.2f)) g.DrawPath(borderPen, path);
+                }
+
+                // Tiêu đề & NATO code
+                using (Font nameFont = new Font("Segoe UI Black", 12f, FontStyle.Bold))
+                using (Font enFont = new Font("Segoe UI", 9.5f, FontStyle.Regular))
+                {
+                    Rectangle nameRect = new Rectangle(cardRect.X + 16, cardRect.Y + 12, 330, 26);
+                    TextRenderer.DrawText(g, $"{icon}  {tenVN} ({size} Ô)", nameFont, nameRect, accentColor, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+
+                    Rectangle enRect = new Rectangle(cardRect.X + 18, cardRect.Y + 38, 330, 20);
+                    TextRenderer.DrawText(g, $"Mã hiệu: {tenEN} • Độ bền: {size}/{size} HP", enFont, enRect, UITheme.TextSecondary, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+                }
+
+                // Vẽ các ô mô phỏng thân tàu
+                int cellStartX = cardRect.X + 350;
+                int cellY = cardRect.Y + 14;
+                int cellSize = 32;
+
+                for (int s = 0; s < size; s++)
+                {
+                    Rectangle segRect = new Rectangle(cellStartX + s * (cellSize + 4), cellY, cellSize, cellSize);
+                    using (SolidBrush segBrush = new SolidBrush(UITheme.ShipCell)) g.FillRectangle(segBrush, segRect);
+                    using (Pen segPen = new Pen(accentColor, 1.2f)) g.DrawRectangle(segPen, segRect);
+                    using (Font sFont = new Font("Segoe UI", 9.5f, FontStyle.Bold))
+                    {
+                        TextRenderer.DrawText(g, "⚓", sFont, segRect, Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                    }
+                }
+
+                // Mô tả vai trò
+                Rectangle roleRect = new Rectangle(cellStartX, cardRect.Y + 54, cardRect.Width - 365, 50);
+                using (Font roleFont = new Font("Segoe UI", 9.25f, FontStyle.Regular))
+                {
+                    TextRenderer.DrawText(g, vaiTro, roleFont, roleRect, UITheme.TextPrimary, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix);
+                }
+            }
+        }
+        #endregion
+
+        #region MỤC 3: MẸO CHIẾN THUẬT (PARITY SO LE, TARGET MODE, SƯƠNG MÙ)
+        private void pnlTacticsView_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.TranslateTransform(pnlTacticsView.AutoScrollPosition.X, pnlTacticsView.AutoScrollPosition.Y);
+            UITheme.SetHighQuality(g);
+
+            int viewWidth = Math.Max(930, pnlTacticsView.ClientSize.Width - 30);
+            int cardW = (viewWidth - 24) / 3;
+            int cardH = 240;
+            int topY = 16;
+
+            // 1. SĂN SO LE (PARITY HUNTING)
+            Rectangle rectParity = new Rectangle(12, topY, cardW, cardH);
+            VeCardParity(g, rectParity);
+
+            // 2. BÁM ĐUỔI 4 HƯỚNG (TARGET MODE)
+            Rectangle rectTarget = new Rectangle(rectParity.Right + 12, topY, cardW, cardH);
+            VeCardTargetMode(g, rectTarget);
+
+            // 3. MÀN SƯƠNG MÙ (HOTSEAT BLINDFOLD)
+            Rectangle rectFog = new Rectangle(rectTarget.Right + 12, topY, cardW, cardH);
+            VeCardFogOverlay(g, rectFog);
+
+            // 4. KỸ NĂNG ĐẶC BIỆT DƯỚI CÙNG
+            int skillTop = rectParity.Bottom + 16;
+            Rectangle rectSkillBox = new Rectangle(12, skillTop, rectFog.Right - 12, 220);
+
+            using (GraphicsPath path = UITheme.CreateRoundedPath(rectSkillBox, 8))
+            {
+                using (SolidBrush bg = new SolidBrush(Color.FromArgb(15, 23, 42))) g.FillPath(bg, path);
+                using (Pen pen = new Pen(UITheme.WarningAmber, 1.2f)) g.DrawPath(pen, path);
+            }
+
+            using (Font titleFont = new Font("Segoe UI Black", 12f, FontStyle.Bold))
+            {
+                Rectangle tRect = new Rectangle(rectSkillBox.X + 16, rectSkillBox.Y + 12, rectSkillBox.Width - 32, 26);
+                TextRenderer.DrawText(g, "📡 MẸO SỬ DỤNG KỸ NĂNG TÁC CHIẾN ĐẶC BIỆT", titleFont, tRect, UITheme.WarningAmber, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+            }
+
+            var skills = new (string Icon, string Name, string Desc)[]
+            {
+                ("📡", "RADAR TRINH SÁT (3x3)", "Quét một vùng biển 3x3 ô nghi vấn. Hệ thống thông báo 'Phát hiện có dấu vết tàu địch' hoặc 'Vùng biển an toàn' mà không tiết lộ ô chính xác. Rất hữu ích khi cần xác định tàu tuần tra 2 ô đang trốn ở góc nào!"),
+                ("💥", "PHÁO KÍCH DIỆN RỘNG (+)", "Khai hỏa đồng loạt 5 quả đại bác theo hình dấu cộng (+) cùng một lúc. Giúp càn quét cực nhanh các vùng biển trống và gia tăng xác suất bắn trúng các tàu cỡ lớn (4-5 ô)!")
+            };
+
+            for (int i = 0; i < skills.Length; i++)
+            {
+                var (icon, sName, sDesc) = skills[i];
+                Rectangle sRect = new Rectangle(rectSkillBox.X + 16, rectSkillBox.Y + 46 + i * 82, rectSkillBox.Width - 32, 74);
+
+                using (Font iFont = new Font("Segoe UI", 16f))
+                using (Font hFont = new Font("Segoe UI", 10.5f, FontStyle.Bold))
+                using (Font dFont = new Font("Segoe UI", 9f, FontStyle.Regular))
+                {
+                    TextRenderer.DrawText(g, icon, iFont, new Rectangle(sRect.X, sRect.Y, 36, 36), Color.White, TextFormatFlags.Left);
+                    TextRenderer.DrawText(g, sName, hFont, new Rectangle(sRect.X + 44, sRect.Y, sRect.Width - 44, 22), UITheme.AccentNeon, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+                    TextRenderer.DrawText(g, sDesc, dFont, new Rectangle(sRect.X + 44, sRect.Y + 24, sRect.Width - 44, 46), UITheme.TextPrimary, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix);
+                }
+            }
+        }
+
+        private void VeCardParity(Graphics g, Rectangle rect)
+        {
+            using (GraphicsPath path = UITheme.CreateRoundedPath(rect, 8))
+            {
+                using (SolidBrush bg = new SolidBrush(Color.FromArgb(15, 23, 42))) g.FillPath(bg, path);
+                using (Pen pen = new Pen(UITheme.AccentNeon, 1.2f)) g.DrawPath(pen, path);
+            }
+
+            using (Font titleFont = new Font("Segoe UI", 10.5f, FontStyle.Bold))
+            {
+                Rectangle tRect = new Rectangle(rect.X + 12, rect.Y + 10, rect.Width - 24, 24);
+                TextRenderer.DrawText(g, "🏁 BẮN SO LE CHẴN LẺ (PARITY)", titleFont, tRect, UITheme.AccentNeon, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+            }
+
+            // Vẽ bàn cờ vua mini 4x4
+            int startX = rect.X + 16;
+            int startY = rect.Y + 40;
+            int sz = 24;
+
+            for (int r = 0; r < 4; r++)
+            {
+                for (int c = 0; c < 4; c++)
+                {
+                    Rectangle cRect = new Rectangle(startX + c * sz, startY + r * sz, sz, sz);
+                    bool isParity = (r + c) % 2 == 0;
+                    Color color = isParity ? UITheme.SuccessGreen : Color.FromArgb(30, 41, 59);
+
+                    using (SolidBrush b = new SolidBrush(color)) g.FillRectangle(b, cRect);
+                    using (Pen p = new Pen(UITheme.BorderDefault, 1f)) g.DrawRectangle(p, cRect);
+
+                    if (isParity)
+                    {
+                        using (Font pf = new Font("Segoe UI", 8f, FontStyle.Bold))
+                        {
+                            TextRenderer.DrawText(g, "🎯", pf, cRect, Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                        }
+                    }
+                }
+            }
+
+            Rectangle dRect = new Rectangle(startX + 4 * sz + 12, startY, rect.Width - (4 * sz) - 36, 175);
+            using (Font df = new Font("Segoe UI", 9f, FontStyle.Regular))
+            {
+                TextRenderer.DrawText(
+                    g,
+                    "Nguyên lý toán học:\n" +
+                    "• Tàu nhỏ nhất dài 2 ô bắt buộc phải đè lên ô (X+Y)%2 == 0.\n" +
+                    "• Bắn so le giúp loại trừ 50% số phát bắn vu vơ, tăng tốc độ tìm tàu gấp đôi!",
+                    df,
+                    dRect,
+                    UITheme.TextPrimary,
+                    TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix
+                );
+            }
+        }
+
+        private void VeCardTargetMode(Graphics g, Rectangle rect)
+        {
+            using (GraphicsPath path = UITheme.CreateRoundedPath(rect, 8))
+            {
+                using (SolidBrush bg = new SolidBrush(Color.FromArgb(15, 23, 42))) g.FillPath(bg, path);
+                using (Pen pen = new Pen(UITheme.HitFireBackground, 1.2f)) g.DrawPath(pen, path);
+            }
+
+            using (Font titleFont = new Font("Segoe UI", 10.5f, FontStyle.Bold))
+            {
+                Rectangle tRect = new Rectangle(rect.X + 12, rect.Y + 10, rect.Width - 24, 24);
+                TextRenderer.DrawText(g, "🎯 BÁM ĐUỔI 4 HƯỚNG (TARGET)", titleFont, tRect, UITheme.HitFireBackground, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+            }
+
+            // Vẽ chữ thập 3x3 với tâm là HIT
+            int startX = rect.X + 16;
+            int startY = rect.Y + 40;
+            int sz = 30;
+
+            Rectangle centerCell = new Rectangle(startX + sz, startY + sz, sz, sz);
+            using (SolidBrush b = new SolidBrush(UITheme.HitFireBackground)) g.FillRectangle(b, centerCell);
+            using (Pen p = new Pen(UITheme.HitFireBorder, 1.5f)) g.DrawRectangle(p, centerCell);
+            using (Font sf = new Font("Segoe UI", 11f, FontStyle.Bold))
+            {
+                TextRenderer.DrawText(g, "X", sf, centerCell, UITheme.HitFireText, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            }
+
+            var dirs = new (int dx, int dy, string icon)[]
+            {
+                (1, 0, "↑"),
+                (1, 2, "↓"),
+                (0, 1, "←"),
+                (2, 1, "→")
+            };
+
+            foreach (var (dx, dy, icon) in dirs)
+            {
+                Rectangle cell = new Rectangle(startX + dx * sz, startY + dy * sz, sz, sz);
+                using (SolidBrush b = new SolidBrush(Color.FromArgb(30, 41, 59))) g.FillRectangle(b, cell);
+                using (Pen p = new Pen(UITheme.AccentNeon, 1.2f)) g.DrawRectangle(p, cell);
+                using (Font af = new Font("Segoe UI", 11f, FontStyle.Bold))
+                {
+                    TextRenderer.DrawText(g, icon, af, cell, UITheme.AccentNeon, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                }
+            }
+
+            Rectangle dRect = new Rectangle(startX + 3 * sz + 12, startY, rect.Width - (3 * sz) - 36, 175);
+            using (Font df = new Font("Segoe UI", 9f, FontStyle.Regular))
+            {
+                TextRenderer.DrawText(
+                    g,
+                    "Ngay khi bắn trúng ô X:\n" +
+                    "• Đẩy 4 ô kề (↑ ↓ ← →) vào hàng đợi ngắm bắn.\n" +
+                    "• Khi trúng phát thứ 2: Xác định trục tàu (Ngang/Dọc) và dồn hỏa lực tiêu diệt!",
+                    df,
+                    dRect,
+                    UITheme.TextPrimary,
+                    TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix
+                );
+            }
+        }
+
+        private void VeCardFogOverlay(Graphics g, Rectangle rect)
+        {
+            using (GraphicsPath path = UITheme.CreateRoundedPath(rect, 8))
+            {
+                using (SolidBrush bg = new SolidBrush(Color.FromArgb(15, 23, 42))) g.FillPath(bg, path);
+                using (Pen pen = new Pen(UITheme.PrimaryCyan, 1.2f)) g.DrawPath(pen, path);
+            }
+
+            using (Font titleFont = new Font("Segoe UI", 10.5f, FontStyle.Bold))
+            {
+                Rectangle tRect = new Rectangle(rect.X + 12, rect.Y + 10, rect.Width - 24, 24);
+                TextRenderer.DrawText(g, "🔒 MÀN SƯƠNG MÙ (PvP HOTSEAT)", titleFont, tRect, UITheme.PrimaryCyan, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+            }
+
+            Rectangle iconBox = new Rectangle(rect.X + 16, rect.Y + 45, 65, 65);
+            using (SolidBrush b = new SolidBrush(Color.FromArgb(10, 17, 32))) g.FillRectangle(b, iconBox);
+            using (Pen p = new Pen(UITheme.PrimaryCyan, 1.5f)) g.DrawRectangle(p, iconBox);
+            using (Font ifont = new Font("Segoe UI", 26f))
+            {
+                TextRenderer.DrawText(g, "🌫️", ifont, iconBox, Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            }
+
+            Rectangle dRect = new Rectangle(iconBox.Right + 12, rect.Y + 40, rect.Width - iconBox.Width - 36, 175);
+            using (Font df = new Font("Segoe UI", 9f, FontStyle.Regular))
+            {
+                TextRenderer.DrawText(
+                    g,
+                    "Cơ chế bảo mật chiến thuật:\n" +
+                    "• Khi chơi 2 người 1 máy, màn che màu đen phủ kín bàn cờ mỗi khi hết lượt.\n" +
+                    "• Chống nhìn trộm tuyệt đối tọa độ hạm đội của nhau!\n" +
+                    "• Người kế tiếp bấm nút mới mở bàn cờ.",
+                    df,
+                    dRect,
+                    UITheme.TextPrimary,
+                    TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix
+                );
+            }
+        }
+        #endregion
+
+        #region MỤC 4: THÀNH VIÊN NHÓM (3 THẺ THÀNH VIÊN & PHÂN CÔNG WBS)
+        private void pnlTeamView_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.TranslateTransform(pnlTeamView.AutoScrollPosition.X, pnlTeamView.AutoScrollPosition.Y);
+            UITheme.SetHighQuality(g);
+
+            var danhSachThanhVien = new (string VaiTro, string HoTen, string MSSV, string NhiemVuChinh, Color AccentColor, string Icon)[]
+            {
+                (
+                    "Thành viên 1 - Trưởng nhóm / Backend & AI Lead",
+                    "Huỳnh Minh Trí",
+                    "51.01.104.105",
+                    "• Thiết kế kiến trúc Model: cO.cs, cTau.cs, cBanCo.cs.\n• Thuật toán Va chạm & Xếp tàu tự động hợp lệ.\n• Thuật toán Trí tuệ Nhân tạo FSM (Hunt Mode Parity & Target Mode bám đuổi).\n• Điều phối ván đấu cQuanLyVanDau.cs và công thức tính điểm.",
+                    UITheme.AccentNeon,
+                    "👑"
+                ),
+                (
+                    "Thành viên 2 - Frontend & UI/UX Lead",
+                    "Trần Trọng Hưng",
+                    "51.01.104.132",
+                    "• Thiết kế toàn bộ giao diện WinForms chuẩn phong cách Hải quân hiện đại.\n• Sinh động 100 Button cho 2 bàn cờ, hiệu ứng bóng mờ (Preview Shadow) khi xếp tàu.\n• Xử lý đồ họa phát bắn (Sóng nước •, Lửa đỏ X, Tro tàn chìm tàu viền đậm 2px).\n• Tích hợp luồng PvP Hotseat chuyển lượt tự động và Form Hướng dẫn có minh họa.",
+                    UITheme.PrimaryCyan,
+                    "🎨"
+                ),
+                (
+                    "Thành viên 3 - System I/O, Audio & QA/Tester",
+                    "Trần Vũ Hòa Phát",
+                    "51.01.104.072",
+                    "• Tích hợp hệ thống Âm thanh đa luồng: Nhạc nền mciSendString và SFX SoundPlayer.\n• Quản lý lưu trữ/đọc file thanhtichs.txt qua cThanhTichDAO.cs và giao diện DataGridView.\n• Cơ chế bẫy lỗi toàn diện try...catch phòng chống ngoại lệ rủi ro cao.\n• Soạn thảo bộ 20 Test Cases kiểm thử, Báo cáo đồ án Word và Video clip demo.",
+                    UITheme.WarningAmber,
+                    "🔊"
+                )
+            };
+
+            int startY = 14;
+            int cardW = Math.Max(930, pnlTeamView.ClientSize.Width - 30);
+            int cardH = 158;
+
+            for (int i = 0; i < danhSachThanhVien.Length; i++)
+            {
+                var (vaiTro, hoTen, mssv, nhiemVu, accentColor, icon) = danhSachThanhVien[i];
+                Rectangle cardRect = new Rectangle(12, startY + i * (cardH + 14), cardW, cardH);
+
+                // Khung card
+                using (GraphicsPath path = UITheme.CreateRoundedPath(cardRect, 8))
+                {
+                    using (SolidBrush bg = new SolidBrush(Color.FromArgb(15, 23, 42))) g.FillPath(bg, path);
+                    using (Pen pen = new Pen(accentColor, 1.2f)) g.DrawPath(pen, path);
+                }
+
+                // Tiêu đề, Tên và MSSV
+                using (Font roleFont = new Font("Segoe UI", 9.5f, FontStyle.Bold))
+                using (Font nameFont = new Font("Segoe UI Black", 14f, FontStyle.Bold))
+                using (Font mssvFont = new Font("Consolas", 11.5f, FontStyle.Bold))
+                {
+                    Rectangle roleRect = new Rectangle(cardRect.X + 16, cardRect.Y + 12, 430, 22);
+                    TextRenderer.DrawText(g, $"{icon}  {vaiTro.ToUpper()}", roleFont, roleRect, accentColor, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+
+                    Rectangle nameRect = new Rectangle(cardRect.X + 16, cardRect.Y + 38, 430, 28);
+                    TextRenderer.DrawText(g, hoTen, nameFont, nameRect, Color.White, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+
+                    Rectangle mssvRect = new Rectangle(cardRect.X + 16, cardRect.Y + 68, 430, 24);
+                    TextRenderer.DrawText(g, $"MSSV: {mssv}", mssvFont, mssvRect, UITheme.GoldAccent, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+                }
+
+                // Nhiệm vụ WBS
+                int taskStartX = cardRect.X + 456;
+                Rectangle taskRect = new Rectangle(taskStartX, cardRect.Y + 12, cardRect.Width - 472, cardRect.Height - 20);
+                using (Font taskFont = new Font("Segoe UI", 9.25f, FontStyle.Regular))
+                {
+                    TextRenderer.DrawText(g, $"PHÂN CÔNG NHIỆM VỤ CHI TIẾT (WBS):\n{nhiemVu}", taskFont, taskRect, UITheme.TextPrimary, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix);
+                }
+            }
+        }
+        #endregion
     }
 }

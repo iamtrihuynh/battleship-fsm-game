@@ -26,6 +26,7 @@ namespace BattleshipGame.Views
         public static readonly Color WarningYellow = Color.FromArgb(234, 179, 8);      // #EAB308 Warning Yellow
         public static readonly Color SunkDarkRed = Color.FromArgb(153, 27, 27);       // #991B1B Dark Red Sunk
         public static readonly Color MissGray = Color.FromArgb(148, 163, 184);        // #94A3B8 Water ripples
+        public static readonly Color GoldAccent = Color.FromArgb(250, 204, 21);       // #FACC15 Trophy Gold
 
         // Màu xử lý đồ họa phát bắn (Ngày 3 - TV2)
         public static readonly Color MissRippleBackground = Color.FromArgb(30, 58, 88);       // #1E3A58 Gợn sóng nước biển

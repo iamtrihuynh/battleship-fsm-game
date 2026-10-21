@@ -8,19 +8,29 @@ namespace BattleshipGame.Views
     {
         private System.ComponentModel.IContainer components = null;
 
+        // Container cố định phía trên chứa Header & TabBar
+        private Panel pnlTopContainer;
+
+        // Header controls (Nằm trên cùng)
         private Panel pnlHeader;
         private Label lblHeaderTitle;
         private TacticalButton btnClose;
-        private TabControl tabAbout;
-        private TabPage tabRules;
-        private TabPage tabShips;
-        private TabPage tabTactics;
-        private TabPage tabTeam;
 
-        private RichTextBox rtbRules;
-        private RichTextBox rtbShips;
-        private RichTextBox rtbTactics;
-        private RichTextBox rtbTeam;
+        // Tab Navigation Bar (Nằm ngay dưới Header)
+        private Panel pnlTabBar;
+        private TacticalButton btnTabRules;
+        private TacticalButton btnTabShips;
+        private TacticalButton btnTabTactics;
+        private TacticalButton btnTabTeam;
+
+        // Container chính chứa nội dung (Bên dưới TabBar, không bị che)
+        private Panel pnlContentContainer;
+
+        // 4 Panels nội dung độc lập
+        private Panel pnlRulesView;
+        private Panel pnlShipsView;
+        private Panel pnlTacticsView;
+        private Panel pnlTeamView;
 
         protected override void Dispose(bool disposing)
         {
@@ -33,21 +43,27 @@ namespace BattleshipGame.Views
 
         private void InitializeComponent()
         {
+            this.pnlTopContainer = new Panel();
             this.pnlHeader = new Panel();
             this.lblHeaderTitle = new Label();
             this.btnClose = new TacticalButton();
 
-            this.tabAbout = new TabControl();
-            this.tabRules = new TabPage();
-            this.tabShips = new TabPage();
-            this.tabTactics = new TabPage();
-            this.tabTeam = new TabPage();
+            this.pnlTabBar = new Panel();
+            this.btnTabRules = new TacticalButton();
+            this.btnTabShips = new TacticalButton();
+            this.btnTabTactics = new TacticalButton();
+            this.btnTabTeam = new TacticalButton();
 
-            this.rtbRules = new RichTextBox();
-            this.rtbShips = new RichTextBox();
-            this.rtbTactics = new RichTextBox();
-            this.rtbTeam = new RichTextBox();
+            this.pnlContentContainer = new Panel();
+            this.pnlRulesView = new Panel();
+            this.pnlShipsView = new Panel();
+            this.pnlTacticsView = new Panel();
+            this.pnlTeamView = new Panel();
 
+            this.pnlTopContainer.SuspendLayout();
+            this.pnlHeader.SuspendLayout();
+            this.pnlTabBar.SuspendLayout();
+            this.pnlContentContainer.SuspendLayout();
             this.SuspendLayout();
 
             // 
@@ -56,103 +72,159 @@ namespace BattleshipGame.Views
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = UITheme.BackgroundDark;
-            this.ClientSize = new Size(820, 580);
+            this.ClientSize = new Size(1020, 720);
+            this.MinimumSize = new Size(940, 650);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "frmAbout";
             this.StartPosition = FormStartPosition.CenterParent;
-            this.Text = "Hướng Dẫn & Giới Thiệu - Bắn Tàu";
+            this.Text = "Hướng Dẫn và Giới Thiệu Bắn Tàu (Tactical Naval Warfare)";
 
             // 
-            // pnlHeader
+            // pnlTopContainer (Khung chứa Header + TabBar cố định trên cùng)
+            // 
+            this.pnlTopContainer.BackColor = UITheme.HeaderBackground;
+            this.pnlTopContainer.Dock = DockStyle.Top;
+            this.pnlTopContainer.Height = 104;
+            this.pnlTopContainer.BorderStyle = BorderStyle.FixedSingle;
+            this.pnlTopContainer.Controls.Add(this.pnlTabBar);
+            this.pnlTopContainer.Controls.Add(this.pnlHeader);
+            this.Controls.Add(this.pnlTopContainer);
+
+            // 
+            // pnlHeader (Nằm trên cùng)
             // 
             this.pnlHeader.BackColor = UITheme.HeaderBackground;
             this.pnlHeader.Dock = DockStyle.Top;
-            this.pnlHeader.Height = 60;
-            this.pnlHeader.BorderStyle = BorderStyle.FixedSingle;
-            this.Controls.Add(this.pnlHeader);
-
-            this.lblHeaderTitle.AutoSize = false;
-            this.lblHeaderTitle.Location = new Point(20, 14);
-            this.lblHeaderTitle.Size = new Size(600, 32);
-            this.lblHeaderTitle.Font = new Font("Segoe UI", 16f, FontStyle.Bold);
-            this.lblHeaderTitle.ForeColor = UITheme.AccentNeon;
-            this.lblHeaderTitle.Text = "📖 HƯỚNG DẪN CHIẾN THUẬT & THÔNG TIN DỰ ÁN";
+            this.pnlHeader.Height = 52;
+            this.pnlHeader.Controls.Add(this.btnClose);
             this.pnlHeader.Controls.Add(this.lblHeaderTitle);
 
-            this.btnClose.Location = new Point(680, 12);
-            this.btnClose.Size = new Size(120, 36);
-            this.btnClose.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
-            this.btnClose.Text = "Đóng";
+            // 
+            // lblHeaderTitle: Hướng dẫn và giới thiệu bắn tàu (bỏ dòng bên dưới)
+            // 
+            this.lblHeaderTitle.AutoSize = false;
+            this.lblHeaderTitle.Location = new Point(20, 8);
+            this.lblHeaderTitle.Size = new Size(750, 36);
+            this.lblHeaderTitle.Font = new Font("Segoe UI Black", 16f, FontStyle.Bold);
+            this.lblHeaderTitle.ForeColor = UITheme.AccentNeon;
+            this.lblHeaderTitle.Text = "📖 HƯỚNG DẪN VÀ GIỚI THIỆU BẮN TÀU";
+            this.lblHeaderTitle.TextAlign = ContentAlignment.MiddleLeft;
+
+            // 
+            // btnClose (Nút đóng góc phải trên)
+            // 
+            this.btnClose.Location = new Point(870, 8);
+            this.btnClose.Size = new Size(130, 36);
+            this.btnClose.Font = new Font("Segoe UI", 10f, FontStyle.Bold);
+            this.btnClose.Text = "✕  Đóng";
+            this.btnClose.BaseFillColor = Color.FromArgb(30, 41, 59);
+            this.btnClose.BorderColor = UITheme.DangerRed;
+            this.btnClose.NormalTextColor = Color.FromArgb(248, 113, 113);
+            this.btnClose.HoverFillColor = Color.FromArgb(220, 38, 38);
+            this.btnClose.HoverTextColor = Color.White;
             this.btnClose.CornerRadius = 6;
             this.btnClose.Click += (s, e) => this.Close();
-            this.pnlHeader.Controls.Add(this.btnClose);
 
             // 
-            // tabAbout
+            // pnlTabBar (Các mục ở ngay dưới tiêu đề)
             // 
-            this.tabAbout.Location = new Point(16, 76);
-            this.tabAbout.Size = new Size(788, 484);
-            this.tabAbout.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
-            this.Controls.Add(this.tabAbout);
+            this.pnlTabBar.BackColor = Color.FromArgb(16, 26, 46);
+            this.pnlTabBar.Dock = DockStyle.Fill;
+            this.pnlTabBar.Controls.Add(this.btnTabRules);
+            this.pnlTabBar.Controls.Add(this.btnTabShips);
+            this.pnlTabBar.Controls.Add(this.btnTabTactics);
+            this.pnlTabBar.Controls.Add(this.btnTabTeam);
 
-            this.tabAbout.Controls.Add(this.tabRules);
-            this.tabAbout.Controls.Add(this.tabShips);
-            this.tabAbout.Controls.Add(this.tabTactics);
-            this.tabAbout.Controls.Add(this.tabTeam);
+            // 1. Nút Luật chơi (có minh họa)
+            this.btnTabRules.Location = new Point(14, 6);
+            this.btnTabRules.Size = new Size(230, 38);
+            this.btnTabRules.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
+            this.btnTabRules.Text = "🎯  Luật Chơi (Có Minh Họa)";
+            this.btnTabRules.CornerRadius = 6;
+            this.btnTabRules.Click += new EventHandler(this.btnTabRules_Click);
 
-            // 
-            // tabRules
-            // 
-            this.tabRules.BackColor = UITheme.PanelBackground;
-            this.tabRules.Text = "  Luật Chơi  ";
-            this.rtbRules.Dock = DockStyle.Fill;
-            this.rtbRules.ReadOnly = true;
-            this.rtbRules.BackColor = UITheme.PanelBackground;
-            this.rtbRules.ForeColor = UITheme.TextPrimary;
-            this.rtbRules.Font = new Font("Segoe UI", 11f, FontStyle.Regular);
-            this.rtbRules.BorderStyle = BorderStyle.None;
-            this.tabRules.Controls.Add(this.rtbRules);
+            // 2. Nút Thông tin hạm đội
+            this.btnTabShips.Location = new Point(252, 6);
+            this.btnTabShips.Size = new Size(220, 38);
+            this.btnTabShips.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
+            this.btnTabShips.Text = "🚢  Thông Tin Hạm Đội";
+            this.btnTabShips.CornerRadius = 6;
+            this.btnTabShips.Click += new EventHandler(this.btnTabShips_Click);
 
-            // 
-            // tabShips
-            // 
-            this.tabShips.BackColor = UITheme.PanelBackground;
-            this.tabShips.Text = "  Thông Số Hạm Đội  ";
-            this.rtbShips.Dock = DockStyle.Fill;
-            this.rtbShips.ReadOnly = true;
-            this.rtbShips.BackColor = UITheme.PanelBackground;
-            this.rtbShips.ForeColor = UITheme.TextPrimary;
-            this.rtbShips.Font = new Font("Segoe UI", 11f, FontStyle.Regular);
-            this.rtbShips.BorderStyle = BorderStyle.None;
-            this.tabShips.Controls.Add(this.rtbShips);
+            // 3. Nút Mẹo chiến thuật
+            this.btnTabTactics.Location = new Point(480, 6);
+            this.btnTabTactics.Size = new Size(210, 38);
+            this.btnTabTactics.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
+            this.btnTabTactics.Text = "⚡  Mẹo Chiến Thuật";
+            this.btnTabTactics.CornerRadius = 6;
+            this.btnTabTactics.Click += new EventHandler(this.btnTabTactics_Click);
 
-            // 
-            // tabTactics
-            // 
-            this.tabTactics.BackColor = UITheme.PanelBackground;
-            this.tabTactics.Text = "  Mẹo Chiến Thuật  ";
-            this.rtbTactics.Dock = DockStyle.Fill;
-            this.rtbTactics.ReadOnly = true;
-            this.rtbTactics.BackColor = UITheme.PanelBackground;
-            this.rtbTactics.ForeColor = UITheme.TextPrimary;
-            this.rtbTactics.Font = new Font("Segoe UI", 11f, FontStyle.Regular);
-            this.rtbTactics.BorderStyle = BorderStyle.None;
-            this.tabTactics.Controls.Add(this.rtbTactics);
+            // 4. Nút Thành viên nhóm
+            this.btnTabTeam.Location = new Point(698, 6);
+            this.btnTabTeam.Size = new Size(210, 38);
+            this.btnTabTeam.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
+            this.btnTabTeam.Text = "👥  Thành Viên Nhóm";
+            this.btnTabTeam.CornerRadius = 6;
+            this.btnTabTeam.Click += new EventHandler(this.btnTabTeam_Click);
 
             // 
-            // tabTeam
+            // pnlContentContainer (Khung nội dung chính nằm bên dưới pnlTopContainer, không bị che)
             // 
-            this.tabTeam.BackColor = UITheme.PanelBackground;
-            this.tabTeam.Text = "  Thành Viên Nhóm  ";
-            this.rtbTeam.Dock = DockStyle.Fill;
-            this.rtbTeam.ReadOnly = true;
-            this.rtbTeam.BackColor = UITheme.PanelBackground;
-            this.rtbTeam.ForeColor = UITheme.TextPrimary;
-            this.rtbTeam.Font = new Font("Segoe UI", 11f, FontStyle.Regular);
-            this.rtbTeam.BorderStyle = BorderStyle.None;
-            this.tabTeam.Controls.Add(this.rtbTeam);
+            this.pnlContentContainer.BackColor = UITheme.PanelBackground;
+            this.pnlContentContainer.Dock = DockStyle.Fill;
+            this.pnlContentContainer.Padding = new Padding(12);
+            this.pnlContentContainer.Controls.Add(this.pnlRulesView);
+            this.pnlContentContainer.Controls.Add(this.pnlShipsView);
+            this.pnlContentContainer.Controls.Add(this.pnlTacticsView);
+            this.pnlContentContainer.Controls.Add(this.pnlTeamView);
+            this.Controls.Add(this.pnlContentContainer);
 
+            // 
+            // pnlRulesView (Mục 1: Luật chơi có minh họa)
+            // 
+            this.pnlRulesView.Dock = DockStyle.Fill;
+            this.pnlRulesView.BackColor = UITheme.PanelBackground;
+            this.pnlRulesView.AutoScroll = true;
+            this.pnlRulesView.Paint += new PaintEventHandler(this.pnlRulesView_Paint);
+
+            // 
+            // pnlShipsView (Mục 2: Thông tin hạm đội)
+            // 
+            this.pnlShipsView.Dock = DockStyle.Fill;
+            this.pnlShipsView.BackColor = UITheme.PanelBackground;
+            this.pnlShipsView.AutoScroll = true;
+            this.pnlShipsView.Visible = false;
+            this.pnlShipsView.Paint += new PaintEventHandler(this.pnlShipsView_Paint);
+
+            // 
+            // pnlTacticsView (Mục 3: Mẹo chiến thuật)
+            // 
+            this.pnlTacticsView.Dock = DockStyle.Fill;
+            this.pnlTacticsView.BackColor = UITheme.PanelBackground;
+            this.pnlTacticsView.AutoScroll = true;
+            this.pnlTacticsView.Visible = false;
+            this.pnlTacticsView.Paint += new PaintEventHandler(this.pnlTacticsView_Paint);
+
+            // 
+            // pnlTeamView (Mục 4: Thành viên nhóm)
+            // 
+            this.pnlTeamView.Dock = DockStyle.Fill;
+            this.pnlTeamView.BackColor = UITheme.PanelBackground;
+            this.pnlTeamView.AutoScroll = true;
+            this.pnlTeamView.Visible = false;
+            this.pnlTeamView.Paint += new PaintEventHandler(this.pnlTeamView_Paint);
+
+            // Đảm bảo trật tự Docking chuẩn: Header trên cùng, TabBar ở ngay dưới, Content container nằm dưới cùng không bị che
+            this.pnlHeader.SendToBack();
+            this.pnlTabBar.BringToFront();
+            this.pnlTopContainer.SendToBack();
+            this.pnlContentContainer.BringToFront();
+
+            this.pnlTopContainer.ResumeLayout(false);
+            this.pnlHeader.ResumeLayout(false);
+            this.pnlTabBar.ResumeLayout(false);
+            this.pnlContentContainer.ResumeLayout(false);
             this.ResumeLayout(false);
         }
     }

@@ -14,8 +14,8 @@
 | :---: | :--- | :---: |
 | **Ngày 1** | Thiết lập Solution, Mô hình Dữ liệu (Models), Khung Form & Tài nguyên | **DONE** |
 | **Ngày 2** | Thuật toán Xếp tàu, Ma trận 100 Button động & Hệ thống Âm thanh | **DONE** |
-| **Ngày 3** | Trí tuệ Nhân tạo Bot AI (FSM Hunt & Target), Đồ họa Phát bắn & DAO | **DONE** (TV2 hoàn thành Ngày 3) |
-| **Ngày 4** | Quản lý ván đấu, Đếm ngược 30s, Thưởng lượt & Màn che PvP Hotseat | **IN PROGRESS** (TV1 & TV3 DONE Ngày 4, TV2 Ngày mai làm) |
+| **Ngày 3** | Trí tuệ Nhân tạo Bot AI (FSM Hunt & Target), Đồ họa Phát bắn & DAO | **DONE** |
+| **Ngày 4** | Quản lý ván đấu, Đếm ngược 30s, Thưởng lượt & Màn che PvP Hotseat | **DONE** |
 | **Ngày 5** | Bẫy lỗi toàn diện (Exception Handling), Kỹ năng đặc biệt & Tối ưu UX | **NOT DONE** |
 | **Ngày 6** | Kiểm thử chéo (Cross-Testing), Ma trận Test Case & Viết Báo cáo Word | **NOT DONE** |
 | **Ngày 7** | Build Release, Thiết kế Slide báo cáo, Quay Video Demo & Đóng gói | **NOT DONE** |
@@ -76,8 +76,8 @@
 | **Trí (TV1)** | Điều kiện kết thúc trận khi chìm toàn bộ 5 tàu (17 ô) | `Views/frmBanTau.cs` | **DONE** |
 | **Trí (TV1)** | Bộ đếm giờ ván đấu (`tmrMatch`) và đếm ngược 30s mỗi lượt (`tmrTurnCountdown`) | `Views/frmBanTau.cs` | **DONE** |
 | **Trí (TV1)** | Tách lớp quản lý điều phối ván đấu độc lập `cQuanLyVanDau.cs` (FSM + TinhDiem) | `Logic/cQuanLyVanDau.cs` | **DONE** |
-| **Hưng (TV2)** | Hoàn thiện luồng đổi lượt PvP Hotseat (đổi giao diện bàn cờ 2 người chơi) | `Views/frmBanTau.cs` | **NOT DONE** (Ngày mai làm) |
-| **Hưng (TV2)** | Form Hướng dẫn & Giới thiệu thành viên nhóm (`frmAbout.cs`) | `Views/frmAbout.cs` | **NOT DONE** (Ngày mai làm) |
+| **Hưng (TV2)** | Hoàn thiện luồng đổi lượt PvP Hotseat (đổi giao diện bàn cờ 2 người chơi) | `Views/frmBanTau.cs` | **DONE** |
+| **Hưng (TV2)** | Form Hướng dẫn & Giới thiệu thành viên nhóm (`frmAbout.cs`) | `Views/frmAbout.cs` | **DONE** |
 | **Phát (TV3)** | Viết công thức tính điểm chuẩn kết thúc trận đấu (`cThanhTichDAO.TinhDiem`) | `DataAccess/cThanhTichDAO.cs` | **DONE** |
 | **Phát (TV3)** | Hộp thoại nhập tên ghi danh (`HienThiHopThoaiNhapTen`) & tự động lưu `thanhtichs.txt` | `Views/frmBanTau.cs` | **DONE** |
 

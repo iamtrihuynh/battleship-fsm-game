@@ -815,8 +815,8 @@ namespace BattleshipGame.Views
             btnStartBattle.BackColor = UITheme.PanelBackground;
             btnStartBattle.ForeColor = UITheme.MissGray;
 
-            _daDungSkillRadar = false;
-            _daDungSkillBomb = false;
+            _daDungSkillRadarP1 = false; _daDungSkillRadarP2 = false;
+            _daDungSkillBombP1 = false; _daDungSkillBombP2 = false;
             _kyNangHienTai = CheDoKyNang.KhongCo;
             btnSkillRadar.Enabled = true;
             btnSkillRadar.BackColor = UITheme.PanelBackground;
