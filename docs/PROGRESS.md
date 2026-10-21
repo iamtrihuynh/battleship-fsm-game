@@ -14,9 +14,9 @@
 | :---: | :--- | :---: |
 | **Ngày 1** | Thiết lập Solution, Mô hình Dữ liệu (Models), Khung Form & Tài nguyên | **DONE** |
 | **Ngày 2** | Thuật toán Xếp tàu, Ma trận 100 Button động & Hệ thống Âm thanh | **DONE** |
-| **Ngày 3** | Trí tuệ Nhân tạo Bot AI (FSM Hunt & Target), Đồ họa Phát bắn & DAO | **DONE** |
-| **Ngày 4** | Quản lý ván đấu, Đếm ngược 30s, Thưởng lượt & Màn che PvP Hotseat | **DONE** (TV1 & TV3 DONE, TV2 Ngày mai làm) |
-| **Ngày 5** | Bẫy lỗi toàn diện (Exception Handling), Kỹ năng đặc biệt & Tối ưu UX | **DONE** |
+| **Ngày 3** | Trí tuệ Nhân tạo Bot AI (FSM Hunt & Target), Đồ họa Phát bắn & DAO | **DONE** (TV2 hoàn thành Ngày 3) |
+| **Ngày 4** | Quản lý ván đấu, Đếm ngược 30s, Thưởng lượt & Màn che PvP Hotseat | **IN PROGRESS** (TV1 & TV3 DONE Ngày 4, TV2 Ngày mai làm) |
+| **Ngày 5** | Bẫy lỗi toàn diện (Exception Handling), Kỹ năng đặc biệt & Tối ưu UX | **NOT DONE** |
 | **Ngày 6** | Kiểm thử chéo (Cross-Testing), Ma trận Test Case & Viết Báo cáo Word | **NOT DONE** |
 | **Ngày 7** | Build Release, Thiết kế Slide báo cáo, Quay Video Demo & Đóng gói | **NOT DONE** |
 
@@ -76,8 +76,8 @@
 | **Trí (TV1)** | Điều kiện kết thúc trận khi chìm toàn bộ 5 tàu (17 ô) | `Views/frmBanTau.cs` | **DONE** |
 | **Trí (TV1)** | Bộ đếm giờ ván đấu (`tmrMatch`) và đếm ngược 30s mỗi lượt (`tmrTurnCountdown`) | `Views/frmBanTau.cs` | **DONE** |
 | **Trí (TV1)** | Tách lớp quản lý điều phối ván đấu độc lập `cQuanLyVanDau.cs` (FSM + TinhDiem) | `Logic/cQuanLyVanDau.cs` | **DONE** |
-| **Hưng (TV2)** | Hoàn thiện luồng đổi lượt PvP Hotseat (đổi giao diện bàn cờ 2 người chơi) | `Views/frmBanTau.cs` | **IN PROGRESS** (Ngày mai làm) |
-| **Hưng (TV2)** | Form Hướng dẫn & Giới thiệu thành viên nhóm (`frmAbout.cs`) | `Views/frmAbout.cs` | **DONE** |
+| **Hưng (TV2)** | Hoàn thiện luồng đổi lượt PvP Hotseat (đổi giao diện bàn cờ 2 người chơi) | `Views/frmBanTau.cs` | **NOT DONE** (Ngày mai làm) |
+| **Hưng (TV2)** | Form Hướng dẫn & Giới thiệu thành viên nhóm (`frmAbout.cs`) | `Views/frmAbout.cs` | **NOT DONE** (Ngày mai làm) |
 | **Hòa (TV3)** | Viết công thức tính điểm chuẩn kết thúc trận đấu (`cThanhTichDAO.TinhDiem`) | `DataAccess/cThanhTichDAO.cs` | **DONE** |
 | **Hòa (TV3)** | Hộp thoại nhập tên ghi danh (`HienThiHopThoaiNhapTen`) & tự động lưu `thanhtichs.txt` | `Views/frmBanTau.cs` | **DONE** |
 
@@ -87,14 +87,14 @@
 
 | Thành viên | Nhiệm vụ chi tiết | File liên quan | Trạng thái |
 | :--- | :--- | :--- | :---: |
-| **Trí (TV1)** | Rà soát AI không bắn trùng ô, không lặp vô tận khi tàu chìm | `Logic/cMayBanAI.cs` | **DONE** |
-| **Trí (TV1)** | Kỹ năng đặc biệt: Radar trinh sát $3 \times 3$ và Pháo kích diện rộng dấu `+` | `Views/frmBanTau.cs` | **DONE** |
-| **Hưng (TV2)** | Nút bật/tắt âm thanh (Mute/Unmute) trên thanh công cụ | `Views/frmMenu.cs` | **DONE** |
-| **Hưng (TV2)** | Khóa toàn bộ các nút không hợp lệ khi đang trong trận đấu | `Views/frmBanTau.cs` | **DONE** |
-| **Hưng (TV2)** | Chống chớp giật giao diện (DoubleBuffered) và căn chỉnh giao diện tự co giãn | `Views/` | **DONE** |
-| **Hòa (TV3)** | Bẫy lỗi thiếu file âm thanh/ảnh: Tự động fallback sang `SystemSounds.Beep` | `Logic/cAmThanh.cs` | **DONE** |
-| **Hòa (TV3)** | Bẫy lỗi mất file `thanhtichs.txt`: Tự động khởi tạo file mẫu mới | `DataAccess/` | **DONE** |
-| **Hòa (TV3)** | Cơ chế Retry Pattern với Exponential Backoff chống lỗi khóa file | `DataAccess/` | **DONE** |
+| **Trí (TV1)** | Rà soát AI không bắn trùng ô, không lặp vô tận khi tàu chìm | `Logic/cMayBanAI.cs` | **NOT DONE** |
+| **Trí (TV1)** | Kỹ năng đặc biệt: Radar trinh sát $3 \times 3$ và Pháo kích diện rộng dấu `+` | `Views/frmBanTau.cs` | **NOT DONE** |
+| **Hưng (TV2)** | Nút bật/tắt âm thanh (Mute/Unmute) trên thanh công cụ | `Views/frmMenu.cs` | **NOT DONE** |
+| **Hưng (TV2)** | Khóa toàn bộ các nút không hợp lệ khi đang trong trận đấu | `Views/frmBanTau.cs` | **NOT DONE** |
+| **Hưng (TV2)** | Chống chớp giật giao diện (DoubleBuffered) và căn chỉnh giao diện tự co giãn | `Views/` | **NOT DONE** |
+| **Hòa (TV3)** | Bẫy lỗi thiếu file âm thanh/ảnh: Tự động fallback sang `SystemSounds.Beep` | `Logic/cAmThanh.cs` | **NOT DONE** |
+| **Hòa (TV3)** | Bẫy lỗi mất file `thanhtichs.txt`: Tự động khởi tạo file mẫu mới | `DataAccess/` | **NOT DONE** |
+| **Hòa (TV3)** | Cơ chế Retry Pattern với Exponential Backoff chống lỗi khóa file | `DataAccess/` | **NOT DONE** |
 
 ---
 
