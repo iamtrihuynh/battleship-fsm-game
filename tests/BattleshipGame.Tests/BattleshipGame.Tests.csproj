@@ -16,4 +16,9 @@
     <Compile Include="..\..\src\BattleshipGame\Models\cTau.cs" Link="Models\cTau.cs" />
     <Compile Include="..\..\src\BattleshipGame\Logic\cBanCo.cs" Link="Logic\cBanCo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\BattleshipGame\Assets\Audio\*.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

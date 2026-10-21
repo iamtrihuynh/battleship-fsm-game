@@ -73,14 +73,15 @@ namespace BattleshipGame.Views
 
         private void CapNhatNutAmThanh()
         {
-            btnSoundToggle.Text = _amThanhBat ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT";
-            btnSoundToggle.ForeColor = _amThanhBat ? UITheme.AccentNeon : UITheme.MissGray;
-            btnSoundToggle.BorderColor = _amThanhBat ? UITheme.AccentNeon : UITheme.BorderDefault;
+            bool bat = cAmThanh.DaBatAmThanh;
+            btnSoundToggle.Text = bat ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT";
+            btnSoundToggle.ForeColor = bat ? UITheme.AccentNeon : UITheme.MissGray;
+            btnSoundToggle.BorderColor = bat ? UITheme.AccentNeon : UITheme.BorderDefault;
         }
 
         private void btnSoundToggle_Click(object sender, EventArgs e)
         {
-            _amThanhBat = !_amThanhBat;
+            cAmThanh.BatTatAmThanh();
             CapNhatNutAmThanh();
         }
 
@@ -94,13 +95,13 @@ namespace BattleshipGame.Views
         private void btnStartPvEEasy_Click(object sender, EventArgs e)
         {
             pnlDifficultySelection.Visible = false;
-            MoManHinhTranDau("PvE");
+            MoManHinhTranDau("PvE - Dễ");
         }
 
         private void btnStartPvEHard_Click(object sender, EventArgs e)
         {
             pnlDifficultySelection.Visible = false;
-            MoManHinhTranDau("PvE");
+            MoManHinhTranDau("PvE - Nâng cao");
         }
 
         private void btnCloseDifficulty_Click(object sender, EventArgs e)
@@ -110,7 +111,7 @@ namespace BattleshipGame.Views
 
         private void btnPvP_Click(object sender, EventArgs e)
         {
-            MoManHinhTranDau("PvP");
+            MoManHinhTranDau("PvP Hotseat");
         }
 
         private void btnCustom_Click(object sender, EventArgs e)

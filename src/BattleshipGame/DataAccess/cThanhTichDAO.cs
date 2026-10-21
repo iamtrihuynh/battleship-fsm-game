@@ -171,9 +171,25 @@ namespace BattleshipGame.DataAccess
                         if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                             Directory.CreateDirectory(dir);
 
+                        bool canXuongDong = false;
+                        if (File.Exists(path))
+                        {
+                            var fi = new FileInfo(path);
+                            if (fi.Length > 0)
+                            {
+                                using (var readFs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                                {
+                                    readFs.Seek(-1, SeekOrigin.End);
+                                    int lastByte = readFs.ReadByte();
+                                    if (lastByte != '\n') canXuongDong = true;
+                                }
+                            }
+                        }
+
                         using (FileStream fs = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Read))
                         using (StreamWriter sw = new StreamWriter(fs, _utf8))
                         {
+                            if (canXuongDong) sw.WriteLine();
                             sw.WriteLine(item.ToString());
                         }
                         return true;
@@ -203,18 +219,19 @@ namespace BattleshipGame.DataAccess
         public static List<ThanhTichItem> SapXep(List<ThanhTichItem> list, TieuChiSapXep tieuChi)
         {
             if (list == null) return new List<ThanhTichItem>();
+            var valid = list.Where(t => t != null);
 
             switch (tieuChi)
             {
                 case TieuChiSapXep.DiemCaoNhat:
-                    return list
+                    return valid
                         .OrderByDescending(t => t.DiemSo)
                         .ThenBy(t => t.ThoiGianGiay)
                         .ThenBy(t => t.SoLuotBan)
                         .ToList();
 
                 case TieuChiSapXep.ThoiGianNganNhat:
-                    return list
+                    return valid
                         .OrderByDescending(t => (t.KetQua != null && t.KetQua.IndexOf("Thắng", StringComparison.OrdinalIgnoreCase) >= 0) ? 1 : 0)
                         .ThenBy(t => t.ThoiGianGiay)
                         .ThenByDescending(t => t.DiemSo)
@@ -222,7 +239,7 @@ namespace BattleshipGame.DataAccess
                         .ToList();
 
                 case TieuChiSapXep.SoLuotItNhat:
-                    return list
+                    return valid
                         .OrderByDescending(t => (t.KetQua != null && t.KetQua.IndexOf("Thắng", StringComparison.OrdinalIgnoreCase) >= 0) ? 1 : 0)
                         .ThenBy(t => t.SoLuotBan)
                         .ThenByDescending(t => t.DiemSo)
@@ -230,7 +247,7 @@ namespace BattleshipGame.DataAccess
                         .ToList();
 
                 default:
-                    return list;
+                    return valid.ToList();
             }
         }
 
@@ -239,13 +256,17 @@ namespace BattleshipGame.DataAccess
         {
             if (list == null) return new List<ThanhTichItem>();
             if (string.IsNullOrWhiteSpace(cheDo) || cheDo.Equals("Tất cả", StringComparison.OrdinalIgnoreCase))
-                return list;
+                return list.Where(t => t != null).ToList();
+
+            bool isPvpFilter = cheDo.StartsWith("PvP", StringComparison.OrdinalIgnoreCase);
+            bool isPveFilter = cheDo.StartsWith("PvE", StringComparison.OrdinalIgnoreCase);
 
             return list
                 .Where(t => t != null && !string.IsNullOrEmpty(t.CheDo) &&
                             (t.CheDo.Equals(cheDo, StringComparison.OrdinalIgnoreCase) ||
                              t.CheDo.StartsWith(cheDo + " -", StringComparison.OrdinalIgnoreCase) ||
-                             (cheDo.Equals("PvE", StringComparison.OrdinalIgnoreCase) && t.CheDo.StartsWith("PvE", StringComparison.OrdinalIgnoreCase))))
+                             (isPveFilter && t.CheDo.StartsWith("PvE", StringComparison.OrdinalIgnoreCase)) ||
+                             (isPvpFilter && t.CheDo.StartsWith("PvP", StringComparison.OrdinalIgnoreCase))))
                 .ToList();
         }
     }

@@ -290,6 +290,51 @@ namespace BattleshipGame.Tests
                 cAmThanh.PhatDefeat();
                 Assert(cAmThanh.AmThanhVuaPhat == "defeat.wav" && !cAmThanh.DangPhatNhacNen,
                     "TC-35: Thất bại (Defeat) ngắt nhạc nền trận chiến và phát defeat.wav");
+
+                Console.WriteLine("\n--- PHẦN 4: VERIFY CÁC FIX CHO BUG REVIEW ---");
+
+                // Test 36: Rollback in DatTau
+                var banCoRollback = new cBanCo(10);
+                var tauRollback = banCoRollback.DanhSachTau[0]; // 5 o
+                bool datHopLe1 = banCoRollback.DatTau(tauRollback, new Point(0, 0), HuongTau.Ngang);
+                bool datLoiTranBien = banCoRollback.DatTau(tauRollback, new Point(8, 0), HuongTau.Ngang);
+                bool rollbackThanhCong = datHopLe1 && !datLoiTranBien &&
+                                         banCoRollback.MaTranO[0, 0].CoTau &&
+                                         banCoRollback.MaTranO[4, 0].CoTau &&
+                                         tauRollback.DaDatXong &&
+                                         tauRollback.DanhSachToaDo[0] == new Point(0, 0);
+                Assert(rollbackThanhCong, "TC-36: cBanCo.DatTau rollback giữ nguyên vị trí cũ khi vị trí mới vi phạm biên");
+
+                // Test 37: SapXep an toan voi phan tu null
+                var listCoNull = new List<ThanhTichItem>
+                {
+                    new ThanhTichItem(DateTime.Now, "PlayerA", 1000, 20, 100, "PvE", "Thắng"),
+                    null,
+                    new ThanhTichItem(DateTime.Now, "PlayerB", 1500, 15, 80, "PvE", "Thắng")
+                };
+                var listSapXepNull = cThanhTichDAO.SapXep(listCoNull, TieuChiSapXep.DiemCaoNhat);
+                bool sapXepAnToan = listSapXepNull != null && listSapXepNull.Count == 2 && listSapXepNull[0].DiemSo == 1500;
+                Assert(sapXepAnToan, "TC-37: cThanhTichDAO.SapXep an toàn và lọc bỏ phần tử null mà không ném ngoại lệ");
+
+                // Test 38: LocTheoCheDo khop PvP voi PvP Hotseat
+                var listPvp = new List<ThanhTichItem>
+                {
+                    new ThanhTichItem(DateTime.Now, "Pvp1", 1200, 25, 120, "PvP", "Thắng"),
+                    new ThanhTichItem(DateTime.Now, "Pvp2", 1300, 22, 110, "PvP Hotseat", "Thắng"),
+                    new ThanhTichItem(DateTime.Now, "Pve1", 1100, 30, 150, "PvE", "Thắng")
+                };
+                var locPvp = cThanhTichDAO.LocTheoCheDo(listPvp, "PvP Hotseat");
+                bool locPvpDung = locPvp.Count == 2;
+                Assert(locPvpDung, "TC-38: cThanhTichDAO.LocTheoCheDo khớp chính xác cả 'PvP' và 'PvP Hotseat'");
+
+                // Test 39: DangPhatNhacNen la false khi file audio khong ton tai
+                cAmThanh.DungNhacNen();
+                cAmThanh.PhatNhacNen("file_am_thanh_khong_ton_tai_xyz.wav");
+                Assert(!cAmThanh.DangPhatNhacNen, "TC-39: cAmThanh.DangPhatNhacNen là false khi file âm thanh không tồn tại");
+
+                // Test 40: LayDanhSachToaDo voi doDai <= 0 an toan
+                var dsToaDoAm = cBanCo.LayDanhSachToaDo(Point.Empty, -3, HuongTau.Ngang);
+                Assert(dsToaDoAm != null && dsToaDoAm.Count == 0, "TC-40: cBanCo.LayDanhSachToaDo trả về rỗng khi độ dài <= 0 không lỗi");
             }
             finally
             {

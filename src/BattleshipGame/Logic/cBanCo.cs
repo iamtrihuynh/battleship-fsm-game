@@ -89,6 +89,7 @@ namespace BattleshipGame.Logic
         /// </summary>
         public static List<Point> LayDanhSachToaDo(Point goc, int doDai, HuongTau huong)
         {
+            if (doDai <= 0) return new List<Point>();
             List<Point> list = new List<Point>(doDai);
             for (int i = 0; i < doDai; i++)
             {
@@ -132,11 +133,28 @@ namespace BattleshipGame.Logic
         {
             if (tau == null) return false;
 
-            // Neu tau da duoc dat truoc do o vi tri khac, go khoi vi tri cu
+            // Luu vi tri cu de rollback neu dat moi khong hop le
+            List<Point> viTriCu = new List<Point>(tau.DanhSachToaDo);
+            HuongTau huongCu = tau.Huong;
+            bool daDatTruocDo = tau.DaDatXong;
+
+            // Go tam khoi vi tri cu
             GoTau(tau);
 
             if (!KiemTraDatTauHopLe(tau, goc, huong))
+            {
+                // Phuc hoi lai vi tri cu neu truoc do tau da o tren ban co
+                if (daDatTruocDo && viTriCu.Count > 0)
+                {
+                    tau.GanToaDo(viTriCu, huongCu);
+                    foreach (Point p in viTriCu)
+                    {
+                        if (TrongPhamVi(p))
+                            MaTranO[p.X, p.Y].DatTau(tau);
+                    }
+                }
                 return false;
+            }
 
             List<Point> toaDo = LayDanhSachToaDo(goc, tau.KichThuoc, huong);
             tau.GanToaDo(toaDo, huong);

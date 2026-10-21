@@ -35,7 +35,26 @@ namespace BattleshipGame.Logic
 
                     if (Directory.Exists(path1)) _audioDir = path1;
                     else if (Directory.Exists(path2)) _audioDir = path2;
-                    else _audioDir = path1;
+                    else
+                    {
+                        string p = baseDir;
+                        bool timThay = false;
+                        for (int i = 0; i < 6; i++)
+                        {
+                            string candidate = Path.Combine(p, "src", "BattleshipGame", "Assets", "Audio");
+                            if (Directory.Exists(candidate))
+                            {
+                                _audioDir = Path.GetFullPath(candidate);
+                                timThay = true;
+                                break;
+                            }
+                            string parent = Path.GetDirectoryName(p);
+                            if (string.IsNullOrEmpty(parent) || parent == p) break;
+                            p = parent;
+                        }
+
+                        if (!timThay) _audioDir = path1;
+                    }
                 }
                 return _audioDir;
             }
@@ -45,6 +64,15 @@ namespace BattleshipGame.Logic
         public static void PhatNhacNen(string file = "bgm_battle.wav")
         {
             if (!DaBatAmThanh) return;
+
+            string ten = (file ?? "bgm_battle.wav").Replace("\"", "").Trim();
+            string path = Path.Combine(ThuMucAudio, ten);
+            if (!File.Exists(path))
+            {
+                DangPhatNhacNen = false;
+                return;
+            }
+
             DangPhatNhacNen = true;
 
             Task.Run(() =>
@@ -53,10 +81,6 @@ namespace BattleshipGame.Logic
                 {
                     try
                     {
-                        string ten = (file ?? "bgm_battle.wav").Replace("\"", "").Trim();
-                        string path = Path.Combine(ThuMucAudio, ten);
-                        if (!File.Exists(path)) return;
-
                         _currentBgm = ten;
                         mciSendString("close bgm", null, 0, IntPtr.Zero);
 
@@ -115,7 +139,7 @@ namespace BattleshipGame.Logic
                     try
                     {
                         SoundPlayer sp = new SoundPlayer(path);
-                        sp.LoadAsync();
+                        sp.Load();
                         _cache[ten] = sp;
                         return sp;
                     }
