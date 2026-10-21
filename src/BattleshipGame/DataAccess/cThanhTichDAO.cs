@@ -287,5 +287,22 @@ namespace BattleshipGame.DataAccess
                              (isPvpFilter && t.CheDo.StartsWith("PvP", StringComparison.OrdinalIgnoreCase))))
                 .ToList();
         }
+
+        /// <summary>
+        /// [NGÀY 4 - TV3] Hàm tính điểm tự động theo công thức Game Balance chuẩn:
+        /// Điểm = 1000 (Thắng) + (Số tàu còn sống * 200) - (Số phát bắn * 15) - (Thời gian giây * 2).
+        /// Kẹp biên an toàn trong khoảng [0, int.MaxValue] chống tràn số.
+        /// Thua trận mặc định 0 điểm.
+        /// </summary>
+        public static int TinhDiem(bool thang, int soTauConSong, int soPhatBan, int thoiGianGiay)
+        {
+            if (!thang) return 0;
+            long soTau = Math.Max(0, soTauConSong);
+            long phatBan = Math.Max(0, soPhatBan);
+            long giay = Math.Max(0, thoiGianGiay);
+
+            long diem = 1000L + (soTau * 200L) - (phatBan * 15L) - (giay * 2L);
+            return (int)Math.Max(0L, Math.Min((long)int.MaxValue, diem));
+        }
     }
 }

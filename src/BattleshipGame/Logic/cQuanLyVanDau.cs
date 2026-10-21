@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using BattleshipGame.DataAccess;
 using BattleshipGame.Models;
 
 namespace BattleshipGame.Logic
@@ -139,10 +140,8 @@ namespace BattleshipGame.Logic
         public int TinhDiemNguoi1()
         {
             if (NguoiThang != 1) return 0;
-
             int soTauConSong = BanCoNguoi1.DanhSachTau.Count(t => !t.DaChim);
-            long tinhDiem = 1000L + (soTauConSong * 200L) - (SoPhatBanNguoi1 * 15L) - (ThoiGianGiay * 2L);
-            return (int)Math.Max(0L, Math.Min((long)int.MaxValue, tinhDiem));
+            return cThanhTichDAO.TinhDiem(true, soTauConSong, SoPhatBanNguoi1, ThoiGianGiay);
         }
 
         public void TamDungHoacTiepTuc()

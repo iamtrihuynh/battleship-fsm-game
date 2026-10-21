@@ -529,6 +529,23 @@ namespace BattleshipGame.Tests
                 var kqP2 = qlPvp.Nguoi2Ban(new Point(5, 5), out _);
                 Assert(kqP2 == KetQuaBan.Hit && qlPvp.LuotNguoiChoi == 2 && tP1.SoOBiBan == 1,
                     "TC-64b: PvP Hotseat: Người 2 bắn trúng tàu Người 1 và được giữ lượt bắn tiếp");
+
+                // Test 65: cThanhTichDAO.TinhDiem() tinh diem chuan cong thuc khi chien thang
+                // 1000 + (5 * 200) - (20 * 15) - (50 * 2) = 1000 + 1000 - 300 - 100 = 1600
+                int diemThang = cThanhTichDAO.TinhDiem(true, 5, 20, 50);
+                Assert(diemThang == 1600,
+                    "TC-65: cThanhTichDAO.TinhDiem() tính chuẩn điểm chiến thắng (1600)");
+
+                // Test 66: cThanhTichDAO.TinhDiem() tra ve 0 khi that bai
+                int diemThua = cThanhTichDAO.TinhDiem(false, 3, 20, 50);
+                Assert(diemThua == 0,
+                    "TC-66: cThanhTichDAO.TinhDiem() trả về 0 khi thất bại");
+
+                // Test 67: cThanhTichDAO.TinhDiem() kep bien 0 khong bao gio tra ve so am
+                // 1000 + (0 * 200) - (100 * 15) - (1000 * 2) = 1000 - 1500 - 2000 = -2500 -> 0
+                int diemAm = cThanhTichDAO.TinhDiem(true, 0, 100, 1000);
+                Assert(diemAm == 0,
+                    "TC-67: cThanhTichDAO.TinhDiem() kẹp biên [0, int.MaxValue] chống tràn số âm");
             }
             finally
             {

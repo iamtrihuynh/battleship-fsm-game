@@ -4,7 +4,7 @@
 > **Ngôn ngữ & Nền tảng:** C# (.NET 8.0 - Windows Forms)  
 > **Kiến trúc:** 3-Tier Layered Architecture (Models - Logic/DataAccess - Views)  
 > **Trạng thái biên dịch:** `Build Succeeded - 0 Error, 0 Warning`  
-> **Kiểm thử tự động:** `65/65 Test Cases PASSED (100%)`
+> **Kiểm thử tự động:** `68/68 Test Cases PASSED (100%)`
 
 ---
 
@@ -15,7 +15,7 @@
 | **Ngày 1** | Thiết lập Solution, Mô hình Dữ liệu (Models), Khung Form & Tài nguyên | **DONE** |
 | **Ngày 2** | Thuật toán Xếp tàu, Ma trận 100 Button động & Hệ thống Âm thanh | **DONE** |
 | **Ngày 3** | Trí tuệ Nhân tạo Bot AI (FSM Hunt & Target), Đồ họa Phát bắn & DAO | **DONE** |
-| **Ngày 4** | Quản lý ván đấu, Đếm ngược 30s, Thưởng lượt & Màn che PvP Hotseat | **DONE** (TV1 & TV3 DONE, TV2 In Progress) |
+| **Ngày 4** | Quản lý ván đấu, Đếm ngược 30s, Thưởng lượt & Màn che PvP Hotseat | **DONE** (TV1 & TV3 DONE, TV2 Ngày mai làm) |
 | **Ngày 5** | Bẫy lỗi toàn diện (Exception Handling), Kỹ năng đặc biệt & Tối ưu UX | **DONE** |
 | **Ngày 6** | Kiểm thử chéo (Cross-Testing), Ma trận Test Case & Viết Báo cáo Word | **NOT DONE** |
 | **Ngày 7** | Build Release, Thiết kế Slide báo cáo, Quay Video Demo & Đóng gói | **NOT DONE** |
@@ -76,10 +76,10 @@
 | **Trí (TV1)** | Điều kiện kết thúc trận khi chìm toàn bộ 5 tàu (17 ô) | `Views/frmBanTau.cs` | **DONE** |
 | **Trí (TV1)** | Bộ đếm giờ ván đấu (`tmrMatch`) và đếm ngược 30s mỗi lượt (`tmrTurnCountdown`) | `Views/frmBanTau.cs` | **DONE** |
 | **Trí (TV1)** | Tách lớp quản lý điều phối ván đấu độc lập `cQuanLyVanDau.cs` (FSM + TinhDiem) | `Logic/cQuanLyVanDau.cs` | **DONE** |
-| **Hưng (TV2)** | Hoàn thiện luồng đổi lượt PvP Hotseat (đổi giao diện bàn cờ 2 người chơi) | `Views/frmBanTau.cs` | **IN PROGRESS** |
+| **Hưng (TV2)** | Hoàn thiện luồng đổi lượt PvP Hotseat (đổi giao diện bàn cờ 2 người chơi) | `Views/frmBanTau.cs` | **IN PROGRESS** (Ngày mai làm) |
 | **Hưng (TV2)** | Form Hướng dẫn & Giới thiệu thành viên nhóm (`frmAbout.cs`) | `Views/frmAbout.cs` | **DONE** |
-| **Hòa (TV3)** | Viết công thức tính điểm chuẩn kết thúc trận đấu | `Views/frmBanTau.cs` | **DONE** |
-| **Hòa (TV3)** | Đấu nối kết thúc trận tự động ghi dữ liệu vào `thanhtichs.txt` | `DataAccess/` | **DONE** |
+| **Hòa (TV3)** | Viết công thức tính điểm chuẩn kết thúc trận đấu (`cThanhTichDAO.TinhDiem`) | `DataAccess/cThanhTichDAO.cs` | **DONE** |
+| **Hòa (TV3)** | Hộp thoại nhập tên ghi danh (`HienThiHopThoaiNhapTen`) & tự động lưu `thanhtichs.txt` | `Views/frmBanTau.cs` | **DONE** |
 
 ---
 
@@ -102,7 +102,7 @@
 
 | Thành viên | Nhiệm vụ chi tiết | Trạng thái |
 | :--- | :--- | :---: |
-| **Cả nhóm** | Chạy kiểm thử tự động toàn diện và test tay trên Windows 10/11 | **DONE** (54 Test Cases) |
+| **Cả nhóm** | Chạy kiểm thử tự động toàn diện và test tay trên Windows 10/11 | **DONE** (68 Test Cases) |
 | **Trí (TV1)** | Viết phần báo cáo: Mô hình lớp (Class Diagram), FSM & Thuật toán AI | **NOT DONE** |
 | **Hưng (TV2)** | Viết phần báo cáo: Kiến trúc WinForms, Sơ đồ Use Case & Luồng giao diện | **NOT DONE** |
 | **Hòa (TV3)** | Viết phần báo cáo: Cấu trúc lưu trữ dữ liệu, Bẫy lỗi I/O & Thống kê | **NOT DONE** |

@@ -1082,6 +1082,93 @@ namespace BattleshipGame.Views
             }
         }
 
+        /// <summary>
+        /// [NGÀY 4 - TV3] Hộp thoại nhập tên người chơi khi kết thúc ván đấu để ghi danh bảng vàng
+        /// </summary>
+        private string HienThiHopThoaiNhapTen(string tenMacDinh, int diem, bool thang)
+        {
+            try
+            {
+                using var dlg = new Form();
+                dlg.Text = thang ? "🎖️ Ghi Danh Bảng Vàng" : "☠️ Báo Cáo Chiến Sự";
+                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.MaximizeBox = false;
+                dlg.MinimizeBox = false;
+                dlg.ShowInTaskbar = false;
+                dlg.ClientSize = new Size(420, 200);
+                dlg.BackColor = UITheme.BackgroundDark;
+                dlg.ForeColor = UITheme.TextPrimary;
+
+                var lblPrompt = new Label
+                {
+                    Text = thang 
+                        ? $"🎉 Chiến thắng oanh liệt! Điểm số: {diem:N0}\nXin mời Đô đốc nhập tên để lưu vào Bảng kỷ lục:" 
+                        : $"☠️ Hạm đội đã thất bại! Hãy nhập tên để ghi nhận kết quả:",
+                    Location = new Point(20, 20),
+                    Size = new Size(380, 45),
+                    Font = new Font("Segoe UI", 10f, FontStyle.Regular),
+                    ForeColor = thang ? UITheme.AccentNeon : UITheme.DangerRed
+                };
+                dlg.Controls.Add(lblPrompt);
+
+                var txtName = new TextBox
+                {
+                    Text = tenMacDinh,
+                    Location = new Point(24, 75),
+                    Size = new Size(372, 28),
+                    Font = new Font("Segoe UI", 11f, FontStyle.Bold),
+                    BackColor = UITheme.PanelBackground,
+                    ForeColor = Color.White,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    MaxLength = 40
+                };
+                txtName.SelectAll();
+                dlg.Controls.Add(txtName);
+
+                var btnOk = new Button
+                {
+                    Text = "💾 Lưu Thành Tích",
+                    DialogResult = DialogResult.OK,
+                    Location = new Point(140, 130),
+                    Size = new Size(130, 38),
+                    FlatStyle = FlatStyle.Flat,
+                    BackColor = UITheme.PrimaryCyan,
+                    ForeColor = Color.White,
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                    Cursor = Cursors.Hand
+                };
+                btnOk.FlatAppearance.BorderSize = 0;
+                dlg.Controls.Add(btnOk);
+
+                var btnCancel = new Button
+                {
+                    Text = "Bỏ qua",
+                    DialogResult = DialogResult.Cancel,
+                    Location = new Point(280, 130),
+                    Size = new Size(116, 38),
+                    FlatStyle = FlatStyle.Flat,
+                    BackColor = UITheme.PanelBackground,
+                    ForeColor = UITheme.MissGray,
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Regular),
+                    Cursor = Cursors.Hand
+                };
+                btnCancel.FlatAppearance.BorderColor = UITheme.BorderDefault;
+                dlg.Controls.Add(btnCancel);
+
+                dlg.AcceptButton = btnOk;
+                dlg.CancelButton = btnCancel;
+
+                var res = dlg.ShowDialog(this);
+                if (res == DialogResult.OK && !string.IsNullOrWhiteSpace(txtName.Text))
+                {
+                    return txtName.Text.Trim();
+                }
+            }
+            catch { }
+            return tenMacDinh;
+        }
+
         private void XuLyKetThucTran(bool nguoiChoiThang)
         {
             if (_tranDauKetThuc) return;
@@ -1094,11 +1181,11 @@ namespace BattleshipGame.Views
             pnlCombatControls.Enabled = false;
 
             int soTauConSong = _banCoTa.DanhSachTau.Count(t => !t.DaChim);
-            long tinhDiem = 1000L + (soTauConSong * 200L) - (_tongPhatBan * 15L) - (_matchSeconds * 2L);
-            int diem = nguoiChoiThang ? (int)Math.Max(0L, Math.Min((long)int.MaxValue, tinhDiem)) : 0;
+            // [NGÀY 4 - TV3] Tinh diem tu dong theo cong thuc Game Balance chuan
+            int diem = cThanhTichDAO.TinhDiem(nguoiChoiThang, soTauConSong, _tongPhatBan, _matchSeconds);
             string ketQua = nguoiChoiThang ? "Thắng" : "Thua";
 
-            string tenNguoiChoi = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
+            string tenMacDinh = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
                 ? $"Người Chơi {_nguoiChoiHienTai}"
                 : "Thuyền Trưởng";
 
@@ -1120,7 +1207,10 @@ namespace BattleshipGame.Views
                 lblTurnMessage.Text = "Hạm đội của bạn đã chìm hoàn toàn. Bạn đã thất bại!";
             }
 
-            // Luu ket qua tran dau vao thanhtichs.txt va kiem tra ket qua
+            // [NGÀY 4 - TV3] Bật hộp thoại nhập tên người chơi để ghi danh
+            string tenNguoiChoi = HienThiHopThoaiNhapTen(tenMacDinh, diem, nguoiChoiThang);
+
+            // [NGÀY 4 - TV3] Luu ket qua tran dau vao thanhtichs.txt va kiem tra ket qua
             bool luuOk = cThanhTichDAO.LuuThanhTich(tenNguoiChoi, diem, _tongPhatBan, _matchSeconds, _cheDoChoi, ketQua);
             string thongBaoLuu = luuOk
                 ? "Thành tích đã được lưu vào hệ thống!"
@@ -1132,7 +1222,7 @@ namespace BattleshipGame.Views
 
             MessageBox.Show(
                 nguoiChoiThang
-                    ? $"{thongBaoTieuDe}\n\nSố lượt bắn: {_tongPhatBan}\nThời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\nĐiểm số: {diem:N0}\n\n{thongBaoLuu}"
+                    ? $"{thongBaoTieuDe}\n\nThuyền trưởng: {tenNguoiChoi}\nSố lượt bắn: {_tongPhatBan}\nThời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\nĐiểm số: {diem:N0}\n\n{thongBaoLuu}"
                     : $"☠️ TRẬN ĐẤU KẾT THÚC!\nHạm đội ta đã bị đối phương bắn chìm hoàn toàn.\n\n{thongBaoLuu}",
                 nguoiChoiThang ? "Chiến Thắng" : "Thất Bại",
                 MessageBoxButtons.OK,
