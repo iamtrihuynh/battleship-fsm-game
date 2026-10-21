@@ -504,6 +504,31 @@ namespace BattleshipGame.Tests
                 cAmThanh.BatTatAmThanh();
                 Assert(cAmThanh.DaBatAmThanh,
                     "TC-62: cAmThanh.BatTatAmThanh() bảo toàn trạng thái âm thanh an toàn");
+
+                // Test 63: DungNhacNen() don sach bien nho BGM, bat tat am thanh khong phat sinh nhac tran dau ngoai menu
+                cAmThanh.DungNhacNen();
+                bool toggleKetQua = cAmThanh.BatTatAmThanh(); // Tat
+                toggleKetQua = cAmThanh.BatTatAmThanh(); // Bat lai
+                Assert(!cAmThanh.DangPhatNhacNen,
+                    "TC-63: cAmThanh.DungNhacNen() xóa _currentBgm, bật lại âm thanh không tự ý phát nhạc chiến đấu");
+
+                // Test 64: Che do PvP Hotseat ban doc lap 2 ban co giua Nguoi 1 va Nguoi 2
+                var qlPvp = new cQuanLyVanDau(CheDoChoi.PvP_Hotseat);
+                qlPvp.BatDauTranDau();
+                var tP2 = qlPvp.BanCoNguoi2.DanhSachTau[0]; // Tau Nguoi 2
+                qlPvp.BanCoNguoi2.DatTau(tP2, new Point(0, 0), HuongTau.Ngang);
+                var tP1 = qlPvp.BanCoNguoi1.DanhSachTau[0]; // Tau Nguoi 1
+                qlPvp.BanCoNguoi1.DatTau(tP1, new Point(5, 5), HuongTau.Ngang);
+
+                // Nguoi 1 ban vao o nuoc cua Nguoi 2 (0, 9) -> Miss -> chuyen luot sang Nguoi 2
+                var kqP1 = qlPvp.Nguoi1Ban(new Point(0, 9), out _);
+                Assert(kqP1 == KetQuaBan.Miss && qlPvp.LuotNguoiChoi == 2,
+                    "TC-64a: PvP Hotseat: Người 1 bắn trượt chuyển lượt sang Người 2");
+
+                // Nguoi 2 ban vao toa do tau cua Nguoi 1 (5, 5) -> Hit -> Nguoi 2 giu luot
+                var kqP2 = qlPvp.Nguoi2Ban(new Point(5, 5), out _);
+                Assert(kqP2 == KetQuaBan.Hit && qlPvp.LuotNguoiChoi == 2 && tP1.SoOBiBan == 1,
+                    "TC-64b: PvP Hotseat: Người 2 bắn trúng tàu Người 1 và được giữ lượt bắn tiếp");
             }
             finally
             {

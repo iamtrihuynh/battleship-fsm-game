@@ -105,6 +105,7 @@ namespace BattleshipGame.Logic
         public static void DungNhacNen()
         {
             DangPhatNhacNen = false;
+            _currentBgm = null;
             SoLanDungNhacNen++;
 
             Task.Run(() =>

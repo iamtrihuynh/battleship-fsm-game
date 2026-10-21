@@ -53,6 +53,19 @@ namespace BattleshipGame.Views
         private readonly int[,] _maTranDoiNha = new int[10, 10];
         // Ma trận radar (0: Chưa bắn, 2: Trúng, 3: Trượt)
         private readonly int[,] _maTranRadar = new int[10, 10];
+        private readonly int[,] _maTranRadarP2 = new int[10, 10];
+
+        private int[,] MaTranRadarHienTai => (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
+            ? _maTranRadarP2
+            : _maTranRadar;
+
+        private cBanCo BanCoMucTieuHienTai => (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
+            ? _banCoTa
+            : _banCoDoiThu;
+
+        private cBanCo BanCoDoiNhaHienTai => (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
+            ? _banCoDoiThu
+            : _banCoTa;
 
         // Mảng 2 chiều chứa 100 Button giao diện cho mỗi bàn cờ
         private readonly Button[,] _btnPlayerGrid = new Button[10, 10];
@@ -303,6 +316,116 @@ namespace BattleshipGame.Views
                 }
             }
             XuLyDoHoa_TauChim(buttons);
+        }
+
+        public void XuLyDoHoa_ONuoc(Button btn)
+        {
+            if (btn == null) return;
+            btn.BackColor = UITheme.WaterCell;
+            btn.FlatAppearance.BorderColor = UITheme.BorderDefault;
+            btn.FlatAppearance.BorderSize = 1;
+            btn.ForeColor = Color.White;
+            btn.Text = "";
+            btn.Cursor = Cursors.Hand;
+        }
+
+        public void XuLyDoHoa_OTau(Button btn)
+        {
+            if (btn == null) return;
+            btn.BackColor = UITheme.ShipCell;
+            btn.FlatAppearance.BorderColor = UITheme.PrimaryCyan;
+            btn.FlatAppearance.BorderSize = 1;
+            btn.ForeColor = Color.White;
+            btn.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
+            btn.Text = "⚓";
+            btn.Cursor = Cursors.Default;
+        }
+
+        /// <summary>
+        /// Đồng bộ giao diện 2 bàn cờ (Đội nhà và Radar) theo lượt chơi của Người chơi 1 hoặc 2 trong chế độ PvP Hotseat
+        /// </summary>
+        public void DongBoGiaoDienTheoLuotChoi()
+        {
+            if (!_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)) return;
+
+            cBanCo banCoNha = BanCoDoiNhaHienTai;
+            cBanCo banCoDich = BanCoMucTieuHienTai;
+            int[,] radar = MaTranRadarHienTai;
+
+            lblLeftBoardTitle.Text = $"BÀN CỜ ĐỘI NHÀ (NGƯỜI CHƠI {_nguoiChoiHienTai})";
+            lblRightBoardTitle.Text = $"RADAR TÁC CHIẾN (ĐỐI THỦ: NGƯỜI CHƠI {(_nguoiChoiHienTai == 1 ? 2 : 1)})";
+
+            // Đồng bộ bàn cờ đội nhà bên trái
+            for (int r = 0; r < 10; r++)
+            {
+                for (int c = 0; c < 10; c++)
+                {
+                    Button btn = _btnPlayerGrid[r, c];
+                    cO o = banCoNha.MaTranO[c, r];
+
+                    if (o.TrangThai == TrangThaiO.Sunk)
+                    {
+                        btn.BackColor = UITheme.SunkAshBackground;
+                        btn.FlatAppearance.BorderColor = UITheme.SunkThickBorder;
+                        btn.FlatAppearance.BorderSize = UITheme.SunkBorderThickness;
+                        btn.ForeColor = UITheme.SunkAshText;
+                        btn.Font = new Font("Segoe UI", 12f, FontStyle.Bold);
+                        btn.Text = "X";
+                    }
+                    else if (o.TrangThai == TrangThaiO.Hit)
+                    {
+                        XuLyDoHoa_OTrung(btn);
+                    }
+                    else if (o.TrangThai == TrangThaiO.Miss)
+                    {
+                        XuLyDoHoa_OTruot(btn);
+                    }
+                    else if (o.CoTau)
+                    {
+                        XuLyDoHoa_OTau(btn);
+                    }
+                    else
+                    {
+                        XuLyDoHoa_ONuoc(btn);
+                    }
+                }
+            }
+
+            // Đồng bộ bàn cờ radar bên phải
+            for (int r = 0; r < 10; r++)
+            {
+                for (int c = 0; c < 10; c++)
+                {
+                    Button btn = _btnRadarGrid[r, c];
+                    int st = radar[r, c];
+
+                    if (st == 2) // Trúng
+                    {
+                        cO oDich = banCoDich.MaTranO[c, r];
+                        if (oDich.TrangThai == TrangThaiO.Sunk)
+                        {
+                            btn.BackColor = UITheme.SunkAshBackground;
+                            btn.FlatAppearance.BorderColor = UITheme.SunkThickBorder;
+                            btn.FlatAppearance.BorderSize = UITheme.SunkBorderThickness;
+                            btn.ForeColor = UITheme.SunkAshText;
+                            btn.Font = new Font("Segoe UI", 12f, FontStyle.Bold);
+                            btn.Text = "X";
+                        }
+                        else
+                        {
+                            XuLyDoHoa_OTrung(btn);
+                        }
+                    }
+                    else if (st == 3) // Trượt
+                    {
+                        XuLyDoHoa_OTruot(btn);
+                    }
+                    else
+                    {
+                        XuLyDoHoa_ONuoc(btn);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -751,6 +874,7 @@ namespace BattleshipGame.Views
                 ? $"LƯỢT: NGƯỜI CHƠI {_nguoiChoiHienTai} KHAI HỎA"
                 : "LƯỢT: BẠN KHAI HỎA";
             lblTurnIndicator.ForeColor = UITheme.AccentNeon;
+            DongBoGiaoDienTheoLuotChoi();
             lblTurnMessage.Text = "Click ô trên Radar đối phương để khai hỏa!";
             lblTurnMessage.ForeColor = UITheme.AccentNeon;
 
@@ -815,7 +939,7 @@ namespace BattleshipGame.Views
                 return;
             }
 
-            if (_maTranRadar[row, col] != 0)
+            if (MaTranRadarHienTai[row, col] != 0)
             {
                 lblTurnMessage.Text = $"⚠️ Tọa độ {((char)('A' + row))}{col + 1} đã được bắn trước đó! Hãy chọn tọa độ khác.";
                 lblTurnMessage.ForeColor = UITheme.DangerRed;
@@ -832,12 +956,12 @@ namespace BattleshipGame.Views
                 cAmThanh.PhatShot();
 
                 // Tiep nhan phat ban thuc su tu ban co doi thu
-                KetQuaBan kq = _banCoDoiThu.TiepNhanPhatBan(new Point(col, row), out cTau tauBiBan);
+                KetQuaBan kq = BanCoMucTieuHienTai.TiepNhanPhatBan(new Point(col, row), out cTau tauBiBan);
 
                 if (kq == KetQuaBan.Hit)
                 {
                     _soPhatTrung++;
-                    _maTranRadar[row, col] = 2; // Trúng
+                    MaTranRadarHienTai[row, col] = 2; // Trúng
                     XuLyDoHoa_OTrung(btn);
 
                     cAmThanh.PhatHit();
@@ -848,7 +972,7 @@ namespace BattleshipGame.Views
                 else if (kq == KetQuaBan.Sunk)
                 {
                     _soPhatTrung++;
-                    _maTranRadar[row, col] = 2;
+                    MaTranRadarHienTai[row, col] = 2;
                     XuLyDoHoa_OTrung(btn);
 
                     // Cập nhật toàn bộ ô của con tàu đã chìm sang màu tro tàn (#374151) và viền đậm 2px (#991B1B) chuẩn Ngày 3
@@ -871,7 +995,7 @@ namespace BattleshipGame.Views
                     lblTurnMessage.ForeColor = UITheme.HitFireBackground;
 
                     // Kiem tra chien thang
-                    if (_banCoDoiThu.TatCaTauDaChim)
+                    if (BanCoMucTieuHienTai.TatCaTauDaChim)
                     {
                         XuLyKetThucTran(true);
                         return;
@@ -879,7 +1003,7 @@ namespace BattleshipGame.Views
                 }
                 else // Miss
                 {
-                    _maTranRadar[row, col] = 3; // Trượt
+                    MaTranRadarHienTai[row, col] = 3; // Trượt
                     XuLyDoHoa_OTruot(btn);
 
                     cAmThanh.PhatMiss();
@@ -1159,7 +1283,7 @@ namespace BattleshipGame.Views
                 {
                     if (c >= 0 && c < 10 && r >= 0 && r < 10)
                     {
-                        if (_banCoDoiThu.MaTranO[c, r].CoTau)
+                        if (BanCoMucTieuHienTai.MaTranO[c, r].CoTau)
                         {
                             soOTauPhatHien++;
                         }
@@ -1206,24 +1330,24 @@ namespace BattleshipGame.Views
                 {
                     if (pt.X >= 0 && pt.X < 10 && pt.Y >= 0 && pt.Y < 10)
                     {
-                        if (_maTranRadar[pt.Y, pt.X] == 0)
+                        if (MaTranRadarHienTai[pt.Y, pt.X] == 0)
                         {
                             _tongPhatBan++;
-                            KetQuaBan kq = _banCoDoiThu.TiepNhanPhatBan(pt, out cTau tauBiBan);
+                            KetQuaBan kq = BanCoMucTieuHienTai.TiepNhanPhatBan(pt, out cTau tauBiBan);
                             var b = _btnRadarGrid[pt.Y, pt.X];
 
                             if (kq == KetQuaBan.Hit)
                             {
                                 _soPhatTrung++;
                                 soPhatTrungPhao++;
-                                _maTranRadar[pt.Y, pt.X] = 2;
+                                MaTranRadarHienTai[pt.Y, pt.X] = 2;
                                 XuLyDoHoa_OTrung(b);
                             }
                             else if (kq == KetQuaBan.Sunk)
                             {
                                 _soPhatTrung++;
                                 soPhatTrungPhao++;
-                                _maTranRadar[pt.Y, pt.X] = 2;
+                                MaTranRadarHienTai[pt.Y, pt.X] = 2;
                                 XuLyDoHoa_OTrung(b);
 
                                 if (tauBiBan != null)
@@ -1241,7 +1365,7 @@ namespace BattleshipGame.Views
                             }
                             else
                             {
-                                _maTranRadar[pt.Y, pt.X] = 3;
+                                MaTranRadarHienTai[pt.Y, pt.X] = 3;
                                 XuLyDoHoa_OTruot(b);
                             }
                         }
@@ -1255,7 +1379,7 @@ namespace BattleshipGame.Views
                 lblTurnMessage.Text = $"💥 Pháo kích diện rộng hoàn tất! Đánh trúng {soPhatTrungPhao} mục tiêu.";
                 lblTurnMessage.ForeColor = UITheme.DangerRed;
 
-                if (_banCoDoiThu.TatCaTauDaChim)
+                if (BanCoMucTieuHienTai.TatCaTauDaChim)
                 {
                     XuLyKetThucTran(true);
                 }
@@ -1325,6 +1449,7 @@ namespace BattleshipGame.Views
             lblTurnIndicator.Text = $"LƯỢT: NGƯỜI CHƠI {_nguoiChoiHienTai} KHAI HỎA";
             lblTurnMessage.Text = $"Đến lượt Người chơi {_nguoiChoiHienTai}! Hãy chọn tọa độ trên radar.";
             lblTurnMessage.ForeColor = UITheme.AccentNeon;
+            DongBoGiaoDienTheoLuotChoi();
         }
 
         private void tmrMatch_Tick(object? sender, EventArgs e)
