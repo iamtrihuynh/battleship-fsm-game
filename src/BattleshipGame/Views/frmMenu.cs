@@ -13,7 +13,6 @@ namespace BattleshipGame.Views
     /// </summary>
     public partial class frmMenu : Form
     {
-        private bool _amThanhBat = true;
 
         public frmMenu()
         {

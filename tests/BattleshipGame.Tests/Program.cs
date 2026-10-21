@@ -362,6 +362,70 @@ namespace BattleshipGame.Tests
                 banCoReset.XoaTatCaTau();
                 bool sachBanCo = banCoReset.MaTranO.Cast<cO>().All(o => !o.CoTau && o.TrangThai == TrangThaiO.Empty);
                 Assert(sachBanCo && !banCoReset.TatCaTauDaDatXong, "TC-44: cBanCo.XoaTatCaTau làm sạch 100% các ô trên ma trận");
+
+                Console.WriteLine("\n--- PHẦN 5: MEMBER 1 - NGÀY 3 (FSM Bot AI: Hunt Parity & Target Mode) ---");
+
+                // Test 45: Bot AI che do Kho chon o so le (Parity Hunt)
+                var botKho = new cMayBanAI(DoKhoAI.Kho, 10);
+                bool tatCaSoLe = true;
+                for (int i = 0; i < 20; i++)
+                {
+                    Point p = botKho.ChonToaDoBan();
+                    if ((p.X + p.Y) % 2 != 0) { tatCaSoLe = false; break; }
+                    botKho.CapNhatKetQua(p, KetQuaBan.Miss);
+                }
+                Assert(tatCaSoLe, "TC-45: Bot AI chế độ Khó (Hunt) luôn chọn tọa độ so le chẵn lẻ (X + Y) % 2 == 0");
+
+                // Test 46: Chuyen sang Target Mode khi ban trung phat dau
+                var botTarget = new cMayBanAI(DoKhoAI.Kho, 10);
+                Point hit1 = new Point(4, 4);
+                botTarget.CapNhatKetQua(hit1, KetQuaBan.Hit);
+                Assert(botTarget.TrangThai == TrangThaiAI.Target, "TC-46: Bot AI chuyển sang Target Mode ngay khi bắn trúng phát đầu");
+
+                // Test 47: Khoa truc thang hang khi trung phat thu 2
+                Point hit2 = new Point(5, 4); // Trung theo truc Ngang (Y = 4)
+                botTarget.CapNhatKetQua(hit2, KetQuaBan.Hit);
+                Point nextShot = botTarget.ChonToaDoBan();
+                bool khoaTrucNgang = (nextShot.Y == 4); // Phai ban tiep theo truc ngang
+                Assert(khoaTrucNgang, "TC-47: Bot AI khóa trục ngang khi trúng phát thứ 2 và ưu tiên bắn thẳng hàng");
+
+                // Test 48: Quay lai Hunt Mode khi tau chim
+                botTarget.CapNhatKetQua(nextShot, KetQuaBan.Sunk);
+                Assert(botTarget.TrangThai == TrangThaiAI.Hunt, "TC-48: Bot AI dọn hàng đợi và quay lại Hunt Mode khi tàu chìm hoàn toàn");
+                Console.WriteLine("\n--- PHAN 6: MEMBER 1 - NGAY 4 (Game Manager cQuanLyVanDau & Scoring Formula) ---");
+
+                // Test 49: Khoi tao cQuanLyVanDau va bat dau tran dau
+                var ql = new cQuanLyVanDau(CheDoChoi.PvE_Kho);
+                Assert(ql.TrangThai == TrangThaiVanDau.ChuanBi && ql.LuotNguoiChoi == 1,
+                    "TC-49: cQuanLyVanDau khoi tao o trang thai ChuanBi va luot Nguoi choi 1");
+
+                ql.BatDauTranDau();
+                Assert(ql.TrangThai == TrangThaiVanDau.DangChoi && ql.SoPhatBanNguoi1 == 0,
+                    "TC-50: BatDauTranDau() chuyen FSM sang DangChoi va reset bo dem");
+
+                // Test 51: Chuyen luot ban giua Nguoi 1 va May
+                ql.BanCoNguoi2.TuDongSinhBanCoNgauNhien();
+                ql.BanCoNguoi1.TuDongSinhBanCoNgauNhien();
+                var kqBan1 = ql.Nguoi1Ban(0, 0, out _);
+                Assert(ql.LuotNguoiChoi == 2 && ql.SoPhatBanNguoi1 == 1,
+                    "TC-51: Nguoi 1 ban hop le chuyen luot sang Nguoi 2 / May va tang SoPhatBanNguoi1");
+
+                // Test 52: May ban nuoc tiep theo
+                var kqMay = ql.MayBanNuocTiepTheo(out Point toaDoMay, out _);
+                Assert(ql.LuotNguoiChoi == 1 && ql.SoPhatBanNguoi2 == 1 && toaDoMay.X >= 0,
+                    "TC-52: MayBanNuocTiepTheo() thuc hien phat ban, tang SoPhatBanNguoi2 va tra luot ve Nguoi 1");
+
+                // Test 53: Dau hang ket thuc tran dau
+                ql.DauHang(2); // May/Nguoi 2 dau hang -> Nguoi 1 thang
+                Assert(ql.TrangThai == TrangThaiVanDau.KetThuc && ql.NguoiThang == 1,
+                    "TC-53: DauHang(2) ket thuc tran dau va ghi nhan Nguoi 1 chien thang");
+
+                // Test 54: Tinh diem chuan xac theo cong thuc
+                ql.ThoiGianGiay = 90;
+                int diemThucTe = ql.TinhDiemNguoi1();
+                int diemDuKien = Math.Max(0, 1000 + (5 * 200) - (ql.SoPhatBanNguoi1 * 15) - (90 * 2));
+                Assert(diemThucTe == diemDuKien,
+                    $"TC-54: TinhDiemNguoi1() tinh chinh xac theo cong thuc Game Balance ({diemThucTe} diem)");
             }
             finally
             {
