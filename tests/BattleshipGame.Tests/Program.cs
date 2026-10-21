@@ -546,6 +546,34 @@ namespace BattleshipGame.Tests
                 int diemAm = cThanhTichDAO.TinhDiem(true, 0, 100, 1000);
                 Assert(diemAm == 0,
                     "TC-67: cThanhTichDAO.TinhDiem() kẹp biên [0, int.MaxValue] chống tràn số âm");
+
+                // Test 68: cMayBanAI khoa truc thong minh khi ban trung 2 tau ke sat nhau
+                var botClustered = new cMayBanAI(DoKhoAI.Kho, 10);
+                botClustered.CapNhatKetQua(new Point(3, 3), KetQuaBan.Hit);
+                botClustered.CapNhatKetQua(new Point(3, 4), KetQuaBan.Hit); // Tau 2 cham canh duoi
+                botClustered.CapNhatKetQua(new Point(4, 3), KetQuaBan.Hit); // Tau 1 tiep tuc trung phat 2 tren truc Y = 3
+                Point clusteredNextShot = botClustered.ChonToaDoBan();
+                Assert(clusteredNextShot.Y == 3 && (clusteredNextShot.X == 2 || clusteredNextShot.X == 5),
+                    "TC-68: cMayBanAI khóa trục chính xác theo nhóm thẳng hàng khi 2 tàu chạm nhau");
+
+                // Test 69: cThanhTichDAO.TinhDiem() voi day du 5 tau song sot cho nguoi chien thang
+                // 1000 + (5 * 200) - (17 * 15) - (60 * 2) = 1000 + 1000 - 255 - 120 = 1625
+                int diemFullFleet = cThanhTichDAO.TinhDiem(true, 5, 17, 60);
+                Assert(diemFullFleet == 1625,
+                    "TC-69: cThanhTichDAO.TinhDiem() tính chuẩn điểm toàn thắng 5 tàu sống sót (1625)");
+
+                // Test 70: cQuanLyVanDau xu ly rieng biet so phat ban 2 nguoi choi trong PvP
+                var pvpMgr = new cQuanLyVanDau(CheDoChoi.PvP_Hotseat);
+                pvpMgr.BatDauTranDau();
+                var pvpTauP2 = pvpMgr.BanCoNguoi2.DanhSachTau[0];
+                pvpMgr.BanCoNguoi2.DatTau(pvpTauP2, new Point(0, 0), HuongTau.Ngang);
+                var pvpTauP1 = pvpMgr.BanCoNguoi1.DanhSachTau[0];
+                pvpMgr.BanCoNguoi1.DatTau(pvpTauP1, new Point(4, 4), HuongTau.Ngang);
+
+                // P1 ban 2 phat vao o nuoc cua P2
+                pvpMgr.Nguoi1Ban(new Point(9, 9), out _); // Miss -> Luot sang P2
+                Assert(pvpMgr.SoPhatBanNguoi1 == 1 && pvpMgr.SoPhatBanNguoi2 == 0,
+                    "TC-70: Quản lý ván đấu tách biệt số phát bắn độc lập giữa Người 1 và Người 2");
             }
             finally
             {

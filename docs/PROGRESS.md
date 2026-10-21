@@ -4,7 +4,7 @@
 > **Ngôn ngữ & Nền tảng:** C# (.NET 8.0 - Windows Forms)  
 > **Kiến trúc:** 3-Tier Layered Architecture (Models - Logic/DataAccess - Views)  
 > **Trạng thái biên dịch:** `Build Succeeded - 0 Error, 0 Warning`  
-> **Kiểm thử tự động:** `68/68 Test Cases PASSED (100%)`
+> **Kiểm thử tự động:** `71/71 Test Cases PASSED (100%)`
 
 ---
 
@@ -102,7 +102,7 @@
 
 | Thành viên | Nhiệm vụ chi tiết | Trạng thái |
 | :--- | :--- | :---: |
-| **Cả nhóm** | Chạy kiểm thử tự động toàn diện và test tay trên Windows 10/11 | **DONE** (68 Test Cases) |
+| **Cả nhóm** | Chạy kiểm thử tự động toàn diện và test tay trên Windows 10/11 | **DONE** (71 Test Cases) |
 | **Trí (TV1)** | Viết phần báo cáo: Mô hình lớp (Class Diagram), FSM & Thuật toán AI | **NOT DONE** |
 | **Hưng (TV2)** | Viết phần báo cáo: Kiến trúc WinForms, Sơ đồ Use Case & Luồng giao diện | **NOT DONE** |
 | **Hòa (TV3)** | Viết phần báo cáo: Cấu trúc lưu trữ dữ liệu, Bẫy lỗi I/O & Thống kê | **NOT DONE** |

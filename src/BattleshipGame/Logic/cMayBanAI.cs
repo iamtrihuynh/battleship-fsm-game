@@ -166,46 +166,56 @@ namespace BattleshipGame.Logic
 
         private void KhoaTrucVaThemODauMut()
         {
-            Point p1 = _cacOTrungHienTai[0];
-            Point p2 = _cacOTrungHienTai[1];
+            if (_cacOTrungHienTai.Count < 2) return;
 
-            bool isNgang = p1.Y == p2.Y;
-            bool isDoc = p1.X == p2.X;
+            // Tìm nhóm ô thẳng hàng ngang hoặc dọc có >= 2 phát bắn
+            var nhomY = _cacOTrungHienTai.GroupBy(pt => pt.Y).FirstOrDefault(g => g.Count() >= 2);
+            var nhomX = _cacOTrungHienTai.GroupBy(pt => pt.X).FirstOrDefault(g => g.Count() >= 2);
 
-            // Neu 2 o khong thang hang (do trung 2 tau khac nhau gan nhau), mo rong cac o lan can cua o moi nhat
+            bool isNgang = nhomY != null;
+            bool isDoc = nhomX != null;
+
+            // Nếu chưa có nhóm nào >= 2 ô thẳng hàng, mở rộng các ô lân cận của ô mới nhất
             if (!isNgang && !isDoc)
             {
-                ThemCacOLanCan(p2);
+                ThemCacOLanCan(_cacOTrungHienTai.Last());
                 return;
             }
 
-            // Xoa cac o lech truc khoi hang doi
-            var dsCu = _hangDoiTarget.ToList();
-            _hangDoiTarget.Clear();
-
-            foreach (var o in dsCu)
+            // Nếu xuất hiện cả 2 trục (2 tàu chạm nhau), ưu tiên trục chứa phát bắn mới nhất
+            Point latest = _cacOTrungHienTai.Last();
+            if (isNgang && isDoc)
             {
-                if ((isNgang && o.Y == p1.Y) || (isDoc && o.X == p1.X))
-                {
-                    _hangDoiTarget.Enqueue(o);
-                }
+                if (nhomY != null && nhomY.Any(pt => pt == latest)) isDoc = false;
+                else isNgang = false;
             }
 
-            // Mo rong ban tiep 2 dau mut
-            if (isNgang)
+            if (isNgang && nhomY != null)
             {
-                int y = p1.Y;
-                int minX = _cacOTrungHienTai.Where(pt => pt.Y == y).Min(pt => pt.X);
-                int maxX = _cacOTrungHienTai.Where(pt => pt.Y == y).Max(pt => pt.X);
+                int y = nhomY.Key;
+                var cacOTrenY = nhomY.ToList();
+                int minX = cacOTrenY.Min(pt => pt.X);
+                int maxX = cacOTrenY.Max(pt => pt.X);
+
+                // Lọc giữ lại các ô cùng trục Y trong hàng đợi
+                var dsCu = _hangDoiTarget.Where(o => o.Y == y).ToList();
+                _hangDoiTarget.Clear();
+                foreach (var o in dsCu) _hangDoiTarget.Enqueue(o);
 
                 ThemODauMut(new Point(minX - 1, y));
                 ThemODauMut(new Point(maxX + 1, y));
             }
-            else
+            else if (isDoc && nhomX != null)
             {
-                int x = p1.X;
-                int minY = _cacOTrungHienTai.Where(pt => pt.X == x).Min(pt => pt.Y);
-                int maxY = _cacOTrungHienTai.Where(pt => pt.X == x).Max(pt => pt.Y);
+                int x = nhomX.Key;
+                var cacOTrenX = nhomX.ToList();
+                int minY = cacOTrenX.Min(pt => pt.Y);
+                int maxY = cacOTrenX.Max(pt => pt.Y);
+
+                // Lọc giữ lại các ô cùng trục X trong hàng đợi
+                var dsCu = _hangDoiTarget.Where(o => o.X == x).ToList();
+                _hangDoiTarget.Clear();
+                foreach (var o in dsCu) _hangDoiTarget.Enqueue(o);
 
                 ThemODauMut(new Point(x, minY - 1));
                 ThemODauMut(new Point(x, maxY + 1));
