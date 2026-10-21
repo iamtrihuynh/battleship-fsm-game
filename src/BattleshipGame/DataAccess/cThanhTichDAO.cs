@@ -88,6 +88,12 @@ namespace BattleshipGame.DataAccess
             }
         }
 
+        // Doc danh sach thanh tich tu file
+        public static List<ThanhTichItem> DocThanhTich()
+        {
+            return DocDanhSach();
+        }
+
         // Doc danh sach tu file
         public static List<ThanhTichItem> DocDanhSach()
         {
@@ -137,6 +143,12 @@ namespace BattleshipGame.DataAccess
             }
 
             return SapXep(list, TieuChiSapXep.DiemCaoNhat);
+        }
+
+        // Ghi them 1 tran moi truyen truc tiep thong so
+        public static bool LuuThanhTich(string ten, int diem, int luot, int giay, string cheDo, string ketQua)
+        {
+            return LuuThanhTich(new ThanhTichItem(DateTime.Now, ten, diem, luot, giay, cheDo, ketQua));
         }
 
         // Ghi them 1 tran moi vao cuoi file

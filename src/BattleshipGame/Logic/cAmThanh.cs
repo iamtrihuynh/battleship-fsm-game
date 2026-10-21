@@ -17,6 +17,9 @@ namespace BattleshipGame.Logic
         private static readonly Dictionary<string, SoundPlayer> _cache = new Dictionary<string, SoundPlayer>(StringComparer.OrdinalIgnoreCase);
 
         public static bool DaBatAmThanh { get; set; } = true;
+        public static bool DangPhatNhacNen { get; private set; } = false;
+        public static string AmThanhVuaPhat { get; private set; } = null;
+        public static int SoLanDungNhacNen { get; private set; } = 0;
         private static string _audioDir = null;
         private static string _currentBgm = null;
 
@@ -42,6 +45,7 @@ namespace BattleshipGame.Logic
         public static void PhatNhacNen(string file = "bgm_battle.wav")
         {
             if (!DaBatAmThanh) return;
+            DangPhatNhacNen = true;
 
             Task.Run(() =>
             {
@@ -68,6 +72,9 @@ namespace BattleshipGame.Logic
 
         public static void DungNhacNen()
         {
+            DangPhatNhacNen = false;
+            SoLanDungNhacNen++;
+
             Task.Run(() =>
             {
                 lock (_lock)
@@ -122,6 +129,7 @@ namespace BattleshipGame.Logic
         public static void PhatSFX(string file)
         {
             if (!DaBatAmThanh) return;
+            AmThanhVuaPhat = file;
 
             try
             {

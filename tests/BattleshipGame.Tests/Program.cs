@@ -237,6 +237,59 @@ namespace BattleshipGame.Tests
 
                 Assert(banCo.TatCaTauDaChim && banCo.TongSoOBiBan == 17,
                     "TC-27: Tiêu diệt toàn bộ 17 ô tàu kích hoạt điều kiện thắng cuộc (TatCaTauDaChim == true)");
+
+                Console.WriteLine("\n--- PHẦN 3: MEMBER 3 - NGÀY 3 (DocThanhTich, LuuThanhTich, Combat Audio & Non-interrupting BGM) ---");
+
+                // Test 28: DocThanhTich() va LuuThanhTich() overload truyen tham so truc tiep
+                string fileDay3 = Path.Combine(tempTestDir, "thanhtich_day3.txt");
+                cThanhTichDAO.DuongDanFile = fileDay3;
+                bool luuThanhCong = cThanhTichDAO.LuuThanhTich("ThuyenTruongPhat", 2200, 20, 95, "PvE - Nâng cao", "Thắng");
+                var dsDocVe = cThanhTichDAO.DocThanhTich();
+                bool docDung = luuThanhCong && dsDocVe.Count == 1 && dsDocVe[0].TenNguoiChoi == "ThuyenTruongPhat" && dsDocVe[0].DiemSo == 2200;
+                Assert(docDung, "TC-28: cThanhTichDAO.LuuThanhTich() và DocThanhTich() hoạt động chuẩn xác");
+
+                // Test 29: Kiem thu am thanh khong ngat nhac nen khi phat SFX
+                // 1. Khoi dong nhac nen
+                cAmThanh.PhatNhacNen("bgm_battle.wav");
+                Assert(cAmThanh.DangPhatNhacNen, "TC-29: Nhạc nền BGM khởi động thành công (DangPhatNhacNen == true)");
+
+                // 2. Ban phao (Shot) -> khong ngat BGM
+                cAmThanh.PhatShot();
+                Assert(cAmThanh.AmThanhVuaPhat == "shot.wav" && cAmThanh.DangPhatNhacNen,
+                    "TC-30: Phát âm thanh đại bác (shot.wav) mà không làm ngắt nhạc nền BGM");
+
+                // 3. Ban truot (Miss) -> phat miss.wav va khong ngat BGM
+                var testBanCo = new cBanCo(10);
+                var tauTest = testBanCo.DanhSachTau[4]; // size 2
+                testBanCo.DatTau(tauTest, new Point(5, 5), HuongTau.Ngang); // (5,5) va (6,5)
+
+                var kqBanTruot = testBanCo.TiepNhanPhatBan(new Point(0, 0));
+                if (kqBanTruot == KetQuaBan.Miss) cAmThanh.PhatMiss();
+                Assert(cAmThanh.AmThanhVuaPhat == "miss.wav" && cAmThanh.DangPhatNhacNen,
+                    "TC-31: Kết quả Trượt (Miss) phát âm thanh miss.wav chuẩn xác, BGM vẫn tiếp tục");
+
+                // 4. Ban trung (Hit) -> phat hit.wav va khong ngat BGM
+                var kqBanTrung = testBanCo.TiepNhanPhatBan(new Point(5, 5), out _);
+                if (kqBanTrung == KetQuaBan.Hit) cAmThanh.PhatHit();
+                Assert(cAmThanh.AmThanhVuaPhat == "hit.wav" && cAmThanh.DangPhatNhacNen,
+                    "TC-32: Kết quả Trúng (Hit) phát âm thanh hit.wav chuẩn xác, BGM vẫn tiếp tục");
+
+                // 5. Ban chim tau (Sunk) -> phat sunk.wav va khong ngat BGM
+                var kqBanChim = testBanCo.TiepNhanPhatBan(new Point(6, 5), out _);
+                if (kqBanChim == KetQuaBan.Sunk) cAmThanh.PhatSunk();
+                Assert(cAmThanh.AmThanhVuaPhat == "sunk.wav" && cAmThanh.DangPhatNhacNen,
+                    "TC-33: Kết quả Chìm tàu (Sunk) phát âm thanh sunk.wav chuẩn xác, BGM vẫn tiếp tục");
+
+                // 6. Chien thang (Victory) -> ngat nhac nen va phat victory.wav
+                cAmThanh.PhatVictory();
+                Assert(cAmThanh.AmThanhVuaPhat == "victory.wav" && !cAmThanh.DangPhatNhacNen,
+                    "TC-34: Kết thúc thắng cuộc (Victory) ngắt nhạc nền trận chiến và phát victory.wav");
+
+                // 7. That bai (Defeat) -> ngat nhac nen va phat defeat.wav
+                cAmThanh.PhatNhacNen("bgm_battle.wav");
+                cAmThanh.PhatDefeat();
+                Assert(cAmThanh.AmThanhVuaPhat == "defeat.wav" && !cAmThanh.DangPhatNhacNen,
+                    "TC-35: Thất bại (Defeat) ngắt nhạc nền trận chiến và phát defeat.wav");
             }
             finally
             {
