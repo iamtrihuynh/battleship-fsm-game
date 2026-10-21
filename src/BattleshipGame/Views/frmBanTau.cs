@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -43,6 +44,7 @@ namespace BattleshipGame.Views
         // Ban co logic
         private readonly cBanCo _banCoTa = new cBanCo(10);
         private readonly cBanCo _banCoDoiThu = new cBanCo(10);
+        private readonly cMayBanAI _botAI;
         private readonly HashSet<Point> _cacOBotDaBan = new HashSet<Point>();
         private readonly Random _randBot = new Random();
 
@@ -78,6 +80,7 @@ namespace BattleshipGame.Views
             Text = "Trận Địa Hải Chiến - Bắn Tàu (Giao Diện Bàn Cờ Động Ngày 2 - TV2)";
 
             _cheDoChoi = cheDoChoi;
+            _botAI = new cMayBanAI(_cheDoChoi.IndexOf("Dễ", StringComparison.OrdinalIgnoreCase) >= 0 ? DoKhoAI.De : DoKhoAI.Kho, 10);
             KhoiTaoThongTinChung();
 
             Shown += (s, e) =>
@@ -644,6 +647,8 @@ namespace BattleshipGame.Views
 
             // Sinh ngau nhien ham doi doi thu
             _banCoDoiThu.TuDongSinhBanCoNgauNhien();
+            _botAI.KhoiTao();
+            _cacOBotDaBan.Clear();
 
             // Bat nhac nen tran chien
             cAmThanh.PhatNhacNen("bgm_battle.wav");
@@ -821,26 +826,13 @@ namespace BattleshipGame.Views
 
         private void MayBanTra()
         {
-            if (_banCoTa.TatCaTauDaChim) return;
+            if (_banCoTa.TatCaTauDaChim || _tranDauKetThuc) return;
 
-            // Tim danh sach o chua ban tren ban co cua nguoi choi
-            List<Point> oChuaBan = new List<Point>();
-            for (int r = 0; r < 10; r++)
-            {
-                for (int c = 0; c < 10; c++)
-                {
-                    Point p = new Point(c, r);
-                    if (!_cacOBotDaBan.Contains(p))
-                        oChuaBan.Add(p);
-                }
-            }
-
-            if (oChuaBan.Count == 0) return;
-
-            Point banO = oChuaBan[_randBot.Next(oChuaBan.Count)];
+            Point banO = _botAI.ChonToaDoBan();
             _cacOBotDaBan.Add(banO);
 
-            KetQuaBan kq = _banCoTa.TiepNhanPhatBan(banO, out cTau tauBiBan);
+            KetQuaBan kq = _banCoTa.TiepNhanPhatBan(banO, out cTau? tauBiBan);
+            _botAI.CapNhatKetQua(banO, kq, tauBiBan);
             var btnO = _btnPlayerGrid[banO.Y, banO.X];
 
             if (kq == KetQuaBan.Hit || kq == KetQuaBan.Sunk)
@@ -862,7 +854,10 @@ namespace BattleshipGame.Views
                 if (_banCoTa.TatCaTauDaChim)
                 {
                     XuLyKetThucTran(false);
+                    return;
                 }
+
+                MayBanTra();
             }
             else
             {

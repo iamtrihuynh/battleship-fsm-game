@@ -23,6 +23,7 @@ namespace BattleshipGame.Views
         public static readonly Color SuccessGreen = Color.FromArgb(16, 185, 129);     // #10B981 Emerald Green
         public static readonly Color DangerRed = Color.FromArgb(239, 68, 68);         // #EF4444 Crimson Red
         public static readonly Color WarningAmber = Color.FromArgb(245, 158, 11);     // #F59E0B Amber
+        public static readonly Color WarningYellow = Color.FromArgb(234, 179, 8);      // #EAB308 Warning Yellow
         public static readonly Color SunkDarkRed = Color.FromArgb(153, 27, 27);       // #991B1B Dark Red Sunk
         public static readonly Color MissGray = Color.FromArgb(148, 163, 184);        // #94A3B8 Water ripples
 
