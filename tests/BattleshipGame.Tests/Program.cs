@@ -403,29 +403,75 @@ namespace BattleshipGame.Tests
                 Assert(ql.TrangThai == TrangThaiVanDau.DangChoi && ql.SoPhatBanNguoi1 == 0,
                     "TC-50: BatDauTranDau() chuyen FSM sang DangChoi va reset bo dem");
 
-                // Test 51: Chuyen luot ban giua Nguoi 1 va May
+                // Test 51: Quy tac chuyen luot chuan (Ban trung thuong luot, Ban truot doi luot)
                 ql.BanCoNguoi2.TuDongSinhBanCoNgauNhien();
                 ql.BanCoNguoi1.TuDongSinhBanCoNgauNhien();
-                var kqBan1 = ql.Nguoi1Ban(0, 0, out _);
-                Assert(ql.LuotNguoiChoi == 2 && ql.SoPhatBanNguoi1 == 1,
-                    "TC-51: Nguoi 1 ban hop le chuyen luot sang Nguoi 2 / May va tang SoPhatBanNguoi1");
 
-                // Test 52: May ban nuoc tiep theo
+                // 1. Tim 1 o co tau de test ban trung thuong luot
+                Point oCoTau = ql.BanCoNguoi2.DanhSachTau[0].DanhSachToaDo[0];
+                var kqTrung = ql.Nguoi1Ban(oCoTau, out _);
+                Assert((kqTrung == KetQuaBan.Hit || kqTrung == KetQuaBan.Sunk) && ql.LuotNguoiChoi == 1,
+                    "TC-51: Nguoi 1 ban trung duoc thuong luot ban tiep (LuotNguoiChoi == 1)");
+
+                // 2. Tim 1 o nuoc trong de test ban truot doi luot
+                Point oNuoc = new Point(-1, -1);
+                for (int x = 0; x < 10; x++)
+                {
+                    for (int y = 0; y < 10; y++)
+                    {
+                        if (!ql.BanCoNguoi2.MaTranO[x, y].CoTau && !ql.BanCoNguoi2.MaTranO[x, y].DaBiBan)
+                        {
+                            oNuoc = new Point(x, y);
+                            break;
+                        }
+                    }
+                    if (oNuoc.X >= 0) break;
+                }
+                var kqTruot = ql.Nguoi1Ban(oNuoc, out _);
+                Assert(kqTruot == KetQuaBan.Miss && ql.LuotNguoiChoi == 2,
+                    "TC-52: Nguoi 1 ban truot chuyen luot sang Nguoi 2 / May (LuotNguoiChoi == 2)");
+
+                // Test 53: May ban nuoc tiep theo
                 var kqMay = ql.MayBanNuocTiepTheo(out Point toaDoMay, out _);
-                Assert(ql.LuotNguoiChoi == 1 && ql.SoPhatBanNguoi2 == 1 && toaDoMay.X >= 0,
-                    "TC-52: MayBanNuocTiepTheo() thuc hien phat ban, tang SoPhatBanNguoi2 va tra luot ve Nguoi 1");
+                Assert(toaDoMay.X >= 0 && ql.SoPhatBanNguoi2 == 1,
+                    "TC-53: MayBanNuocTiepTheo() thuc hien phat ban va tang SoPhatBanNguoi2");
 
-                // Test 53: Dau hang ket thuc tran dau
+                // Test 54: Dau hang ket thuc tran dau va kiem tra chan so bat thuong
+                ql.DauHang(99); // Tham so khong hop le bi bo qua
+                Assert(ql.TrangThai == TrangThaiVanDau.DangChoi,
+                    "TC-54: DauHang(99) tham so ngoai le bi bo qua, tran dau khong bi ket thuc sai");
+
                 ql.DauHang(2); // May/Nguoi 2 dau hang -> Nguoi 1 thang
                 Assert(ql.TrangThai == TrangThaiVanDau.KetThuc && ql.NguoiThang == 1,
-                    "TC-53: DauHang(2) ket thuc tran dau va ghi nhan Nguoi 1 chien thang");
+                    "TC-55: DauHang(2) ket thuc tran dau va ghi nhan Nguoi 1 chien thang");
 
-                // Test 54: Tinh diem chuan xac theo cong thuc
+                // Test 56: Tinh diem chuan xac theo cong thuc va chong tran so
                 ql.ThoiGianGiay = 90;
                 int diemThucTe = ql.TinhDiemNguoi1();
                 int diemDuKien = Math.Max(0, 1000 + (5 * 200) - (ql.SoPhatBanNguoi1 * 15) - (90 * 2));
                 Assert(diemThucTe == diemDuKien,
-                    $"TC-54: TinhDiemNguoi1() tinh chinh xac theo cong thuc Game Balance ({diemThucTe} diem)");
+                    $"TC-56: TinhDiemNguoi1() tinh chinh xac theo cong thuc Game Balance ({diemThucTe} diem)");
+
+                // Test 57: cMayBanAI an toan tuyet doi khi ban sach 100 o khong nem ArgumentOutOfRangeException
+                var botHetO = new cMayBanAI(DoKhoAI.De, 10);
+                for (int i = 0; i < 100; i++)
+                {
+                    Point p = botHetO.ChonToaDoBan();
+                    botHetO.CapNhatKetQua(p, KetQuaBan.Miss);
+                }
+                Point shotVuotMuc = botHetO.ChonToaDoBan();
+                Assert(shotVuotMuc.X == -1 && shotVuotMuc.Y == -1,
+                    "TC-57: cMayBanAI.ChonToaDoBan() tra ve (-1, -1) an toan khi het sach o, khong throw ArgumentOutOfRangeException");
+
+                // Test 58: cMayBanAI tiep tuc target tau dang thuong khi 1 tau khac bi chim hoan toan
+                var botMulti = new cMayBanAI(DoKhoAI.Kho, 10);
+                var tau1 = new cTau("Tau1", 2);
+                tau1.GanToaDo(new List<Point> { new Point(2, 2), new Point(3, 2) }, HuongTau.Ngang);
+                botMulti.CapNhatKetQua(new Point(2, 2), KetQuaBan.Hit);
+                botMulti.CapNhatKetQua(new Point(5, 5), KetQuaBan.Hit); // Trung tau khac
+                botMulti.CapNhatKetQua(new Point(3, 2), KetQuaBan.Sunk, tau1); // Tau 1 chim
+                Assert(botMulti.TrangThai == TrangThaiAI.Target,
+                    "TC-58: cMayBanAI van duy tri Target Mode cho cac o tau con lai khi tau 1 da chim");
             }
             finally
             {

@@ -4,7 +4,7 @@
 > **Ngôn ngữ & Nền tảng:** C# (.NET 8.0 - Windows Forms)  
 > **Kiến trúc:** 3-Tier Layered Architecture (Models - Logic/DataAccess - Views)  
 > **Trạng thái biên dịch:** `Build Succeeded - 0 Error, 0 Warning`  
-> **Kiểm thử tự động:** `54/54 Test Cases PASSED (100%)`
+> **Kiểm thử tự động:** `58/58 Test Cases PASSED (100%)`
 
 ---
 

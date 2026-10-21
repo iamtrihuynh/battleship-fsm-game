@@ -63,6 +63,11 @@ namespace BattleshipGame.Logic
                 }
             }
 
+            if (_danhSachChuaBan.Count == 0)
+            {
+                return new Point(-1, -1);
+            }
+
             // Pha Hunt
             if (DoKho == DoKhoAI.Kho)
             {
@@ -99,9 +104,26 @@ namespace BattleshipGame.Logic
             }
             else if (kq == KetQuaBan.Sunk)
             {
-                // Tau da chim: quay lai pha Hunt
-                _cacOTrungHienTai.Clear();
+                if (tauBiBan != null && tauBiBan.DanhSachToaDo != null && tauBiBan.DanhSachToaDo.Count > 0)
+                {
+                    // Loai bo cac toa do cua con tau da chim khoi danh sach o dang theo doi
+                    foreach (var pt in tauBiBan.DanhSachToaDo)
+                    {
+                        _cacOTrungHienTai.Remove(pt);
+                    }
+                }
+                else
+                {
+                    _cacOTrungHienTai.Clear();
+                }
+
                 _hangDoiTarget.Clear();
+
+                // Neu van con o bi trung cua tau khac gan do, tiep tuc Target o do
+                if (_cacOTrungHienTai.Count > 0)
+                {
+                    ThemCacOLanCan(_cacOTrungHienTai[0]);
+                }
             }
         }
 
@@ -127,7 +149,16 @@ namespace BattleshipGame.Logic
         {
             Point p1 = _cacOTrungHienTai[0];
             Point p2 = _cacOTrungHienTai[1];
+
             bool isNgang = p1.Y == p2.Y;
+            bool isDoc = p1.X == p2.X;
+
+            // Neu 2 o khong thang hang (do trung 2 tau khac nhau gan nhau), mo rong cac o lan can cua o moi nhat
+            if (!isNgang && !isDoc)
+            {
+                ThemCacOLanCan(p2);
+                return;
+            }
 
             // Xoa cac o lech truc khoi hang doi
             var dsCu = _hangDoiTarget.ToList();
@@ -135,7 +166,7 @@ namespace BattleshipGame.Logic
 
             foreach (var o in dsCu)
             {
-                if ((isNgang && o.Y == p1.Y) || (!isNgang && o.X == p1.X))
+                if ((isNgang && o.Y == p1.Y) || (isDoc && o.X == p1.X))
                 {
                     _hangDoiTarget.Enqueue(o);
                 }
@@ -145,8 +176,8 @@ namespace BattleshipGame.Logic
             if (isNgang)
             {
                 int y = p1.Y;
-                int minX = _cacOTrungHienTai.Min(pt => pt.X);
-                int maxX = _cacOTrungHienTai.Max(pt => pt.X);
+                int minX = _cacOTrungHienTai.Where(pt => pt.Y == y).Min(pt => pt.X);
+                int maxX = _cacOTrungHienTai.Where(pt => pt.Y == y).Max(pt => pt.X);
 
                 ThemODauMut(new Point(minX - 1, y));
                 ThemODauMut(new Point(maxX + 1, y));
@@ -154,8 +185,8 @@ namespace BattleshipGame.Logic
             else
             {
                 int x = p1.X;
-                int minY = _cacOTrungHienTai.Min(pt => pt.Y);
-                int maxY = _cacOTrungHienTai.Max(pt => pt.Y);
+                int minY = _cacOTrungHienTai.Where(pt => pt.X == x).Min(pt => pt.Y);
+                int maxY = _cacOTrungHienTai.Where(pt => pt.X == x).Max(pt => pt.Y);
 
                 ThemODauMut(new Point(x, minY - 1));
                 ThemODauMut(new Point(x, maxY + 1));

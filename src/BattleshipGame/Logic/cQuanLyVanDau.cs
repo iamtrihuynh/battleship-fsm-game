@@ -74,7 +74,7 @@ namespace BattleshipGame.Logic
                     NguoiThang = 1;
                     TrangThai = TrangThaiVanDau.KetThuc;
                 }
-                else
+                else if (kq == KetQuaBan.Miss)
                 {
                     LuotNguoiChoi = 2;
                 }
@@ -100,7 +100,7 @@ namespace BattleshipGame.Logic
                     NguoiThang = 2;
                     TrangThai = TrangThaiVanDau.KetThuc;
                 }
-                else
+                else if (kq == KetQuaBan.Miss)
                 {
                     LuotNguoiChoi = 1;
                 }
@@ -120,7 +120,7 @@ namespace BattleshipGame.Logic
 
             toaDoBan = MayAI.ChonToaDoBan();
             KetQuaBan kq = BanCoNguoi1.TiepNhanPhatBan(toaDoBan, out tauBiChim);
-            MayAI.CapNhatKetQua(toaDoBan, kq);
+            MayAI.CapNhatKetQua(toaDoBan, kq, tauBiChim);
             SoPhatBanNguoi2++;
 
             if (BanCoNguoi1.TatCaTauDaChim)
@@ -128,7 +128,7 @@ namespace BattleshipGame.Logic
                 NguoiThang = 2;
                 TrangThai = TrangThaiVanDau.KetThuc;
             }
-            else
+            else if (kq == KetQuaBan.Miss)
             {
                 LuotNguoiChoi = 1;
             }
@@ -141,8 +141,8 @@ namespace BattleshipGame.Logic
             if (NguoiThang != 1) return 0;
 
             int soTauConSong = BanCoNguoi1.DanhSachTau.Count(t => !t.DaChim);
-            int diem = 1000 + (soTauConSong * 200) - (SoPhatBanNguoi1 * 15) - (ThoiGianGiay * 2);
-            return Math.Max(0, diem);
+            long tinhDiem = 1000L + (soTauConSong * 200L) - (SoPhatBanNguoi1 * 15L) - (ThoiGianGiay * 2L);
+            return (int)Math.Max(0L, Math.Min((long)int.MaxValue, tinhDiem));
         }
 
         public void TamDungHoacTiepTuc()
@@ -156,6 +156,9 @@ namespace BattleshipGame.Logic
         public void DauHang(int nguoiDauHang)
         {
             if (TrangThai != TrangThaiVanDau.DangChoi && TrangThai != TrangThaiVanDau.TamDung)
+                return;
+
+            if (nguoiDauHang != 1 && nguoiDauHang != 2)
                 return;
 
             NguoiThang = (nguoiDauHang == 1) ? 2 : 1;
