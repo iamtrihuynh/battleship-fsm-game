@@ -92,6 +92,10 @@ namespace BattleshipGame.Logic
                             else
                                 mciSendString("close bgm", null, 0, IntPtr.Zero);
                         }
+                        else
+                        {
+                            DangPhatNhacNen = false;
+                        }
                     }
                     catch { }
                 }
@@ -193,8 +197,10 @@ namespace BattleshipGame.Logic
         public static bool BatTatAmThanh()
         {
             DaBatAmThanh = !DaBatAmThanh;
-            if (!DaBatAmThanh) DungNhacNen();
-            else PhatNhacNen(_currentBgm ?? "bgm_battle.wav");
+            if (!DaBatAmThanh)
+                DungNhacNen();
+            else if (!string.IsNullOrEmpty(_currentBgm))
+                PhatNhacNen(_currentBgm);
             return DaBatAmThanh;
         }
 

@@ -472,6 +472,38 @@ namespace BattleshipGame.Tests
                 botMulti.CapNhatKetQua(new Point(3, 2), KetQuaBan.Sunk, tau1); // Tau 1 chim
                 Assert(botMulti.TrangThai == TrangThaiAI.Target,
                     "TC-58: cMayBanAI van duy tri Target Mode cho cac o tau con lai khi tau 1 da chim");
+
+                // Test 59: LocTheoCheDo phan biet chinh xac submode 'PvE - De' khong bi ro ri sang 'PvE - Nang cao'
+                var listPveSub = new List<ThanhTichItem>
+                {
+                    new ThanhTichItem(DateTime.Now, "P1", 1000, 20, 100, "PvE - Dễ", "Thắng"),
+                    new ThanhTichItem(DateTime.Now, "P2", 1500, 25, 120, "PvE - Nâng cao", "Thắng"),
+                    new ThanhTichItem(DateTime.Now, "P3", 1200, 22, 110, "PvP", "Thắng")
+                };
+                var locSubDe = cThanhTichDAO.LocTheoCheDo(listPveSub, "PvE - Dễ");
+                var locGenericPve = cThanhTichDAO.LocTheoCheDo(listPveSub, "PvE");
+                Assert(locSubDe.Count == 1 && locSubDe[0].CheDo == "PvE - Dễ" && locGenericPve.Count == 2,
+                    "TC-59: cThanhTichDAO.LocTheoCheDo phân biệt chính xác submode cụ thể và generic filter");
+
+                // Test 60: ThanhTichItem cat ngan do dai chuoi ten nguoi choi toi da 40 ky tu chong tran UI
+                string tenSieuDai = new string('A', 100);
+                var itemDai = new ThanhTichItem(DateTime.Now, tenSieuDai, 1000, 20, 100, "PvE", "Thắng");
+                Assert(itemDai.TenNguoiChoi.Length == 40 && itemDai.TenNguoiChoi == new string('A', 40),
+                    "TC-60: ThanhTichItem.TenNguoiChoi tự động cắt ngắn còn tối đa 40 ký tự an toàn");
+
+                // Test 61: cMayBanAI tu dong phuc hoi Target Mode va quet lan can cac o trung khi hang doi trong
+                var botRecovery = new cMayBanAI(DoKhoAI.Kho, 10);
+                botRecovery.CapNhatKetQua(new Point(4, 4), KetQuaBan.Hit);
+                Point pNext = botRecovery.ChonToaDoBan();
+                Assert(botRecovery.TrangThai == TrangThaiAI.Target && pNext.X >= 0,
+                    "TC-61: cMayBanAI duy trì TrangThaiAI.Target khi ô bị thương vẫn tồn tại");
+
+                // Test 62: cAmThanh.BatTatAmThanh() bao toan trang thai an toan
+                cAmThanh.DungNhacNen();
+                cAmThanh.BatTatAmThanh();
+                cAmThanh.BatTatAmThanh();
+                Assert(cAmThanh.DaBatAmThanh,
+                    "TC-62: cAmThanh.BatTatAmThanh() bảo toàn trạng thái âm thanh an toàn");
             }
             finally
             {

@@ -27,7 +27,7 @@ namespace BattleshipGame.Logic
         private readonly List<Point> _cacOTrungHienTai = new List<Point>();
 
         public DoKhoAI DoKho { get; set; }
-        public TrangThaiAI TrangThai => _hangDoiTarget.Count > 0 ? TrangThaiAI.Target : TrangThaiAI.Hunt;
+        public TrangThaiAI TrangThai => (_hangDoiTarget.Count > 0 || _cacOTrungHienTai.Count > 0) ? TrangThaiAI.Target : TrangThaiAI.Hunt;
 
         public cMayBanAI(DoKhoAI doKho = DoKhoAI.Kho, int kichThuoc = 10)
         {
@@ -60,6 +60,25 @@ namespace BattleshipGame.Logic
                 if (_danhSachChuaBan.Contains(p))
                 {
                     return p;
+                }
+            }
+
+            // Neu hang doi target het nhung van con cac o da ban trung chua chim (vi du lech truc hoac het dau mut theo huong cu),
+            // tim cac o chua ban tiep giap voi cac o trung de tiep tuc Target, tranh bi rot ve Hunt ngau nhien
+            if (_cacOTrungHienTai.Count > 0)
+            {
+                foreach (var hit in _cacOTrungHienTai)
+                {
+                    ThemCacOLanCan(hit);
+                }
+
+                while (_hangDoiTarget.Count > 0)
+                {
+                    Point p = _hangDoiTarget.Dequeue();
+                    if (_danhSachChuaBan.Contains(p))
+                    {
+                        return p;
+                    }
                 }
             }
 

@@ -13,6 +13,7 @@ namespace BattleshipGame.Views
         private List<ThanhTichItem> _listGoc = new List<ThanhTichItem>();
         private TieuChiSapXep _sortType = TieuChiSapXep.DiemCaoNhat;
         private bool _daLoad = false;
+        private DateTime _lanTaiCuoi = DateTime.MinValue;
         private static readonly Font _fontDiem = new Font("Segoe UI", 10F, FontStyle.Bold);
 
         public frmThanhTich()
@@ -40,7 +41,13 @@ namespace BattleshipGame.Views
             if (e.KeyCode == Keys.Escape)
                 this.Close();
             else if (e.KeyCode == Keys.F5)
-                TaiDuLieuTuFile();
+            {
+                if ((DateTime.UtcNow - _lanTaiCuoi).TotalMilliseconds >= 300)
+                {
+                    _lanTaiCuoi = DateTime.UtcNow;
+                    TaiDuLieuTuFile();
+                }
+            }
         }
 
         private void frmThanhTich_Load(object sender, EventArgs e)
@@ -171,7 +178,11 @@ namespace BattleshipGame.Views
 
         private void btnLamMoi_Click(object sender, EventArgs e)
         {
-            TaiDuLieuTuFile();
+            if ((DateTime.UtcNow - _lanTaiCuoi).TotalMilliseconds >= 300)
+            {
+                _lanTaiCuoi = DateTime.UtcNow;
+                TaiDuLieuTuFile();
+            }
         }
 
         private void btnDong_Click(object sender, EventArgs e)

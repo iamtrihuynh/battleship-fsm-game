@@ -276,14 +276,14 @@ namespace BattleshipGame.DataAccess
             if (string.IsNullOrWhiteSpace(cheDo) || cheDo.Equals("Tất cả", StringComparison.OrdinalIgnoreCase))
                 return list.Where(t => t != null).ToList();
 
+            bool isGenericPve = cheDo.Equals("PvE", StringComparison.OrdinalIgnoreCase);
             bool isPvpFilter = cheDo.StartsWith("PvP", StringComparison.OrdinalIgnoreCase);
-            bool isPveFilter = cheDo.StartsWith("PvE", StringComparison.OrdinalIgnoreCase);
 
             return list
                 .Where(t => t != null && !string.IsNullOrEmpty(t.CheDo) &&
                             (t.CheDo.Equals(cheDo, StringComparison.OrdinalIgnoreCase) ||
                              t.CheDo.StartsWith(cheDo + " -", StringComparison.OrdinalIgnoreCase) ||
-                             (isPveFilter && t.CheDo.StartsWith("PvE", StringComparison.OrdinalIgnoreCase)) ||
+                             (isGenericPve && t.CheDo.StartsWith("PvE", StringComparison.OrdinalIgnoreCase)) ||
                              (isPvpFilter && t.CheDo.StartsWith("PvP", StringComparison.OrdinalIgnoreCase))))
                 .ToList();
         }

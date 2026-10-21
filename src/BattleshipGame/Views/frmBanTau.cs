@@ -24,6 +24,7 @@ namespace BattleshipGame.Views
         }
 
         private readonly string _cheDoChoi;
+        private int _nguoiChoiHienTai = 1; // 1: Nguoi choi 1, 2: Nguoi choi 2 (che do PvP Hotseat)
         private bool _huongNgang = true; // true: Ngang (Horizontal), false: Dọc (Vertical)
         private int _matchSeconds = 0;
         private int _turnSeconds = 30;
@@ -66,8 +67,8 @@ namespace BattleshipGame.Views
         {
             new ThongTinTauUI { TenTau = "Tàu sân bay (5 ô)", DoDai = 5 },
             new ThongTinTauUI { TenTau = "Thiết giáp hạm (4 ô)", DoDai = 4 },
-            new ThongTinTauUI { TenTau = "Tàu ngầm (3 ô)", DoDai = 3 },
             new ThongTinTauUI { TenTau = "Tàu khu trục (3 ô)", DoDai = 3 },
+            new ThongTinTauUI { TenTau = "Tàu ngầm (3 ô)", DoDai = 3 },
             new ThongTinTauUI { TenTau = "Tàu tuần tra (2 ô)", DoDai = 2 }
         };
 
@@ -746,7 +747,9 @@ namespace BattleshipGame.Views
             tmrMatch.Start();
             tmrTurnCountdown.Start();
 
-            lblTurnIndicator.Text = "LƯỢT: BẠN KHAI HỎA";
+            lblTurnIndicator.Text = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
+                ? $"LƯỢT: NGƯỜI CHƠI {_nguoiChoiHienTai} KHAI HỎA"
+                : "LƯỢT: BẠN KHAI HỎA";
             lblTurnIndicator.ForeColor = UITheme.AccentNeon;
             lblTurnMessage.Text = "Click ô trên Radar đối phương để khai hỏa!";
             lblTurnMessage.ForeColor = UITheme.AccentNeon;
@@ -890,7 +893,8 @@ namespace BattleshipGame.Views
                     }
                     else
                     {
-                        KichHoatManCheSuongMu(2);
+                        _nguoiChoiHienTai = (_nguoiChoiHienTai == 1) ? 2 : 1;
+                        KichHoatManCheSuongMu(_nguoiChoiHienTai);
                     }
                 }
 
@@ -970,12 +974,19 @@ namespace BattleshipGame.Views
             int diem = nguoiChoiThang ? (int)Math.Max(0L, Math.Min((long)int.MaxValue, tinhDiem)) : 0;
             string ketQua = nguoiChoiThang ? "Thắng" : "Thua";
 
+            string tenNguoiChoi = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
+                ? $"Người Chơi {_nguoiChoiHienTai}"
+                : "Thuyền Trưởng";
+
             if (nguoiChoiThang)
             {
                 cAmThanh.PhatVictory();
                 lblTurnIndicator.Text = "🏆 CHIẾN THẮNG CHUNG CUỘC!";
                 lblTurnIndicator.ForeColor = UITheme.AccentNeon;
-                lblTurnMessage.Text = $"🎉 Chúc mừng! Bạn đã tiêu diệt toàn bộ hạm đội địch! Điểm số: {diem:N0}";
+                string winMsg = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
+                    ? $"🎉 Người chơi {_nguoiChoiHienTai} đã chiến thắng vang dội! Điểm số: {diem:N0}"
+                    : $"🎉 Chúc mừng! Bạn đã tiêu diệt toàn bộ hạm đội địch! Điểm số: {diem:N0}";
+                lblTurnMessage.Text = winMsg;
             }
             else
             {
@@ -986,14 +997,18 @@ namespace BattleshipGame.Views
             }
 
             // Luu ket qua tran dau vao thanhtichs.txt va kiem tra ket qua
-            bool luuOk = cThanhTichDAO.LuuThanhTich("Thuyền Trưởng", diem, _tongPhatBan, _matchSeconds, _cheDoChoi, ketQua);
+            bool luuOk = cThanhTichDAO.LuuThanhTich(tenNguoiChoi, diem, _tongPhatBan, _matchSeconds, _cheDoChoi, ketQua);
             string thongBaoLuu = luuOk
                 ? "Thành tích đã được lưu vào hệ thống!"
                 : $"⚠️ Không thể lưu thành tích ({cThanhTichDAO.LoiGanNhat ?? "File bận"}).";
 
+            string thongBaoTieuDe = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
+                ? (nguoiChoiThang ? $"🎉 NGƯỜI CHƠI {_nguoiChoiHienTai} CHIẾN THẮNG!" : "☠️ TRẬN ĐẤU KẾT THÚC!")
+                : (nguoiChoiThang ? "🎉 CHIẾN THẮNG XUẤT SẮC!" : "☠️ TRẬN ĐẤU KẾT THÚC!");
+
             MessageBox.Show(
                 nguoiChoiThang
-                    ? $"🎉 CHIẾN THẮNG XUẤT SẮC!\n\nSố lượt bắn: {_tongPhatBan}\nThời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\nĐiểm số: {diem:N0}\n\n{thongBaoLuu}"
+                    ? $"{thongBaoTieuDe}\n\nSố lượt bắn: {_tongPhatBan}\nThời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\nĐiểm số: {diem:N0}\n\n{thongBaoLuu}"
                     : $"☠️ TRẬN ĐẤU KẾT THÚC!\nHạm đội ta đã bị đối phương bắn chìm hoàn toàn.\n\n{thongBaoLuu}",
                 nguoiChoiThang ? "Chiến Thắng" : "Thất Bại",
                 MessageBoxButtons.OK,
@@ -1030,6 +1045,27 @@ namespace BattleshipGame.Views
 
         private void btnBackToMenu_Click(object? sender, EventArgs e)
         {
+            if (!_giaiDoanXepTau && !_tranDauKetThuc)
+            {
+                bool wasTurnRunning = tmrTurnCountdown.Enabled;
+                bool wasMatchRunning = tmrMatch.Enabled;
+                tmrTurnCountdown.Stop();
+                tmrMatch.Stop();
+
+                var res = MessageBox.Show(
+                    "Trận đấu đang diễn ra. Bạn có chắc chắn muốn thoát về Menu chính không?",
+                    "Xác nhận thoát",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                );
+                if (res != DialogResult.Yes)
+                {
+                    if (wasTurnRunning && !_tranDauKetThuc) tmrTurnCountdown.Start();
+                    if (wasMatchRunning && !_tranDauKetThuc) tmrMatch.Start();
+                    return;
+                }
+            }
+
             cAmThanh.DungNhacNen();
             tmrMatch.Stop();
             tmrTurnCountdown.Stop();
@@ -1229,7 +1265,8 @@ namespace BattleshipGame.Views
                 }
                 else
                 {
-                    KichHoatManCheSuongMu(2);
+                    _nguoiChoiHienTai = (_nguoiChoiHienTai == 1) ? 2 : 1;
+                    KichHoatManCheSuongMu(_nguoiChoiHienTai);
                 }
             }
             finally
@@ -1282,6 +1319,12 @@ namespace BattleshipGame.Views
         private void btnFogContinue_Click(object? sender, EventArgs e)
         {
             pnlFogOverlay.Visible = false;
+            _turnSeconds = 30;
+            lblTurnTimer.Text = $"⏳ Lượt: {_turnSeconds}s";
+            prgTurnTime.Value = 30;
+            lblTurnIndicator.Text = $"LƯỢT: NGƯỜI CHƠI {_nguoiChoiHienTai} KHAI HỎA";
+            lblTurnMessage.Text = $"Đến lượt Người chơi {_nguoiChoiHienTai}! Hãy chọn tọa độ trên radar.";
+            lblTurnMessage.ForeColor = UITheme.AccentNeon;
         }
 
         private void tmrMatch_Tick(object? sender, EventArgs e)
@@ -1317,9 +1360,10 @@ namespace BattleshipGame.Views
                 {
                     if (pnlFogOverlay != null)
                     {
-                        KichHoatManCheSuongMu(2);
+                        _nguoiChoiHienTai = (_nguoiChoiHienTai == 1) ? 2 : 1;
+                        KichHoatManCheSuongMu(_nguoiChoiHienTai);
                         lblFogTitle.Text = "⏰ HẾT THỜI GIAN LƯỢT BẮN!";
-                        lblFogMessage.Text = "Đã hết 30 giây! Hãy chuyển lượt cho đối thủ tiếp tục.";
+                        lblFogMessage.Text = $"Đã hết 30 giây! Hãy chuyển lượt cho Người chơi {_nguoiChoiHienTai} tiếp tục.";
                     }
                 }
             }
@@ -1357,6 +1401,18 @@ namespace BattleshipGame.Views
                 lblFogMessage.Left = (pnlFogOverlay.Width - lblFogMessage.Width) / 2;
                 btnFogContinue.Left = (pnlFogOverlay.Width - btnFogContinue.Width) / 2;
             }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            try
+            {
+                tmrMatch?.Stop();
+                tmrTurnCountdown?.Stop();
+                cAmThanh.DungNhacNen();
+            }
+            catch { }
+            base.OnFormClosing(e);
         }
         #endregion
     }

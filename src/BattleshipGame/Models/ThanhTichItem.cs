@@ -15,7 +15,7 @@ namespace BattleshipGame.Models
         public string TenNguoiChoi
         {
             get => _ten;
-            set => _ten = ChuanHoa(value, "VoDanh");
+            set => _ten = ChuanHoa(value, "VoDanh", 40);
         }
 
         public int DiemSo { get; set; }
@@ -25,13 +25,13 @@ namespace BattleshipGame.Models
         public string CheDo
         {
             get => _cheDo;
-            set => _cheDo = ChuanHoa(value, "PvE");
+            set => _cheDo = ChuanHoa(value, "PvE", 30);
         }
 
         public string KetQua
         {
             get => _ketQua;
-            set => _ketQua = ChuanHoa(value, "Thắng");
+            set => _ketQua = ChuanHoa(value, "Thắng", 20);
         }
 
         public ThanhTichItem()
@@ -84,11 +84,13 @@ namespace BattleshipGame.Models
             KetQua = arr[6];
         }
 
-        // Xoa ky tu | va xuong dong tranh loi file
-        private static string ChuanHoa(string s, string def)
+        // Xoa ky tu | va xuong dong tranh loi file, dong thoi gioi han do dai tranh tran UI
+        private static string ChuanHoa(string s, string def, int maxLen = 40)
         {
             if (string.IsNullOrWhiteSpace(s)) return def;
             string res = s.Replace("|", "-").Replace("\r", "").Replace("\n", " ").Trim();
+            if (string.IsNullOrWhiteSpace(res)) return def;
+            if (res.Length > maxLen) res = res.Substring(0, maxLen).TrimEnd();
             return string.IsNullOrWhiteSpace(res) ? def : res;
         }
 
