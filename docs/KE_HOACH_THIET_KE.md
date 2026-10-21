@@ -45,3 +45,35 @@ Theo đúng phân công và yêu cầu tài liệu đề tài, **Thành viên 2 
    * Nút **Đặt lại (Reset Board)**: Thu hồi toàn bộ 5 tàu về kho chỉ với 1 click.
    * Nút **Xếp ngẫu nhiên (Auto Place)**: Tự động xếp ngẫu nhiên hợp lệ toàn bộ 5 tàu hiển thị ngay ngắn trên bàn cờ.
    * Khi đủ 5/5 tàu, nút **Bắt đầu chiến đấu** tự động kích hoạt chuyển sang giai đoạn tác chiến.
+
+---
+
+### 3. Tiến Độ Thực Hiện Ngày 3 (Thứ Tư) - Trọng Tâm Thành Viên 2 (Frontend & UI/UX Lead)
+Theo đúng phân công và yêu cầu tài liệu đề tài Ngày 3, **Thành viên 2 (Trần Trọng Hưng)** đã hoàn thành trọn vẹn 100% các hạng mục giao diện, không can thiệp vào các module Backend/AI (`Models/`, `Logic/` của TV1) và Audio/DAO (`DataAccess/` của TV3):
+
+1. **Hàm xử lý đồ họa khi bắn (`XuLyDoHoaPhatBan`)**:
+   * **Ô Trượt (`XuLyDoHoa_OTruot`)**:
+     * Đổi sang màu **Xanh sóng nước** (`#1E3A58` / `UITheme.MissRippleBackground`).
+     * Hiển thị ký tự **`•`** rõ nét, viền sóng nhạt (`#38BDF8`), phông Segoe UI 16pt Bold.
+   * **Ô Trúng (`XuLyDoHoa_OTrung`)**:
+     * Đổi sang màu **Đỏ rực** (`#EF4444` / `UITheme.HitFireBackground`).
+     * Hiển thị ký tự **`X`** màu vàng lửa (`#FEF08A`), viền lửa cam rực (`#FCA5A5`), phông Segoe UI 12pt Bold.
+   * **Ô Chìm (`XuLyDoHoa_TauChim`)**:
+     * Đổi **TOÀN BỘ** các ô của con tàu đó sang màu **Xám tro** (`#374151` / `UITheme.SunkAshBackground`).
+     * Viền đậm quy chuẩn **2px** (`#991B1B` / `UITheme.SunkThickBorder`) nổi bật toàn bộ đường viền thân tàu.
+     * Hiển thị ký tự **`X`** màu xám trắng tro tàn (`#E2E8F0`).
+
+2. **Panel Màn che sương mù phủ kín màn hình cho chế độ PvP Hotseat (`pnlFogOverlay`)**:
+   * Thiết kế giao diện toàn màn hình (`Dock = DockStyle.Fill`, `BringToFront()`) màu xanh đen quân sự (`#0A1120`).
+   * Card thông báo trung tâm (`pnlFogCard`) với hiệu ứng bo viền chiến thuật:
+     * Biểu tượng sương mù `🌫️`.
+     * Tiêu đề: **MÀN CHẮN SƯƠNG MÙ CHIẾN THUẬT**.
+     * Thông điệp: *"Để đảm bảo bí mật chiến thuật tuyệt đối... toàn bộ hạm đội và radar đã được che kín..."*
+     * Nút bấm xác nhận đúng yêu cầu: **`⚓ Người chơi 2: Sẵn sàng`** (và tự động đảo thành `⚓ Người chơi 1: Sẵn sàng` khi sang lượt kế tiếp).
+   * Kích hoạt tự động khi:
+     * Người chơi bắn trượt trong chế độ PvP Hotseat.
+     * Hoặc khi đồng hồ đếm ngược 30 giây về 0 (hết thời gian lượt bắn).
+
+3. **Bảng quy tắc radar khai hỏa (`pnlRightNote`)**:
+   * Khung hướng dẫn quy chuẩn nằm ngay dưới Bàn cờ Radar, thể hiện đầy đủ quy tắc tính điểm, chuyển lượt và phản hồi phát bắn đúng đặc tả đề tài.
+

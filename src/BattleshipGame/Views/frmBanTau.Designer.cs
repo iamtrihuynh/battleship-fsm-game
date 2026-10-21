@@ -509,7 +509,7 @@ namespace BattleshipGame.Views
             // 
             // Màn che sương mù (PvP Hotseat Overlay)
             // 
-            this.pnlFogOverlay.BackColor = Color.FromArgb(245, 11, 19, 36);
+            this.pnlFogOverlay.BackColor = UITheme.FogOverlayBackground;
             this.pnlFogOverlay.Dock = DockStyle.Fill;
             this.pnlFogOverlay.Visible = false;
             this.Controls.Add(this.pnlFogOverlay);
@@ -532,10 +532,10 @@ namespace BattleshipGame.Views
             this.lblFogMessage.Text = "Đã hết lượt bắn của người chơi!\nVui lòng nhận máy và bấm 'Tiếp Tục' để mở bàn cờ tác chiến của bạn.";
             this.pnlFogOverlay.Controls.Add(this.lblFogMessage);
 
-            this.btnFogContinue.Location = new Point(480, 370);
-            this.btnFogContinue.Size = new Size(300, 56);
+            this.btnFogContinue.Location = new Point(460, 370);
+            this.btnFogContinue.Size = new Size(340, 56);
             this.btnFogContinue.Font = new Font("Segoe UI", 13f, FontStyle.Bold);
-            this.btnFogContinue.Text = "▶ SẴN SÀNG TIẾP TỤC";
+            this.btnFogContinue.Text = "⚓ Người chơi 2: Sẵn sàng";
             this.btnFogContinue.BorderColor = UITheme.AccentNeon;
             this.btnFogContinue.HoverBorderColor = UITheme.AccentNeon;
             this.btnFogContinue.HoverTextColor = UITheme.AccentNeon;

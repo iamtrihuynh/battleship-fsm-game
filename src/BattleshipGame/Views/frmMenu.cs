@@ -1,6 +1,8 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using BattleshipGame.DataAccess;
+using BattleshipGame.Logic;
 
 namespace BattleshipGame.Views
 {

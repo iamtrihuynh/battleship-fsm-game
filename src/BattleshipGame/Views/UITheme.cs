@@ -23,8 +23,22 @@ namespace BattleshipGame.Views
         public static readonly Color SuccessGreen = Color.FromArgb(16, 185, 129);     // #10B981 Emerald Green
         public static readonly Color DangerRed = Color.FromArgb(239, 68, 68);         // #EF4444 Crimson Red
         public static readonly Color WarningAmber = Color.FromArgb(245, 158, 11);     // #F59E0B Amber
+        public static readonly Color WarningYellow = Color.FromArgb(234, 179, 8);      // #EAB308 Warning Yellow
         public static readonly Color SunkDarkRed = Color.FromArgb(153, 27, 27);       // #991B1B Dark Red Sunk
         public static readonly Color MissGray = Color.FromArgb(148, 163, 184);        // #94A3B8 Water ripples
+
+        // Màu xử lý đồ họa phát bắn (Ngày 3 - TV2)
+        public static readonly Color MissRippleBackground = Color.FromArgb(30, 58, 88);       // #1E3A58 Gợn sóng nước biển
+        public static readonly Color MissRippleBorder = Color.FromArgb(56, 189, 248);         // #38BDF8 Viền sóng nhạt
+        public static readonly Color MissRippleText = Color.FromArgb(147, 197, 253);           // #93C5FD Ký tự sóng •
+        public static readonly Color HitFireBackground = Color.FromArgb(239, 68, 68);         // #EF4444 Lửa cháy đỏ rực
+        public static readonly Color HitFireBorder = Color.FromArgb(252, 165, 165);            // #FCA5A5 Viền lửa cam rực
+        public static readonly Color HitFireText = Color.FromArgb(254, 240, 138);             // #FEF08A Ký tự X vàng lửa
+        public static readonly Color SunkAshBackground = Color.FromArgb(55, 65, 81);          // #374151 Tro tàn tối sẫm
+        public static readonly Color SunkThickBorder = Color.FromArgb(153, 27, 27);           // #991B1B Viền đậm 2px đỏ thẫm
+        public static readonly int SunkBorderThickness = 2;                                   // Độ dày viền tàu chìm: 2px
+        public static readonly Color SunkAshText = Color.FromArgb(226, 232, 240);             // #E2E8F0 Ký tự X màu tro tàn
+        public static readonly Color FogOverlayBackground = Color.FromArgb(240, 10, 17, 32);   // Màn che sương mù bán trong suốt
 
         // Màu chữ
         public static readonly Color TextPrimary = Color.FromArgb(241, 245, 249);      // #F1F5F9 Off-white
