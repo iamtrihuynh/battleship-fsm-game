@@ -34,8 +34,8 @@
 | **Hưng (TV2)** | Khởi tạo Solution WinForms và cấu hình 3 tầng | `BattleshipGame.sln` | **DONE** |
 | **Hưng (TV2)** | Thiết kế Menu chính (`frmMenu`) và hiệu ứng Sonar Radar | `Views/frmMenu.cs` | **DONE** |
 | **Hưng (TV2)** | Phác thảo kích thước tĩnh cho màn hình trận đấu `frmBanTau` | `Views/frmBanTau.cs` | **DONE** |
-| **Hòa (TV3)** | Thu thập 9 file âm thanh `.wav` (súng đại bác, trúng, trượt, chìm, bgm) | `Assets/Audio/` | **DONE** |
-| **Hòa (TV3)** | Thiết kế cấu trúc `thanhtichs.txt` và thực thể `ThanhTichItem.cs` | `Models/ThanhTichItem.cs` | **DONE** |
+| **Phát (TV3)** | Thu thập 9 file âm thanh `.wav` (súng đại bác, trúng, trượt, chìm, bgm) | `Assets/Audio/` | **DONE** |
+| **Phát (TV3)** | Thiết kế cấu trúc `thanhtichs.txt` và thực thể `ThanhTichItem.cs` | `Models/ThanhTichItem.cs` | **DONE** |
 
 ---
 
@@ -49,8 +49,8 @@
 | **Hưng (TV2)** | Sinh động $10 \times 10 = 100$ Button cho 2 bàn cờ lúc Form_Load | `Views/frmBanTau.cs` | **DONE** |
 | **Hưng (TV2)** | Hiệu ứng bóng mờ xem trước (Xanh lá hợp lệ, Đỏ đè/tràn biên) | `Views/frmBanTau.cs` | **DONE** |
 | **Hưng (TV2)** | Phím tắt xoay tàu `Space` / `R` đổi chiều Ngang ↔ Dọc | `Views/frmBanTau.cs` | **DONE** |
-| **Hòa (TV3)** | Module âm thanh `cAmThanh.cs` (mciSendString BGM + SoundPlayer SFX) | `Logic/cAmThanh.cs` | **DONE** |
-| **Hòa (TV3)** | Giao diện Bảng xếp hạng kỷ lục (`frmThanhTich.cs`, DataGridView) | `Views/frmThanhTich.cs` | **DONE** |
+| **Phát (TV3)** | Module âm thanh `cAmThanh.cs` (mciSendString BGM + SoundPlayer SFX) | `Logic/cAmThanh.cs` | **DONE** |
+| **Phát (TV3)** | Giao diện Bảng xếp hạng kỷ lục (`frmThanhTich.cs`, DataGridView) | `Views/frmThanhTich.cs` | **DONE** |
 
 ---
 
@@ -63,8 +63,8 @@
 | **Trí (TV1)** | Tiếp nhận phát bắn `TiepNhanPhatBan` trả về `Miss`, `Hit`, `Sunk` | `Logic/cBanCo.cs` | **DONE** |
 | **Hưng (TV2)** | Đồ họa phát bắn trực quan: Trượt (`•`), Trúng (`✕` Đỏ), Chìm (`💀` Đỏ thẫm) | `Views/frmBanTau.cs` | **DONE** |
 | **Hưng (TV2)** | Thiết kế Panel Màn che sương mù (`pnlFogOverlay`) cho PvP Hotseat | `Views/frmBanTau.cs` | **DONE** |
-| **Hòa (TV3)** | Lớp `cThanhTichDAO.cs`: `LuuThanhTich()` và `DocDanhSach()` | `DataAccess/` | **DONE** |
-| **Hòa (TV3)** | Viết bộ kiểm thử Unit Test âm thanh combat không ngắt BGM (TC-28 $\rightarrow$ TC-35) | `tests/` | **DONE** |
+| **Phát (TV3)** | Lớp `cThanhTichDAO.cs`: `LuuThanhTich()` và `DocDanhSach()` | `DataAccess/` | **DONE** |
+| **Phát (TV3)** | Viết bộ kiểm thử Unit Test âm thanh combat không ngắt BGM (TC-28 $\rightarrow$ TC-35) | `tests/` | **DONE** |
 
 ---
 
@@ -78,8 +78,8 @@
 | **Trí (TV1)** | Tách lớp quản lý điều phối ván đấu độc lập `cQuanLyVanDau.cs` (FSM + TinhDiem) | `Logic/cQuanLyVanDau.cs` | **DONE** |
 | **Hưng (TV2)** | Hoàn thiện luồng đổi lượt PvP Hotseat (đổi giao diện bàn cờ 2 người chơi) | `Views/frmBanTau.cs` | **NOT DONE** (Ngày mai làm) |
 | **Hưng (TV2)** | Form Hướng dẫn & Giới thiệu thành viên nhóm (`frmAbout.cs`) | `Views/frmAbout.cs` | **NOT DONE** (Ngày mai làm) |
-| **Hòa (TV3)** | Viết công thức tính điểm chuẩn kết thúc trận đấu (`cThanhTichDAO.TinhDiem`) | `DataAccess/cThanhTichDAO.cs` | **DONE** |
-| **Hòa (TV3)** | Hộp thoại nhập tên ghi danh (`HienThiHopThoaiNhapTen`) & tự động lưu `thanhtichs.txt` | `Views/frmBanTau.cs` | **DONE** |
+| **Phát (TV3)** | Viết công thức tính điểm chuẩn kết thúc trận đấu (`cThanhTichDAO.TinhDiem`) | `DataAccess/cThanhTichDAO.cs` | **DONE** |
+| **Phát (TV3)** | Hộp thoại nhập tên ghi danh (`HienThiHopThoaiNhapTen`) & tự động lưu `thanhtichs.txt` | `Views/frmBanTau.cs` | **DONE** |
 
 ---
 
@@ -92,9 +92,9 @@
 | **Hưng (TV2)** | Nút bật/tắt âm thanh (Mute/Unmute) trên thanh công cụ | `Views/frmMenu.cs` | **NOT DONE** |
 | **Hưng (TV2)** | Khóa toàn bộ các nút không hợp lệ khi đang trong trận đấu | `Views/frmBanTau.cs` | **NOT DONE** |
 | **Hưng (TV2)** | Chống chớp giật giao diện (DoubleBuffered) và căn chỉnh giao diện tự co giãn | `Views/` | **NOT DONE** |
-| **Hòa (TV3)** | Bẫy lỗi thiếu file âm thanh/ảnh: Tự động fallback sang `SystemSounds.Beep` | `Logic/cAmThanh.cs` | **NOT DONE** |
-| **Hòa (TV3)** | Bẫy lỗi mất file `thanhtichs.txt`: Tự động khởi tạo file mẫu mới | `DataAccess/` | **NOT DONE** |
-| **Hòa (TV3)** | Cơ chế Retry Pattern với Exponential Backoff chống lỗi khóa file | `DataAccess/` | **NOT DONE** |
+| **Phát (TV3)** | Bẫy lỗi thiếu file âm thanh/ảnh: Tự động fallback sang `SystemSounds.Beep` | `Logic/cAmThanh.cs` | **NOT DONE** |
+| **Phát (TV3)** | Bẫy lỗi mất file `thanhtichs.txt`: Tự động khởi tạo file mẫu mới | `DataAccess/` | **NOT DONE** |
+| **Phát (TV3)** | Cơ chế Retry Pattern với Exponential Backoff chống lỗi khóa file | `DataAccess/` | **NOT DONE** |
 
 ---
 
@@ -105,7 +105,7 @@
 | **Cả nhóm** | Chạy kiểm thử tự động toàn diện và test tay trên Windows 10/11 | **DONE** (77 Test Cases) |
 | **Trí (TV1)** | Viết phần báo cáo: Mô hình lớp (Class Diagram), FSM & Thuật toán AI | **NOT DONE** |
 | **Hưng (TV2)** | Viết phần báo cáo: Kiến trúc WinForms, Sơ đồ Use Case & Luồng giao diện | **NOT DONE** |
-| **Hòa (TV3)** | Viết phần báo cáo: Cấu trúc lưu trữ dữ liệu, Bẫy lỗi I/O & Thống kê | **NOT DONE** |
+| **Phát (TV3)** | Viết phần báo cáo: Cấu trúc lưu trữ dữ liệu, Bẫy lỗi I/O & Thống kê | **NOT DONE** |
 
 ---
 
@@ -116,4 +116,4 @@
 | **Cả nhóm** | Xuất bản file chạy độc lập (`Release/publish`) không cần cài Visual Studio | **NOT DONE** |
 | **Trí (TV1)** | Chuẩn bị slide trình bày phần Backend, Logic bàn cờ & Bot AI | **NOT DONE** |
 | **Hưng (TV2)** | Chuẩn bị kịch bản demo trực tiếp các tính năng trên lớp | **NOT DONE** |
-| **Hòa (TV3)** | Tổng hợp nộp file ZIP (.sln + Báo cáo Word + Slide PPT) cho giảng viên | **NOT DONE** |
+| **Phát (TV3)** | Tổng hợp nộp file ZIP (.sln + Báo cáo Word + Slide PPT) cho giảng viên | **NOT DONE** |

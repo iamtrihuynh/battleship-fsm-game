@@ -577,7 +577,7 @@ BattleshipGame/                         \<--- Thư mục gốc Repo GitHub
 * **Thành viên 2 (Frontend & UI/UX Lead): Hưng cute**  
   * *Trách nhiệm chính:* Thiết kế toàn bộ giao diện WinForms, cơ chế vẽ bàn cờ động (Dynamic Button Matrix), hiệu ứng đổi màu (Sóng xanh, Lửa đỏ, Tro xám), Panel Màn che sương mù (PvP Hotseat), Form Menu, Form About & Hướng dẫn.  
   * *Module phụ trách:* `frmMenu.cs`, `frmBanTau.cs` (giao diện), `frmAbout.cs`, thiết kế Icon/Asset đồ họa.  
-* **Thành viên 3 (System I/O, Audio & QA/Tester): Hòa Phố**  
+* **Thành viên 3 (System I/O, Audio & QA/Tester): Trần Vũ Hòa Phát**  
   * *Trách nhiệm chính:* Tích hợp hệ thống Âm thanh đa luồng (`mciSendString` \+ `SoundPlayer`), Quản lý đọc/ghi bảng thành tích `thanhtichs.txt` (`cThanhTichDAO.cs`, `frmThanhTich.cs`), Bẫy lỗi toàn diện (`try...catch`), Viết kịch bản kiểm thử (Test Cases), Quay video demo và Soạn slide báo cáo.  
   * *Module phụ trách:* `cAmThanh.cs`, `cThanhTichDAO.cs`, `frmThanhTich.cs`, Báo cáo Word/Slide.
 
