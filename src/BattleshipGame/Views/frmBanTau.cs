@@ -24,6 +24,7 @@ namespace BattleshipGame.Views
         }
 
         private readonly string _cheDoChoi;
+        private string _tenNguoiChoi = "Thuyền Trưởng";
         private int _nguoiChoiHienTai = 1; // 1: Nguoi choi 1, 2: Nguoi choi 2 (che do PvP Hotseat)
         private bool _huongNgang = true; // true: Ngang (Horizontal), false: Dọc (Vertical)
         private int _matchSeconds = 0;
@@ -126,7 +127,7 @@ namespace BattleshipGame.Views
             new ThongTinTauUI { TenTau = "Tàu tuần tra (2 ô)", DoDai = 2 }
         };
 
-        public frmBanTau(string cheDoChoi = "PvE")
+        public frmBanTau(string cheDoChoi = "PvE", string tenNguoiChoi = "Thuyền Trưởng")
         {
             InitializeComponent();
             DoubleBuffered = true;
@@ -135,6 +136,7 @@ namespace BattleshipGame.Views
             Text = "Trận Địa Hải Chiến - Bắn Tàu (Giao Diện Bàn Cờ Động Ngày 2 - TV2)";
 
             _cheDoChoi = cheDoChoi;
+            _tenNguoiChoi = string.IsNullOrWhiteSpace(tenNguoiChoi) ? "Thuyền Trưởng" : tenNguoiChoi.Trim();
             _botAI = new cMayBanAI(_cheDoChoi.IndexOf("Dễ", StringComparison.OrdinalIgnoreCase) >= 0 ? DoKhoAI.De : DoKhoAI.Kho, 10);
             KhoiTaoThongTinChung();
 
@@ -1154,31 +1156,32 @@ namespace BattleshipGame.Views
         }
 
         /// <summary>
-        /// [NGÀY 4 - TV3] Hộp thoại nhập tên người chơi khi kết thúc ván đấu để ghi danh bảng vàng
+        /// [NGÀY 4 - TV3] Hộp thoại nhập / xác nhận tên người chơi khi kết thúc ván đấu Bot AI để lưu vào Bảng Xếp Hạng.
+        /// (Chỉ áp dụng với chế độ Bot AI).
         /// </summary>
-        private string HienThiHopThoaiNhapTen(string tenMacDinh, int diem, bool thang)
+        private string? HienThiHopThoaiNhapTen(string tenMacDinh, int diem, bool thang)
         {
             try
             {
                 using var dlg = new Form();
-                dlg.Text = thang ? "🎖️ Ghi Danh Bảng Vàng" : "☠️ Báo Cáo Chiến Sự";
+                dlg.Text = thang ? "🎖️ Ghi Danh Bảng Vàng (Bot AI)" : "☠️ Báo Cáo Chiến Sự (Bot AI)";
                 dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
                 dlg.StartPosition = FormStartPosition.CenterParent;
                 dlg.MaximizeBox = false;
                 dlg.MinimizeBox = false;
                 dlg.ShowInTaskbar = false;
-                dlg.ClientSize = new Size(420, 200);
+                dlg.ClientSize = new Size(430, 215);
                 dlg.BackColor = UITheme.BackgroundDark;
                 dlg.ForeColor = UITheme.TextPrimary;
 
                 var lblPrompt = new Label
                 {
                     Text = thang 
-                        ? $"🎉 Chiến thắng oanh liệt! Điểm số: {diem:N0}\nXin mời Đô đốc nhập tên để lưu vào Bảng kỷ lục:" 
-                        : $"☠️ Hạm đội đã thất bại! Hãy nhập tên để ghi nhận kết quả:",
-                    Location = new Point(20, 20),
-                    Size = new Size(380, 45),
-                    Font = new Font("Segoe UI", 10f, FontStyle.Regular),
+                        ? $"🎉 Chiến thắng oanh liệt! Điểm số: {diem:N0}\nXin mời Đô đốc xác nhận tên để lưu vào Bảng Xếp Hạng:" 
+                        : $"☠️ Hạm đội đã thất bại! Điểm số: {diem:N0}\nNhập tên Đô đốc để ghi nhận kết quả vào Bảng Xếp Hạng:",
+                    Location = new Point(20, 16),
+                    Size = new Size(390, 48),
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Regular),
                     ForeColor = thang ? UITheme.AccentNeon : UITheme.DangerRed
                 };
                 dlg.Controls.Add(lblPrompt);
@@ -1186,8 +1189,8 @@ namespace BattleshipGame.Views
                 var txtName = new TextBox
                 {
                     Text = tenMacDinh,
-                    Location = new Point(24, 75),
-                    Size = new Size(372, 28),
+                    Location = new Point(24, 72),
+                    Size = new Size(382, 28),
                     Font = new Font("Segoe UI", 11f, FontStyle.Bold),
                     BackColor = UITheme.PanelBackground,
                     ForeColor = Color.White,
@@ -1197,12 +1200,22 @@ namespace BattleshipGame.Views
                 txtName.SelectAll();
                 dlg.Controls.Add(txtName);
 
+                var lblNote = new Label
+                {
+                    Text = "ℹ️ Thành tích sẽ được lưu vào Bảng Xếp Hạng (chế độ Bot AI).",
+                    Location = new Point(24, 108),
+                    Size = new Size(382, 20),
+                    Font = new Font("Segoe UI", 8.5f, FontStyle.Italic),
+                    ForeColor = UITheme.TextSecondary
+                };
+                dlg.Controls.Add(lblNote);
+
                 var btnOk = new Button
                 {
-                    Text = "💾 Lưu Thành Tích",
+                    Text = "💾 Lưu Vào BXH",
                     DialogResult = DialogResult.OK,
-                    Location = new Point(140, 130),
-                    Size = new Size(130, 38),
+                    Location = new Point(136, 145),
+                    Size = new Size(136, 38),
                     FlatStyle = FlatStyle.Flat,
                     BackColor = UITheme.PrimaryCyan,
                     ForeColor = Color.White,
@@ -1216,8 +1229,8 @@ namespace BattleshipGame.Views
                 {
                     Text = "Bỏ qua",
                     DialogResult = DialogResult.Cancel,
-                    Location = new Point(280, 130),
-                    Size = new Size(116, 38),
+                    Location = new Point(286, 145),
+                    Size = new Size(120, 38),
                     FlatStyle = FlatStyle.Flat,
                     BackColor = UITheme.PanelBackground,
                     ForeColor = UITheme.MissGray,
@@ -1256,13 +1269,7 @@ namespace BattleshipGame.Views
             int soTauConSong = banCoNhaThucTe.DanhSachTau.Count(t => !t.DaChim);
             int shotCount = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) ? TongPhatBanHienTai : _tongPhatBan;
 
-            // [NGÀY 4 - TV3] Tinh diem tu dong theo cong thuc Game Balance chuan
-            int diem = cThanhTichDAO.TinhDiem(nguoiChoiThang, soTauConSong, shotCount, _matchSeconds);
-            string ketQua = nguoiChoiThang ? "Thắng" : "Thua";
-
-            string tenMacDinh = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
-                ? $"Người Chơi {_nguoiChoiHienTai}"
-                : "Thuyền Trưởng";
+            bool laCheDoBot = _cheDoChoi.StartsWith("PvE", StringComparison.OrdinalIgnoreCase);
 
             if (nguoiChoiThang)
             {
@@ -1270,8 +1277,8 @@ namespace BattleshipGame.Views
                 lblTurnIndicator.Text = "🏆 CHIẾN THẮNG CHUNG CUỘC!";
                 lblTurnIndicator.ForeColor = UITheme.AccentNeon;
                 string winMsg = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
-                    ? $"🎉 Người chơi {_nguoiChoiHienTai} đã chiến thắng vang dội! Điểm số: {diem:N0}"
-                    : $"🎉 Chúc mừng! Bạn đã tiêu diệt toàn bộ hạm đội địch! Điểm số: {diem:N0}";
+                    ? $"🎉 Người chơi {_nguoiChoiHienTai} đã chiến thắng vang dội!"
+                    : $"🎉 Chúc mừng Đô đốc {_tenNguoiChoi}! Bạn đã tiêu diệt toàn bộ hạm đội địch!";
                 lblTurnMessage.Text = winMsg;
             }
             else
@@ -1279,38 +1286,102 @@ namespace BattleshipGame.Views
                 cAmThanh.PhatDefeat();
                 lblTurnIndicator.Text = "☠️ HẠM ĐỘI ĐÃ BỊ TIÊU DIỆT!";
                 lblTurnIndicator.ForeColor = UITheme.DangerRed;
-                lblTurnMessage.Text = "Hạm đội của bạn đã chìm hoàn toàn. Bạn đã thất bại!";
+                lblTurnMessage.Text = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
+                    ? "Hạm đội đã chìm hoàn toàn. Trận đấu kết thúc!"
+                    : $"Hạm đội của Đô đốc {_tenNguoiChoi} đã chìm hoàn toàn. Bạn đã thất bại!";
             }
 
-            // [NGÀY 4 - TV3] Bật hộp thoại nhập tên người chơi để ghi danh
-            string? tenNguoiChoi = HienThiHopThoaiNhapTen(tenMacDinh, diem, nguoiChoiThang);
-
-            string thongBaoLuu;
-            if (!string.IsNullOrEmpty(tenNguoiChoi))
+            if (laCheDoBot)
             {
-                bool luuOk = cThanhTichDAO.LuuThanhTich(tenNguoiChoi, diem, shotCount, _matchSeconds, _cheDoChoi, ketQua);
-                thongBaoLuu = luuOk
-                    ? "Thành tích đã được lưu vào hệ thống!"
-                    : $"⚠️ Không thể lưu thành tích ({cThanhTichDAO.LoiGanNhat ?? "File bận"}).";
+                // [CHỈ ÁP DỤNG VỚI CHẾ ĐỘ BOT]
+                // 1. Tính điểm tự động theo công thức Game Balance
+                int diem = cThanhTichDAO.TinhDiem(nguoiChoiThang, soTauConSong, shotCount, _matchSeconds);
+                string ketQua = nguoiChoiThang ? "Thắng" : "Thua";
+
+                // 2. Hộp thoại nhập / xác nhận tên lưu vào Bảng Xếp Hạng
+                string? tenLuu = HienThiHopThoaiNhapTen(_tenNguoiChoi, diem, nguoiChoiThang);
+
+                string thongBaoLuu;
+                bool daLuu = false;
+                if (!string.IsNullOrEmpty(tenLuu))
+                {
+                    _tenNguoiChoi = tenLuu; // Cập nhật tên nếu người chơi sửa
+                    bool luuOk = cThanhTichDAO.LuuThanhTich(_tenNguoiChoi, diem, shotCount, _matchSeconds, _cheDoChoi, ketQua);
+                    daLuu = luuOk;
+                    thongBaoLuu = luuOk
+                        ? "✅ Thành tích đã được ghi danh vào Bảng Xếp Hạng!"
+                        : $"⚠️ Không thể lưu thành tích ({cThanhTichDAO.LoiGanNhat ?? "File bận"}).";
+                }
+                else
+                {
+                    thongBaoLuu = "ℹ️ Đã bỏ qua lưu thành tích vào Bảng Xếp Hạng.";
+                }
+
+                string thongBaoChiTiet = nguoiChoiThang
+                    ? $"🎉 CHIẾN THẮNG XUẤT SẮC!\n\n" +
+                      $"Đô đốc: {_tenNguoiChoi}\n" +
+                      $"Chế độ: {_cheDoChoi}\n" +
+                      $"Số lượt bắn: {shotCount}\n" +
+                      $"Thời gian tác chiến: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n" +
+                      $"Điểm tích lũy: {diem:N0} điểm\n\n" +
+                      $"{thongBaoLuu}"
+                    : $"☠️ TRẬN ĐẤU KẾT THÚC!\n\n" +
+                      $"Hạm đội của Đô đốc {_tenNguoiChoi} đã bị Bot AI bắn chìm hoàn toàn.\n" +
+                      $"Số lượt bắn: {shotCount}\n" +
+                      $"Thời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n\n" +
+                      $"{thongBaoLuu}";
+
+                if (daLuu)
+                {
+                    var xemBxh = MessageBox.Show(
+                        $"{thongBaoChiTiet}\n\nBạn có muốn mở xem Bảng Xếp Hạng ngay không?",
+                        nguoiChoiThang ? "Chiến Thắng - Bảng Xếp Hạng" : "Thất Bại - Bảng Xếp Hạng",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Information
+                    );
+                    if (xemBxh == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            using var f = new frmThanhTich();
+                            f.ShowDialog(this);
+                        }
+                        catch { }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(
+                        thongBaoChiTiet,
+                        nguoiChoiThang ? "Chiến Thắng" : "Thất Bại",
+                        MessageBoxButtons.OK,
+                        nguoiChoiThang ? MessageBoxIcon.Information : MessageBoxIcon.Warning
+                    );
+                }
             }
             else
             {
-                thongBaoLuu = "ℹ️ Đã bỏ qua lưu thành tích theo yêu cầu.";
-                tenNguoiChoi = tenMacDinh;
+                // [CHẾ ĐỘ KHÔNG PHẢI BOT: PvP Hotseat / Custom]
+                // KHÔNG hiển thị hộp thoại lưu tên và KHÔNG lưu vào Bảng Xếp Hạng
+                string thongBaoTieuDe = nguoiChoiThang ? $"🎉 NGƯỜI CHƠI {_nguoiChoiHienTai} CHIẾN THẮNG!" : "☠️ TRẬN ĐẤU KẾT THÚC!";
+                string thongBaoPvP = nguoiChoiThang
+                    ? $"{thongBaoTieuDe}\n\n" +
+                      $"Người chiến thắng: Người chơi {_nguoiChoiHienTai}\n" +
+                      $"Số lượt bắn: {shotCount}\n" +
+                      $"Thời gian ván đấu: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n\n" +
+                      $"ℹ️ Chế độ PvP không lưu vào Bảng Xếp Hạng (chỉ áp dụng với chế độ Bot AI)."
+                    : $"☠️ TRẬN ĐẤU KẾT THÚC!\n\n" +
+                      $"Hạm đội đã bị đối phương bắn chìm hoàn toàn.\n" +
+                      $"Thời gian ván đấu: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n\n" +
+                      $"ℹ️ Chế độ PvP không lưu vào Bảng Xếp Hạng (chỉ áp dụng với chế độ Bot AI).";
+
+                MessageBox.Show(
+                    thongBaoPvP,
+                    "Kết Quả Trận Đấu",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
             }
-
-            string thongBaoTieuDe = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
-                ? (nguoiChoiThang ? $"🎉 NGƯỜI CHƠI {_nguoiChoiHienTai} CHIẾN THẮNG!" : "☠️ TRẬN ĐẤU KẾT THÚC!")
-                : (nguoiChoiThang ? "🎉 CHIẾN THẮNG XUẤT SẮC!" : "☠️ TRẬN ĐẤU KẾT THÚC!");
-
-            MessageBox.Show(
-                nguoiChoiThang
-                    ? $"{thongBaoTieuDe}\n\nThuyền trưởng: {tenNguoiChoi}\nSố lượt bắn: {shotCount}\nThời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\nĐiểm số: {diem:N0}\n\n{thongBaoLuu}"
-                    : $"☠️ TRẬN ĐẤU KẾT THÚC!\nHạm đội ta đã bị đối phương bắn chìm hoàn toàn.\n\n{thongBaoLuu}",
-                nguoiChoiThang ? "Chiến Thắng" : "Thất Bại",
-                MessageBoxButtons.OK,
-                nguoiChoiThang ? MessageBoxIcon.Information : MessageBoxIcon.Stop
-            );
         }
         #endregion
 
@@ -1319,10 +1390,15 @@ namespace BattleshipGame.Views
         {
             lblMatchModeInfo.Text = _cheDoChoi switch
             {
-                var s when s.StartsWith("PvE") => $"Chế độ: Đấu với Máy ({_cheDoChoi}) • Bàn cờ động 10x10",
+                var s when s.StartsWith("PvE") => $"Chế độ: Đấu với Máy ({_cheDoChoi}) • Đô đốc: {_tenNguoiChoi} • Bàn cờ 10x10",
                 var s when s.StartsWith("PvP") => "Chế độ: Hai người chơi chung 1 máy (Hotseat) • Màn chắn sương mù",
-                _ => $"Chế độ: {_cheDoChoi} • Bàn cờ động 10x10"
+                _ => $"Chế độ: {_cheDoChoi} • Bàn cờ 10x10"
             };
+
+            if (_cheDoChoi.StartsWith("PvE", StringComparison.OrdinalIgnoreCase))
+            {
+                lblLeftBoardTitle.Text = $"🛡️ VÙNG BIỂN CỦA {_tenNguoiChoi.ToUpper()} (HẠM ĐỘI TA)";
+            }
 
             CapNhatNutAmThanh();
         }

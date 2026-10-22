@@ -613,6 +613,14 @@ namespace BattleshipGame.Tests
                 var docNested = cThanhTichDAO.DocDanhSach();
                 Assert(File.Exists(nestedDirFile) && docNested.Count > 0,
                     "TC-75: cThanhTichDAO tự động sinh thư mục cha lồng nhau khi đường dẫn chưa tồn tại");
+
+                // Test 76: Ghi danh Bang Xep Hang cho che do Bot AI va xac thuc ten nguoi choi hop le
+                string botTestFile = Path.Combine(tempTestDir, "bot_leaderboard_test.txt");
+                cThanhTichDAO.DuongDanFile = botTestFile;
+                bool botSaveSuccess = cThanhTichDAO.LuuThanhTich("DoDocNam", 1850, 18, 75, "PvE - Nâng cao", "Thắng");
+                var botRecords = cThanhTichDAO.DocThanhTich();
+                bool botOk = botSaveSuccess && botRecords.Count == 1 && botRecords[0].TenNguoiChoi == "DoDocNam" && botRecords[0].CheDo.StartsWith("PvE");
+                Assert(botOk, "TC-76: Ghi danh Bảng Xếp Hạng chuẩn xác cho chế độ Bot AI với tên Đô đốc tùy chỉnh");
             }
             finally
             {

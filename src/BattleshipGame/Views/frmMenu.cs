@@ -88,21 +88,25 @@ namespace BattleshipGame.Views
 
         private void btnPvE_Click(object sender, EventArgs e)
         {
-            // Hiển thị panel chọn độ khó AI
+            // Hiển thị panel chọn độ khó AI và focus vào ô nhập tên
             pnlDifficultySelection.Visible = true;
             pnlDifficultySelection.BringToFront();
+            txtPlayerName.Focus();
+            txtPlayerName.SelectAll();
         }
 
         private void btnStartPvEEasy_Click(object sender, EventArgs e)
         {
             pnlDifficultySelection.Visible = false;
-            MoManHinhTranDau("PvE - Dễ");
+            string ten = string.IsNullOrWhiteSpace(txtPlayerName.Text) ? "Thuyền Trưởng" : txtPlayerName.Text.Trim();
+            MoManHinhTranDau("PvE - Dễ", ten);
         }
 
         private void btnStartPvEHard_Click(object sender, EventArgs e)
         {
             pnlDifficultySelection.Visible = false;
-            MoManHinhTranDau("PvE - Nâng cao");
+            string ten = string.IsNullOrWhiteSpace(txtPlayerName.Text) ? "Thuyền Trưởng" : txtPlayerName.Text.Trim();
+            MoManHinhTranDau("PvE - Nâng cao", ten);
         }
 
         private void btnCloseDifficulty_Click(object sender, EventArgs e)
@@ -162,10 +166,10 @@ namespace BattleshipGame.Views
             }
         }
 
-        private void MoManHinhTranDau(string cheDo)
+        private void MoManHinhTranDau(string cheDo, string tenNguoiChoi = "Thuyền Trưởng")
         {
             Hide();
-            using (var f = new frmBanTau(cheDo))
+            using (var f = new frmBanTau(cheDo, tenNguoiChoi))
             {
                 f.ShowDialog(this);
             }

@@ -31,6 +31,8 @@ namespace BattleshipGame.Views
         private TacticalButton btnStartPvEEasy;
         private TacticalButton btnStartPvEHard;
         private TacticalButton btnCloseDifficulty;
+        private Label lblPlayerName;
+        private TextBox txtPlayerName;
 
         protected override void Dispose(bool disposing)
         {
@@ -65,6 +67,8 @@ namespace BattleshipGame.Views
             this.btnStartPvEEasy = new TacticalButton();
             this.btnStartPvEHard = new TacticalButton();
             this.btnCloseDifficulty = new TacticalButton();
+            this.lblPlayerName = new Label();
+            this.txtPlayerName = new TextBox();
 
             this.SuspendLayout();
 
@@ -211,31 +215,53 @@ namespace BattleshipGame.Views
             // 
             this.pnlDifficultySelection.BackColor = UITheme.PanelBackground;
             this.pnlDifficultySelection.BorderStyle = BorderStyle.FixedSingle;
-            this.pnlDifficultySelection.Location = new Point(190, 180);
-            this.pnlDifficultySelection.Size = new Size(500, 330);
+            this.pnlDifficultySelection.Location = new Point(190, 160);
+            this.pnlDifficultySelection.Size = new Size(500, 360);
             this.pnlDifficultySelection.Visible = false;
             this.Controls.Add(this.pnlDifficultySelection);
 
             this.lblDifficultyTitle.AutoSize = false;
-            this.lblDifficultyTitle.Location = new Point(20, 20);
-            this.lblDifficultyTitle.Size = new Size(460, 32);
-            this.lblDifficultyTitle.Font = new Font("Segoe UI", 16f, FontStyle.Bold);
+            this.lblDifficultyTitle.Location = new Point(20, 16);
+            this.lblDifficultyTitle.Size = new Size(460, 30);
+            this.lblDifficultyTitle.Font = new Font("Segoe UI", 15f, FontStyle.Bold);
             this.lblDifficultyTitle.ForeColor = UITheme.AccentNeon;
             this.lblDifficultyTitle.TextAlign = ContentAlignment.MiddleCenter;
             this.lblDifficultyTitle.Text = "CHỌN CẤP ĐỘ MÁY ĐỐI THỦ (AI)";
             this.pnlDifficultySelection.Controls.Add(this.lblDifficultyTitle);
 
             this.lblDifficultyDesc.AutoSize = false;
-            this.lblDifficultyDesc.Location = new Point(30, 60);
-            this.lblDifficultyDesc.Size = new Size(440, 40);
-            this.lblDifficultyDesc.Font = new Font("Segoe UI", 9.5f, FontStyle.Regular);
+            this.lblDifficultyDesc.Location = new Point(25, 48);
+            this.lblDifficultyDesc.Size = new Size(450, 30);
+            this.lblDifficultyDesc.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
             this.lblDifficultyDesc.ForeColor = UITheme.TextSecondary;
             this.lblDifficultyDesc.TextAlign = ContentAlignment.MiddleCenter;
-            this.lblDifficultyDesc.Text = "Hệ thống AI tích hợp 2 thuật toán chiến thuật hải chiến:\nChọn cấp độ để sẵn sàng vào trận!";
+            this.lblDifficultyDesc.Text = "Nhập tên Đô đốc để lưu điểm vào Bảng Xếp Hạng khi kết thúc ván đấu:";
             this.pnlDifficultySelection.Controls.Add(this.lblDifficultyDesc);
 
-            this.btnStartPvEEasy.Location = new Point(60, 115);
-            this.btnStartPvEEasy.Size = new Size(380, 52);
+            // lblPlayerName
+            this.lblPlayerName.AutoSize = false;
+            this.lblPlayerName.Location = new Point(50, 82);
+            this.lblPlayerName.Size = new Size(400, 18);
+            this.lblPlayerName.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+            this.lblPlayerName.ForeColor = UITheme.PrimaryCyan;
+            this.lblPlayerName.TextAlign = ContentAlignment.MiddleLeft;
+            this.lblPlayerName.Text = "👤 TÊN ĐÔ ĐỐC / NGƯỜI CHƠI:";
+            this.pnlDifficultySelection.Controls.Add(this.lblPlayerName);
+
+            // txtPlayerName
+            this.txtPlayerName.Location = new Point(50, 102);
+            this.txtPlayerName.Size = new Size(400, 28);
+            this.txtPlayerName.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
+            this.txtPlayerName.BackColor = Color.FromArgb(15, 23, 42);
+            this.txtPlayerName.ForeColor = Color.White;
+            this.txtPlayerName.BorderStyle = BorderStyle.FixedSingle;
+            this.txtPlayerName.MaxLength = 40;
+            this.txtPlayerName.Text = "Thuyền Trưởng";
+            this.pnlDifficultySelection.Controls.Add(this.txtPlayerName);
+
+            // btnStartPvEEasy
+            this.btnStartPvEEasy.Location = new Point(50, 142);
+            this.btnStartPvEEasy.Size = new Size(400, 48);
             this.btnStartPvEEasy.Text = "🟢 CẤP ĐỘ DỄ (Bắn ngẫu nhiên)";
             this.btnStartPvEEasy.BorderColor = UITheme.SuccessGreen;
             this.btnStartPvEEasy.HoverBorderColor = UITheme.SuccessGreen;
@@ -243,8 +269,9 @@ namespace BattleshipGame.Views
             this.btnStartPvEEasy.Click += new EventHandler(this.btnStartPvEEasy_Click);
             this.pnlDifficultySelection.Controls.Add(this.btnStartPvEEasy);
 
-            this.btnStartPvEHard.Location = new Point(60, 180);
-            this.btnStartPvEHard.Size = new Size(380, 52);
+            // btnStartPvEHard
+            this.btnStartPvEHard.Location = new Point(50, 200);
+            this.btnStartPvEHard.Size = new Size(400, 48);
             this.btnStartPvEHard.Text = "🔴 CẤP ĐỘ KHÓ (FSM Hunt & Target)";
             this.btnStartPvEHard.BorderColor = UITheme.DangerRed;
             this.btnStartPvEHard.HoverBorderColor = UITheme.DangerRed;
@@ -252,8 +279,9 @@ namespace BattleshipGame.Views
             this.btnStartPvEHard.Click += new EventHandler(this.btnStartPvEHard_Click);
             this.pnlDifficultySelection.Controls.Add(this.btnStartPvEHard);
 
-            this.btnCloseDifficulty.Location = new Point(140, 255);
-            this.btnCloseDifficulty.Size = new Size(220, 42);
+            // btnCloseDifficulty
+            this.btnCloseDifficulty.Location = new Point(140, 260);
+            this.btnCloseDifficulty.Size = new Size(220, 38);
             this.btnCloseDifficulty.Text = "Quay Lại Menu";
             this.btnCloseDifficulty.BorderColor = UITheme.BorderDefault;
             this.btnCloseDifficulty.Click += new EventHandler(this.btnCloseDifficulty_Click);
