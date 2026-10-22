@@ -14,6 +14,8 @@ namespace BattleshipGame.Views
     public partial class frmMenu : Form
     {
 
+        private string _tenNguoiChoi = "Thuyền Trưởng";
+
         public frmMenu()
         {
             InitializeComponent();
@@ -21,6 +23,7 @@ namespace BattleshipGame.Views
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Bắn Tàu - Tactical Naval Warfare";
             CapNhatNutAmThanh();
+            CapNhatHienThiTenNguoiChoi();
 
             Shown += (s, e) =>
             {
@@ -86,27 +89,116 @@ namespace BattleshipGame.Views
             CapNhatNutAmThanh();
         }
 
+        private void CapNhatHienThiTenNguoiChoi()
+        {
+            if (lblCurrentPlayer != null)
+            {
+                lblCurrentPlayer.Text = $"👤 Đô đốc: {_tenNguoiChoi}";
+            }
+        }
+
+        private void btnChangeName_Click(object sender, EventArgs e)
+        {
+            using (Form prompt = new Form())
+            {
+                prompt.Width = 400;
+                prompt.Height = 190;
+                prompt.FormBorderStyle = FormBorderStyle.FixedDialog;
+                prompt.Text = "Đổi Tên Đô Đốc";
+                prompt.StartPosition = FormStartPosition.CenterParent;
+                prompt.BackColor = UITheme.BackgroundDark;
+                prompt.ForeColor = Color.White;
+                prompt.MaximizeBox = false;
+                prompt.MinimizeBox = false;
+
+                Label lblPrompt = new Label()
+                {
+                    Left = 24,
+                    Top = 18,
+                    Width = 340,
+                    Height = 22,
+                    Text = "Nhập tên Đô đốc mới (dùng cho chế độ Đấu Máy):",
+                    ForeColor = UITheme.PrimaryCyan,
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold)
+                };
+
+                TextBox txtInput = new TextBox()
+                {
+                    Left = 24,
+                    Top = 48,
+                    Width = 336,
+                    Text = _tenNguoiChoi,
+                    MaxLength = 30,
+                    BackColor = Color.FromArgb(15, 23, 42),
+                    ForeColor = Color.White,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    Font = new Font("Segoe UI", 11f, FontStyle.Bold)
+                };
+
+                TacticalButton btnXacNhan = new TacticalButton()
+                {
+                    Text = "Xác nhận",
+                    Left = 140,
+                    Width = 105,
+                    Top = 95,
+                    Height = 36,
+                    BorderColor = UITheme.PrimaryCyan,
+                    DialogResult = DialogResult.OK
+                };
+
+                TacticalButton btnHuy = new TacticalButton()
+                {
+                    Text = "Hủy",
+                    Left = 255,
+                    Width = 105,
+                    Top = 95,
+                    Height = 36,
+                    BorderColor = UITheme.BorderLight,
+                    DialogResult = DialogResult.Cancel
+                };
+
+                prompt.Controls.Add(lblPrompt);
+                prompt.Controls.Add(txtInput);
+                prompt.Controls.Add(btnXacNhan);
+                prompt.Controls.Add(btnHuy);
+                prompt.AcceptButton = btnXacNhan;
+                prompt.CancelButton = btnHuy;
+
+                prompt.Shown += (s, ev) =>
+                {
+                    txtInput.Focus();
+                    txtInput.SelectAll();
+                };
+
+                if (prompt.ShowDialog(this) == DialogResult.OK)
+                {
+                    if (!string.IsNullOrWhiteSpace(txtInput.Text))
+                    {
+                        _tenNguoiChoi = txtInput.Text.Trim();
+                        CapNhatHienThiTenNguoiChoi();
+                    }
+                }
+            }
+        }
+
         private void btnPvE_Click(object sender, EventArgs e)
         {
-            // Hiển thị panel chọn độ khó AI và focus vào ô nhập tên
+            // Hiển thị panel chọn độ khó AI
+            lblDifficultyDesc.Text = $"Đô đốc hiện tại: {_tenNguoiChoi}\nHãy chọn cấp độ để sẵn sàng vào trận!";
             pnlDifficultySelection.Visible = true;
             pnlDifficultySelection.BringToFront();
-            txtPlayerName.Focus();
-            txtPlayerName.SelectAll();
         }
 
         private void btnStartPvEEasy_Click(object sender, EventArgs e)
         {
             pnlDifficultySelection.Visible = false;
-            string ten = string.IsNullOrWhiteSpace(txtPlayerName.Text) ? "Thuyền Trưởng" : txtPlayerName.Text.Trim();
-            MoManHinhTranDau("PvE - Dễ", ten);
+            MoManHinhTranDau("PvE - Dễ", _tenNguoiChoi);
         }
 
         private void btnStartPvEHard_Click(object sender, EventArgs e)
         {
             pnlDifficultySelection.Visible = false;
-            string ten = string.IsNullOrWhiteSpace(txtPlayerName.Text) ? "Thuyền Trưởng" : txtPlayerName.Text.Trim();
-            MoManHinhTranDau("PvE - Nâng cao", ten);
+            MoManHinhTranDau("PvE - Nâng cao", _tenNguoiChoi);
         }
 
         private void btnCloseDifficulty_Click(object sender, EventArgs e)
@@ -117,11 +209,6 @@ namespace BattleshipGame.Views
         private void btnPvP_Click(object sender, EventArgs e)
         {
             MoManHinhTranDau("PvP Hotseat");
-        }
-
-        private void btnCustom_Click(object sender, EventArgs e)
-        {
-            MoManHinhTranDau("Custom");
         }
 
         private void btnLeaderboard_Click(object sender, EventArgs e)

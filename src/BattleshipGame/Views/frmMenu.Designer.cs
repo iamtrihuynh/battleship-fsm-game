@@ -17,10 +17,13 @@ namespace BattleshipGame.Views
         private Panel pnlButtonContainer;
         private TacticalButton btnPvE;
         private TacticalButton btnPvP;
-        private TacticalButton btnCustom;
         private TacticalButton btnLeaderboard;
         private TacticalButton btnAbout;
         private TacticalButton btnExit;
+
+        // Góc trên bên trái: Tên người chơi và nút đổi tên
+        private Label lblCurrentPlayer;
+        private TacticalButton btnChangeName;
 
         private Label lblFooter;
 
@@ -31,8 +34,6 @@ namespace BattleshipGame.Views
         private TacticalButton btnStartPvEEasy;
         private TacticalButton btnStartPvEHard;
         private TacticalButton btnCloseDifficulty;
-        private Label lblPlayerName;
-        private TextBox txtPlayerName;
 
         protected override void Dispose(bool disposing)
         {
@@ -54,10 +55,12 @@ namespace BattleshipGame.Views
             this.pnlButtonContainer = new Panel();
             this.btnPvE = new TacticalButton();
             this.btnPvP = new TacticalButton();
-            this.btnCustom = new TacticalButton();
             this.btnLeaderboard = new TacticalButton();
             this.btnAbout = new TacticalButton();
             this.btnExit = new TacticalButton();
+
+            this.lblCurrentPlayer = new Label();
+            this.btnChangeName = new TacticalButton();
 
             this.lblFooter = new Label();
 
@@ -67,8 +70,6 @@ namespace BattleshipGame.Views
             this.btnStartPvEEasy = new TacticalButton();
             this.btnStartPvEHard = new TacticalButton();
             this.btnCloseDifficulty = new TacticalButton();
-            this.lblPlayerName = new Label();
-            this.txtPlayerName = new TextBox();
 
             this.SuspendLayout();
 
@@ -85,6 +86,32 @@ namespace BattleshipGame.Views
             this.Name = "frmMenu";
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Resize += new EventHandler(this.frmMenu_Resize);
+
+            // 
+            // lblCurrentPlayer (Tên người chơi hiện tại ở góc trên bên trái)
+            // 
+            this.lblCurrentPlayer.AutoSize = false;
+            this.lblCurrentPlayer.Location = new Point(24, 16);
+            this.lblCurrentPlayer.Size = new Size(260, 24);
+            this.lblCurrentPlayer.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
+            this.lblCurrentPlayer.ForeColor = UITheme.AccentNeon;
+            this.lblCurrentPlayer.TextAlign = ContentAlignment.MiddleLeft;
+            this.lblCurrentPlayer.Text = "👤 Đô đốc: Thuyền Trưởng";
+            this.Controls.Add(this.lblCurrentPlayer);
+
+            // 
+            // btnChangeName (Nút đổi tên ngay bên dưới tên người chơi)
+            // 
+            this.btnChangeName.Location = new Point(24, 44);
+            this.btnChangeName.Size = new Size(110, 32);
+            this.btnChangeName.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+            this.btnChangeName.Text = "✏️  Đổi tên";
+            this.btnChangeName.CornerRadius = 6;
+            this.btnChangeName.BorderColor = UITheme.PrimaryCyan;
+            this.btnChangeName.HoverBorderColor = UITheme.AccentNeon;
+            this.btnChangeName.HoverTextColor = UITheme.AccentNeon;
+            this.btnChangeName.Click += new EventHandler(this.btnChangeName_Click);
+            this.Controls.Add(this.btnChangeName);
 
             // 
             // btnSoundToggle
@@ -133,7 +160,7 @@ namespace BattleshipGame.Views
             // 
             this.pnlButtonContainer.BackColor = UITheme.BackgroundDark;
             this.pnlButtonContainer.Location = new Point(270, 245);
-            this.pnlButtonContainer.Size = new Size(340, 360);
+            this.pnlButtonContainer.Size = new Size(340, 310);
             this.Controls.Add(this.pnlButtonContainer);
 
             // 
@@ -149,7 +176,7 @@ namespace BattleshipGame.Views
             // 
             // btnPvP
             // 
-            this.btnPvP.Location = new Point(20, 68);
+            this.btnPvP.Location = new Point(20, 70);
             this.btnPvP.Size = new Size(300, 48);
             this.btnPvP.Text = "👥  HAI NGƯỜI CHƠI (PvP)";
             this.btnPvP.BorderColor = UITheme.PrimaryCyan;
@@ -157,19 +184,9 @@ namespace BattleshipGame.Views
             this.pnlButtonContainer.Controls.Add(this.btnPvP);
 
             // 
-            // btnCustom
-            // 
-            this.btnCustom.Location = new Point(20, 126);
-            this.btnCustom.Size = new Size(300, 48);
-            this.btnCustom.Text = "⚙️  CHẾ ĐỘ TÙY BIẾN (CUSTOM)";
-            this.btnCustom.BorderColor = UITheme.BorderLight;
-            this.btnCustom.Click += new EventHandler(this.btnCustom_Click);
-            this.pnlButtonContainer.Controls.Add(this.btnCustom);
-
-            // 
             // btnLeaderboard
             // 
-            this.btnLeaderboard.Location = new Point(20, 184);
+            this.btnLeaderboard.Location = new Point(20, 130);
             this.btnLeaderboard.Size = new Size(300, 48);
             this.btnLeaderboard.Text = "🏆  BẢNG XẾP HẠNG";
             this.btnLeaderboard.BorderColor = UITheme.BorderLight;
@@ -179,7 +196,7 @@ namespace BattleshipGame.Views
             // 
             // btnAbout
             // 
-            this.btnAbout.Location = new Point(20, 242);
+            this.btnAbout.Location = new Point(20, 190);
             this.btnAbout.Size = new Size(300, 48);
             this.btnAbout.Text = "ℹ️  HƯỚNG DẪN & GIỚI THIỆU";
             this.btnAbout.BorderColor = UITheme.BorderLight;
@@ -189,7 +206,7 @@ namespace BattleshipGame.Views
             // 
             // btnExit
             // 
-            this.btnExit.Location = new Point(20, 300);
+            this.btnExit.Location = new Point(20, 250);
             this.btnExit.Size = new Size(300, 48);
             this.btnExit.Text = "🚪  THOÁT TRÒ CHƠI";
             this.btnExit.BorderColor = UITheme.DangerRed;
@@ -215,8 +232,8 @@ namespace BattleshipGame.Views
             // 
             this.pnlDifficultySelection.BackColor = UITheme.PanelBackground;
             this.pnlDifficultySelection.BorderStyle = BorderStyle.FixedSingle;
-            this.pnlDifficultySelection.Location = new Point(190, 160);
-            this.pnlDifficultySelection.Size = new Size(500, 360);
+            this.pnlDifficultySelection.Location = new Point(190, 180);
+            this.pnlDifficultySelection.Size = new Size(500, 270);
             this.pnlDifficultySelection.Visible = false;
             this.Controls.Add(this.pnlDifficultySelection);
 
@@ -230,37 +247,16 @@ namespace BattleshipGame.Views
             this.pnlDifficultySelection.Controls.Add(this.lblDifficultyTitle);
 
             this.lblDifficultyDesc.AutoSize = false;
-            this.lblDifficultyDesc.Location = new Point(25, 48);
-            this.lblDifficultyDesc.Size = new Size(450, 30);
-            this.lblDifficultyDesc.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
+            this.lblDifficultyDesc.Location = new Point(25, 50);
+            this.lblDifficultyDesc.Size = new Size(450, 32);
+            this.lblDifficultyDesc.Font = new Font("Segoe UI", 9.5f, FontStyle.Regular);
             this.lblDifficultyDesc.ForeColor = UITheme.TextSecondary;
             this.lblDifficultyDesc.TextAlign = ContentAlignment.MiddleCenter;
-            this.lblDifficultyDesc.Text = "Nhập tên Đô đốc để lưu điểm vào Bảng Xếp Hạng khi kết thúc ván đấu:";
+            this.lblDifficultyDesc.Text = "Hệ thống AI tích hợp 2 thuật toán chiến thuật hải chiến:\nChọn cấp độ để sẵn sàng vào trận!";
             this.pnlDifficultySelection.Controls.Add(this.lblDifficultyDesc);
 
-            // lblPlayerName
-            this.lblPlayerName.AutoSize = false;
-            this.lblPlayerName.Location = new Point(50, 82);
-            this.lblPlayerName.Size = new Size(400, 18);
-            this.lblPlayerName.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
-            this.lblPlayerName.ForeColor = UITheme.PrimaryCyan;
-            this.lblPlayerName.TextAlign = ContentAlignment.MiddleLeft;
-            this.lblPlayerName.Text = "👤 TÊN ĐÔ ĐỐC / NGƯỜI CHƠI:";
-            this.pnlDifficultySelection.Controls.Add(this.lblPlayerName);
-
-            // txtPlayerName
-            this.txtPlayerName.Location = new Point(50, 102);
-            this.txtPlayerName.Size = new Size(400, 28);
-            this.txtPlayerName.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
-            this.txtPlayerName.BackColor = Color.FromArgb(15, 23, 42);
-            this.txtPlayerName.ForeColor = Color.White;
-            this.txtPlayerName.BorderStyle = BorderStyle.FixedSingle;
-            this.txtPlayerName.MaxLength = 40;
-            this.txtPlayerName.Text = "Thuyền Trưởng";
-            this.pnlDifficultySelection.Controls.Add(this.txtPlayerName);
-
             // btnStartPvEEasy
-            this.btnStartPvEEasy.Location = new Point(50, 142);
+            this.btnStartPvEEasy.Location = new Point(50, 92);
             this.btnStartPvEEasy.Size = new Size(400, 48);
             this.btnStartPvEEasy.Text = "🟢 CẤP ĐỘ DỄ (Bắn ngẫu nhiên)";
             this.btnStartPvEEasy.BorderColor = UITheme.SuccessGreen;
@@ -270,7 +266,7 @@ namespace BattleshipGame.Views
             this.pnlDifficultySelection.Controls.Add(this.btnStartPvEEasy);
 
             // btnStartPvEHard
-            this.btnStartPvEHard.Location = new Point(50, 200);
+            this.btnStartPvEHard.Location = new Point(50, 150);
             this.btnStartPvEHard.Size = new Size(400, 48);
             this.btnStartPvEHard.Text = "🔴 CẤP ĐỘ KHÓ (FSM Hunt & Target)";
             this.btnStartPvEHard.BorderColor = UITheme.DangerRed;
@@ -280,7 +276,7 @@ namespace BattleshipGame.Views
             this.pnlDifficultySelection.Controls.Add(this.btnStartPvEHard);
 
             // btnCloseDifficulty
-            this.btnCloseDifficulty.Location = new Point(140, 260);
+            this.btnCloseDifficulty.Location = new Point(140, 210);
             this.btnCloseDifficulty.Size = new Size(220, 38);
             this.btnCloseDifficulty.Text = "Quay Lại Menu";
             this.btnCloseDifficulty.BorderColor = UITheme.BorderDefault;

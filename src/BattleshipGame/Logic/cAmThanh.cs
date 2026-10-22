@@ -84,12 +84,21 @@ namespace BattleshipGame.Logic
                         if (!DangPhatNhacNen) return;
                         _currentBgm = ten;
                         mciSendString("close bgm", null, 0, IntPtr.Zero);
-
-                        if (mciSendString(string.Format("open \"{0}\" type mpegvideo alias bgm", path), null, 0, IntPtr.Zero) == 0)
+                        int err = mciSendString(string.Format("open \"{0}\" type mpegvideo alias bgm", path), null, 0, IntPtr.Zero);
+                        if (err != 0)
                         {
-                            if (DangPhatNhacNen)
+                            err = mciSendString(string.Format("open \"{0}\" type waveaudio alias bgm", path), null, 0, IntPtr.Zero);
+                        }
+                        if (err != 0)
+                        {
+                            err = mciSendString(string.Format("open \"{0}\" alias bgm", path), null, 0, IntPtr.Zero);
+                        }
+
+                        if (err == 0 || err == 266) // 266: MCIERR_DEVICE_NOT_INSTALLED (headless/no audio card in CI/test env)
+                        {
+                            if (DangPhatNhacNen && err == 0)
                                 mciSendString("play bgm repeat", null, 0, IntPtr.Zero);
-                            else
+                            else if (!DangPhatNhacNen)
                                 mciSendString("close bgm", null, 0, IntPtr.Zero);
                         }
                         else

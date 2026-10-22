@@ -156,8 +156,7 @@ namespace BattleshipGame.Views
             this.cboCheDo.Items.AddRange(new object[] {
             "Tất cả",
             "PvE",
-            "PvP Hotseat",
-            "Custom"});
+            "PvP Hotseat"});
             this.cboCheDo.Location = new System.Drawing.Point(135, 12);
             this.cboCheDo.Name = "cboCheDo";
             this.cboCheDo.Size = new System.Drawing.Size(180, 25);
