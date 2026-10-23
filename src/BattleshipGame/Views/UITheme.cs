@@ -70,9 +70,9 @@ namespace BattleshipGame.Views
         }
 
         /// <summary>
-        /// Tạo bo góc mượt mà cho hình chữ nhật
+        /// Tạo bo góc mượt mà cho hình chữ nhật dạng số thực (RectangleF)
         /// </summary>
-        public static GraphicsPath CreateRoundedPath(Rectangle rect, int radius)
+        public static GraphicsPath CreateRoundedPath(RectangleF rect, float radius)
         {
             GraphicsPath path = new GraphicsPath();
             if (radius <= 0)
@@ -81,8 +81,11 @@ namespace BattleshipGame.Views
                 return path;
             }
 
-            int diameter = radius * 2;
-            Rectangle arc = new Rectangle(rect.Location, new Size(diameter, diameter));
+            float diameter = radius * 2f;
+            if (diameter > rect.Width) diameter = rect.Width;
+            if (diameter > rect.Height) diameter = rect.Height;
+
+            RectangleF arc = new RectangleF(rect.Location, new SizeF(diameter, diameter));
 
             // Góc trên trái
             path.AddArc(arc, 180, 90);
@@ -104,13 +107,21 @@ namespace BattleshipGame.Views
         }
 
         /// <summary>
-        /// Kích hoạt chế độ vẽ chất lượng cao cho Graphics
+        /// Tạo bo góc mượt mà cho hình chữ nhật nguyên (Rectangle)
+        /// </summary>
+        public static GraphicsPath CreateRoundedPath(Rectangle rect, int radius)
+        {
+            return CreateRoundedPath(new RectangleF(rect.X, rect.Y, rect.Width, rect.Height), radius);
+        }
+
+        /// <summary>
+        /// Kích hoạt chế độ vẽ chất lượng cao sắc nét cho Graphics
         /// </summary>
         public static void SetHighQuality(Graphics g)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            g.PixelOffsetMode = PixelOffsetMode.Default;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
         }
     }

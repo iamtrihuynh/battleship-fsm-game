@@ -362,7 +362,7 @@ namespace BattleshipGame.Views
             this.btnRotateShip.Location = new Point(10, 72);
             this.btnRotateShip.Size = new Size(364, 42);
             this.btnRotateShip.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
-            this.btnRotateShip.Text = "🔄 Xoay hướng (Phím R): Ngang";
+            this.btnRotateShip.Text = "🔄 Xoay hướng (R): Ngang";
             this.btnRotateShip.Click += new EventHandler(this.btnRotateShip_Click);
             this.pnlPlacementControls.Controls.Add(this.btnRotateShip);
 

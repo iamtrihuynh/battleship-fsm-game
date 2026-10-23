@@ -90,54 +90,81 @@ namespace BattleshipGame.Views
             Graphics g = pevent.Graphics;
             UITheme.SetHighQuality(g);
 
-            Rectangle rect = new Rectangle(0, 0, Width - 1, Height - 1);
+            if (Width <= 4 || Height <= 4) return;
 
-            Color fillColor = !Enabled ? Color.FromArgb(20, 28, 42) :
-                              _isPressed ? Color.FromArgb(24, 38, 58) :
+            // Xóa sạch nền theo màu control cha để 4 góc bo tròn không bị lem cạnh vuông
+            if (Parent != null)
+            {
+                using (SolidBrush parentBrush = new SolidBrush(Parent.BackColor))
+                {
+                    g.FillRectangle(parentBrush, ClientRectangle);
+                }
+            }
+
+            float strokeWidth = _isHovered ? 2.0f : 1.5f;
+            float halfStroke = strokeWidth / 2f;
+            RectangleF borderRect = new RectangleF(
+                halfStroke,
+                halfStroke,
+                Width - strokeWidth,
+                Height - strokeWidth
+            );
+
+            Color fillColor = !Enabled ? Color.FromArgb(16, 24, 38) :
+                              _isPressed ? Color.FromArgb(20, 32, 50) :
                               _isHovered ? HoverFillColor : BaseFillColor;
 
-            Color borderColor = !Enabled ? UITheme.BorderDefault :
+            Color borderColor = !Enabled ? Color.FromArgb(45, 60, 80) :
                                 _isHovered ? HoverBorderColor : BorderColor;
 
             Color textColor = !Enabled ? UITheme.TextMuted :
                               _isHovered ? HoverTextColor : NormalTextColor;
 
-            using (GraphicsPath path = UITheme.CreateRoundedPath(rect, CornerRadius))
+            using (GraphicsPath path = UITheme.CreateRoundedPath(borderRect, CornerRadius))
             {
-                // Vẽ nền
+                // 1. Tô màu nền nút
                 using (SolidBrush brush = new SolidBrush(fillColor))
                 {
                     g.FillPath(brush, path);
                 }
 
-                // Vẽ viền sắc nét, nổi bật rõ ràng
-                using (Pen pen = new Pen(borderColor, _isHovered ? 2.2f : 1.8f))
+                // 2. Phủ ánh kim mờ phía trên (sheen highlight) tạo chiều sâu 3D tinh tế
+                if (Enabled && borderRect.Height > 10)
                 {
-                    g.DrawPath(pen, path);
+                    using (LinearGradientBrush sheen = new LinearGradientBrush(
+                        new PointF(0, borderRect.Top),
+                        new PointF(0, borderRect.Top + borderRect.Height * 0.45f),
+                        Color.FromArgb(_isHovered ? 30 : 14, Color.White),
+                        Color.FromArgb(0, Color.White)))
+                    {
+                        g.FillPath(sheen, path);
+                    }
                 }
 
-                // Vẽ hiệu ứng viền phát sáng nhẹ khi hover
-                if (_isHovered && Enabled)
+                // 3. Vẽ viền sắc nét, hoàn toàn không bị xén mép
+                using (Pen pen = new Pen(borderColor, strokeWidth))
                 {
-                    using (Pen glowPen = new Pen(Color.FromArgb(60, HoverBorderColor), 3.5f))
-                    {
-                        Rectangle glowRect = new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2);
-                        using (GraphicsPath glowPath = UITheme.CreateRoundedPath(glowRect, Math.Max(2, CornerRadius - 1)))
-                        {
-                            g.DrawPath(glowPen, glowPath);
-                        }
-                    }
+                    pen.LineJoin = LineJoin.Round;
+                    pen.StartCap = LineCap.Round;
+                    pen.EndCap = LineCap.Round;
+                    g.DrawPath(pen, path);
                 }
             }
 
-            // Vẽ Text căn giữa
+            // 4. Vẽ văn bản (Text) căn giữa
+            Rectangle textRect = new Rectangle(0, 0, Width, Height);
+            if (_isPressed)
+            {
+                textRect.Offset(0, 1);
+            }
+
             TextRenderer.DrawText(
                 g,
                 Text,
                 Font,
-                rect,
+                textRect,
                 textColor,
-                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis
+                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix
             );
         }
     }

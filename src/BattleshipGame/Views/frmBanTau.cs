@@ -487,7 +487,7 @@ namespace BattleshipGame.Views
         private void DoiHuongTau()
         {
             _huongNgang = !_huongNgang;
-            btnRotateShip.Text = $"🔄 Xoay Hướng (R / Space): {(_huongNgang ? "NGANG" : "DỌC")}";
+            btnRotateShip.Text = $"🔄 Xoay hướng (R): {(_huongNgang ? "Ngang" : "Dọc")}";
             btnRotateShip.ForeColor = _huongNgang ? UITheme.PrimaryCyan : UITheme.AccentNeon;
         }
         #endregion
@@ -699,6 +699,10 @@ namespace BattleshipGame.Views
             btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
             btnSkillCrossBomb.ForeColor = UITheme.AccentNeon;
             btnSkillCrossBomb.Text = "💥 Pháo kích diện rộng (+)";
+
+            _huongNgang = true;
+            btnRotateShip.Text = "🔄 Xoay hướng (R): Ngang";
+            btnRotateShip.ForeColor = UITheme.PrimaryCyan;
 
             CapNhatThongKeTranDau();
             lblTurnIndicator.Text = "Bố trí hạm đội";
@@ -1011,92 +1015,162 @@ namespace BattleshipGame.Views
         }
 
         /// <summary>
-        /// [NGÀY 4 - TV3] Hộp thoại nhập / xác nhận tên người chơi khi kết thúc ván đấu Bot AI để lưu vào Bảng Xếp Hạng.
-        /// (Chỉ áp dụng với chế độ Bot AI).
+        /// [NGÀY 4 - TV3] Hộp thoại nhập tên ghi danh bảng xếp hạng khi CHIẾN THẮNG ván đấu Bot AI.
+        /// (Chỉ áp dụng khi Chiến thắng. Thất bại sẽ không ghi nhận vào bảng xếp hạng).
         /// </summary>
-        private string? HienThiHopThoaiNhapTen(string tenMacDinh, int diem, bool thang)
+        private string? HienThiHopThoaiGhiDanhThang(string tenMacDinh, int diem, int shotCount, int soTauConSong)
         {
             try
             {
                 using var dlg = new Form();
-                dlg.Text = thang ? "Ghi danh bảng xếp hạng" : "Kết quả trận đấu";
-                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dlg.FormBorderStyle = FormBorderStyle.None;
                 dlg.StartPosition = FormStartPosition.CenterParent;
-                dlg.MaximizeBox = false;
-                dlg.MinimizeBox = false;
                 dlg.ShowInTaskbar = false;
-                dlg.ClientSize = new Size(430, 215);
+                dlg.ClientSize = new Size(460, 290);
                 dlg.BackColor = UITheme.BackgroundDark;
                 dlg.ForeColor = UITheme.TextPrimary;
 
-                var lblPrompt = new Label
+                // Bo tròn 4 góc cửa sổ và vẽ viền vàng chiến thắng sắc nét
+                dlg.Region = new Region(UITheme.CreateRoundedPath(new Rectangle(0, 0, dlg.Width, dlg.Height), 12));
+                dlg.Paint += (s, pe) =>
                 {
-                    Text = thang 
-                        ? $"Chiến thắng! Điểm số: {diem:N0}\nNhập tên để lưu vào bảng xếp hạng:" 
-                        : $"Thất bại! Điểm số: {diem:N0}\nNhập tên để lưu kết quả:",
-                    Location = new Point(20, 16),
-                    Size = new Size(390, 48),
-                    Font = new Font("Segoe UI", 9.5f, FontStyle.Regular),
-                    ForeColor = thang ? UITheme.AccentNeon : UITheme.DangerRed
+                    var g = pe.Graphics;
+                    UITheme.SetHighQuality(g);
+                    using var borderPen = new Pen(UITheme.GoldAccent, 1.8f);
+                    using var path = UITheme.CreateRoundedPath(new RectangleF(0.9f, 0.9f, dlg.Width - 1.8f, dlg.Height - 1.8f), 12);
+                    g.DrawPath(borderPen, path);
                 };
-                dlg.Controls.Add(lblPrompt);
+
+                // 1. Thanh tiêu đề Header
+                var pnlHeader = new Panel
+                {
+                    Location = new Point(0, 0),
+                    Size = new Size(dlg.Width, 42),
+                    BackColor = UITheme.HeaderBackground
+                };
+                var lblHeaderTitle = new Label
+                {
+                    Text = "🏆 CHIẾN THẮNG - GHI DANH BẢNG XẾP HẠNG",
+                    Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
+                    ForeColor = UITheme.GoldAccent,
+                    Location = new Point(16, 11),
+                    AutoSize = true
+                };
+                pnlHeader.Controls.Add(lblHeaderTitle);
+                dlg.Controls.Add(pnlHeader);
+
+                // 2. Điểm số nổi bật
+                var lblScoreBadge = new Label
+                {
+                    Text = $"⭐ ĐIỂM SỐ: {diem:N0} ĐIỂM",
+                    Font = new Font("Segoe UI", 12f, FontStyle.Bold),
+                    ForeColor = UITheme.AccentNeon,
+                    Location = new Point(24, 56),
+                    Size = new Size(dlg.Width - 48, 26),
+                    TextAlign = ContentAlignment.MiddleLeft
+                };
+                dlg.Controls.Add(lblScoreBadge);
+
+                // 3. Chi tiết trận đấu
+                var lblStatsDetail = new Label
+                {
+                    Text = $"🎯 Lượt bắn: {shotCount} phát  •  ⏱️ Thời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}  •  🛡️ Tàu sống: {soTauConSong}/5",
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Regular),
+                    ForeColor = UITheme.TextSecondary,
+                    Location = new Point(24, 86),
+                    Size = new Size(dlg.Width - 48, 22)
+                };
+                dlg.Controls.Add(lblStatsDetail);
+
+                // 4. Nhãn hướng dẫn nhập tên
+                var lblInputTitle = new Label
+                {
+                    Text = "Nhập tên chỉ huy để lưu vào bảng xếp hạng:",
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                    ForeColor = UITheme.PrimaryCyan,
+                    Location = new Point(24, 118),
+                    Size = new Size(dlg.Width - 48, 20)
+                };
+                dlg.Controls.Add(lblInputTitle);
+
+                // 5. Khung chứa TextBox với viền bo góc sắc sảo
+                var pnlTxtContainer = new Panel
+                {
+                    Location = new Point(24, 142),
+                    Size = new Size(dlg.Width - 48, 38),
+                    BackColor = UITheme.PanelBackground
+                };
+                pnlTxtContainer.Paint += (s, pe) =>
+                {
+                    var g = pe.Graphics;
+                    UITheme.SetHighQuality(g);
+                    using var p = new Pen(UITheme.PrimaryCyan, 1.5f);
+                    using var path = UITheme.CreateRoundedPath(new RectangleF(0.75f, 0.75f, pnlTxtContainer.Width - 1.5f, pnlTxtContainer.Height - 1.5f), 6);
+                    g.DrawPath(p, path);
+                };
 
                 var txtName = new TextBox
                 {
                     Text = tenMacDinh,
-                    Location = new Point(24, 72),
-                    Size = new Size(382, 28),
-                    Font = new Font("Segoe UI", 11f, FontStyle.Bold),
+                    Location = new Point(10, 8),
+                    Size = new Size(pnlTxtContainer.Width - 20, 22),
+                    Font = new Font("Segoe UI", 11.5f, FontStyle.Bold),
                     BackColor = UITheme.PanelBackground,
                     ForeColor = Color.White,
-                    BorderStyle = BorderStyle.FixedSingle,
-                    MaxLength = 40
+                    BorderStyle = BorderStyle.None,
+                    MaxLength = 30
                 };
                 txtName.SelectAll();
-                dlg.Controls.Add(txtName);
+                pnlTxtContainer.Controls.Add(txtName);
+                dlg.Controls.Add(pnlTxtContainer);
 
-                var lblNote = new Label
+                var lblHint = new Label
                 {
-                    Text = "Thành tích sẽ được lưu vào bảng xếp hạng.",
-                    Location = new Point(24, 108),
-                    Size = new Size(382, 20),
+                    Text = "Thành tích của bạn sẽ được lưu vĩnh viễn trên bảng xếp hạng tác chiến.",
                     Font = new Font("Segoe UI", 8.5f, FontStyle.Italic),
-                    ForeColor = UITheme.TextSecondary
+                    ForeColor = UITheme.TextSecondary,
+                    Location = new Point(24, 186),
+                    Size = new Size(dlg.Width - 48, 18)
                 };
-                dlg.Controls.Add(lblNote);
+                dlg.Controls.Add(lblHint);
 
-                var btnOk = new Button
+                // 6. Cụm nút bấm TacticalButton
+                var btnSave = new TacticalButton
                 {
-                    Text = "Lưu vào BXH",
-                    DialogResult = DialogResult.OK,
-                    Location = new Point(136, 145),
-                    Size = new Size(136, 38),
-                    FlatStyle = FlatStyle.Flat,
-                    BackColor = UITheme.PrimaryCyan,
-                    ForeColor = Color.White,
-                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-                    Cursor = Cursors.Hand
+                    Text = "💾 Lưu kỷ lục",
+                    Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                    Location = new Point(dlg.Width - 268, 224),
+                    Size = new Size(130, 44),
+                    CornerRadius = 6,
+                    BaseFillColor = Color.FromArgb(28, 44, 68),
+                    BorderColor = UITheme.AccentNeon,
+                    NormalTextColor = UITheme.AccentNeon,
+                    HoverBorderColor = Color.White,
+                    HoverTextColor = Color.White,
+                    DialogResult = DialogResult.OK
                 };
-                btnOk.FlatAppearance.BorderSize = 0;
-                dlg.Controls.Add(btnOk);
+                btnSave.Click += (s, e) => { dlg.DialogResult = DialogResult.OK; dlg.Close(); };
+                dlg.Controls.Add(btnSave);
 
-                var btnCancel = new Button
+                var btnSkip = new TacticalButton
                 {
                     Text = "Bỏ qua",
-                    DialogResult = DialogResult.Cancel,
-                    Location = new Point(286, 145),
-                    Size = new Size(120, 38),
-                    FlatStyle = FlatStyle.Flat,
-                    BackColor = UITheme.PanelBackground,
-                    ForeColor = UITheme.MissGray,
-                    Font = new Font("Segoe UI", 9.5f, FontStyle.Regular),
-                    Cursor = Cursors.Hand
+                    Font = new Font("Segoe UI", 10f, FontStyle.Regular),
+                    Location = new Point(dlg.Width - 126, 224),
+                    Size = new Size(102, 44),
+                    CornerRadius = 6,
+                    BaseFillColor = Color.FromArgb(20, 28, 42),
+                    BorderColor = UITheme.BorderDefault,
+                    NormalTextColor = UITheme.TextSecondary,
+                    HoverBorderColor = UITheme.TextPrimary,
+                    HoverTextColor = UITheme.TextPrimary,
+                    DialogResult = DialogResult.Cancel
                 };
-                btnCancel.FlatAppearance.BorderColor = UITheme.BorderDefault;
-                dlg.Controls.Add(btnCancel);
+                btnSkip.Click += (s, e) => { dlg.DialogResult = DialogResult.Cancel; dlg.Close(); };
+                dlg.Controls.Add(btnSkip);
 
-                dlg.AcceptButton = btnOk;
-                dlg.CancelButton = btnCancel;
+                dlg.AcceptButton = btnSave;
+                dlg.CancelButton = btnSkip;
 
                 var res = dlg.ShowDialog(this);
                 if (res == DialogResult.OK)
@@ -1123,64 +1197,60 @@ namespace BattleshipGame.Views
             int soTauConSong = _banCoTa.DanhSachTau.Count(t => !t.DaChim);
             int shotCount = _tongPhatBan;
 
-            if (nguoiChoiThang)
-            {
-                cAmThanh.PhatVictory();
-                lblTurnIndicator.Text = "Chiến thắng!";
-                lblTurnIndicator.ForeColor = UITheme.AccentNeon;
-                lblTurnMessage.Text = $"Chúc mừng {_tenNguoiChoi}! Bạn đã tiêu diệt toàn bộ hạm đội địch!";
-            }
-            else
+            // NẾU THẤT BẠI: Không hỏi nhập tên, không lưu vào bảng xếp hạng
+            if (!nguoiChoiThang)
             {
                 cAmThanh.PhatDefeat();
                 lblTurnIndicator.Text = "Hạm đội bị tiêu diệt!";
                 lblTurnIndicator.ForeColor = UITheme.DangerRed;
                 lblTurnMessage.Text = $"Hạm đội của {_tenNguoiChoi} đã chìm hoàn toàn. Bạn đã thất bại!";
+
+                string thongBaoThua =
+                    $"Toàn bộ 5 chiến hạm của {_tenNguoiChoi} đã bị đối phương bắn chìm!\n\n" +
+                    $"• Chế độ: {_cheDoChoi}\n" +
+                    $"• Lượt khai hỏa: {shotCount} phát\n" +
+                    $"• Thời gian tác chiến: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n\n" +
+                    $"Hãy củng cố chiến thuật và phục thù ở ván tiếp theo!";
+
+                TacticalMessageBox.ShowDefeat(this, "Thất bại", thongBaoThua);
+                return;
             }
 
-            int diem = cThanhTichDAO.TinhDiem(nguoiChoiThang, soTauConSong, shotCount, _matchSeconds);
-            string ketQua = nguoiChoiThang ? "Thắng" : "Thua";
+            // NẾU CHIẾN THẮNG: Tính điểm, hỏi nhập tên và ghi danh vào bảng xếp hạng
+            cAmThanh.PhatVictory();
+            lblTurnIndicator.Text = "Chiến thắng!";
+            lblTurnIndicator.ForeColor = UITheme.AccentNeon;
+            lblTurnMessage.Text = $"Chúc mừng {_tenNguoiChoi}! Bạn đã tiêu diệt toàn bộ hạm đội địch!";
 
-            string? tenLuu = HienThiHopThoaiNhapTen(_tenNguoiChoi, diem, nguoiChoiThang);
+            int diem = cThanhTichDAO.TinhDiem(true, soTauConSong, shotCount, _matchSeconds);
 
-            string thongBaoLuu;
-            bool daLuu = false;
+            string? tenLuu = HienThiHopThoaiGhiDanhThang(_tenNguoiChoi, diem, shotCount, soTauConSong);
+
             if (!string.IsNullOrEmpty(tenLuu))
             {
                 _tenNguoiChoi = tenLuu;
-                bool luuOk = cThanhTichDAO.LuuThanhTich(_tenNguoiChoi, diem, shotCount, _matchSeconds, _cheDoChoi, ketQua);
-                daLuu = luuOk;
-                thongBaoLuu = luuOk
-                    ? "Đã ghi danh vào bảng xếp hạng."
+                bool luuOk = cThanhTichDAO.LuuThanhTich(_tenNguoiChoi, diem, shotCount, _matchSeconds, _cheDoChoi, "Thắng");
+                string thongBaoLuu = luuOk
+                    ? "Đã ghi danh vào bảng xếp hạng thành công."
                     : $"Không thể lưu thành tích ({cThanhTichDAO.LoiGanNhat ?? "File bận"}).";
-            }
-            else
-            {
-                thongBaoLuu = "Đã bỏ qua lưu thành tích.";
-            }
 
-            string thongBaoChiTiet = nguoiChoiThang
-                ? $"Chiến thắng xuất sắc!\n\n" +
-                  $"Người chơi: {_tenNguoiChoi}\n" +
-                  $"Chế độ: {_cheDoChoi}\n" +
-                  $"Lượt bắn: {shotCount}\n" +
-                  $"Thời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n" +
-                  $"Điểm: {diem:N0}\n\n" +
-                  $"{thongBaoLuu}"
-                : $"Trận đấu kết thúc!\n\n" +
-                  $"Hạm đội của {_tenNguoiChoi} đã bị bắn chìm.\n" +
-                  $"Lượt bắn: {shotCount}\n" +
-                  $"Thời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n\n" +
-                  $"{thongBaoLuu}";
+                string thongBaoChiTiet =
+                    $"Chiến thắng xuất sắc!\n\n" +
+                    $"Người chơi: {_tenNguoiChoi}\n" +
+                    $"Chế độ: {_cheDoChoi}\n" +
+                    $"Lượt bắn: {shotCount}\n" +
+                    $"Thời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n" +
+                    $"Điểm: {diem:N0}\n\n" +
+                    $"{thongBaoLuu}\n\n" +
+                    $"Bạn có muốn mở xem Bảng xếp hạng không?";
 
-            if (daLuu)
-            {
                 var xemBxh = TacticalMessageBox.ShowVictory(
                     this,
-                    nguoiChoiThang ? "Chiến thắng" : "Thất bại",
-                    $"{thongBaoChiTiet}\n\nBạn có muốn mở xem Bảng xếp hạng không?",
+                    "Chiến thắng",
+                    thongBaoChiTiet,
                     MessageBoxButtons.YesNo
                 );
+
                 if (xemBxh == DialogResult.Yes)
                 {
                     try
@@ -1193,14 +1263,16 @@ namespace BattleshipGame.Views
             }
             else
             {
-                if (nguoiChoiThang)
-                {
-                    TacticalMessageBox.ShowVictory(this, "Chiến thắng", thongBaoChiTiet);
-                }
-                else
-                {
-                    TacticalMessageBox.ShowDefeat(this, "Thất bại", thongBaoChiTiet);
-                }
+                string thongBaoChiTiet =
+                    $"Chiến thắng xuất sắc!\n\n" +
+                    $"Người chơi: {_tenNguoiChoi}\n" +
+                    $"Chế độ: {_cheDoChoi}\n" +
+                    $"Lượt bắn: {shotCount}\n" +
+                    $"Thời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n" +
+                    $"Điểm: {diem:N0}\n\n" +
+                    $"Đã bỏ qua lưu thành tích.";
+
+                TacticalMessageBox.ShowVictory(this, "Chiến thắng", thongBaoChiTiet);
             }
         }
         #endregion
