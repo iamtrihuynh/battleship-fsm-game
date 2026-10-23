@@ -227,6 +227,27 @@ namespace BattleshipGame.DataAccess
                         Thread.Sleep(delay);
                         delay *= 2;
                     }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        LoiGanNhat = "Lỗi quyền truy cập file: " + ex.Message;
+                        try
+                        {
+                            string appDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BattleshipGame");
+                            if (!Directory.Exists(appDataDir)) Directory.CreateDirectory(appDataDir);
+                            string fallbackPath = Path.Combine(appDataDir, "thanhtichs.txt");
+                            _filePath = fallbackPath;
+                            using (FileStream fs = new FileStream(fallbackPath, FileMode.Append, FileAccess.Write, FileShare.Read))
+                            using (StreamWriter sw = new StreamWriter(fs, _utf8))
+                            {
+                                sw.WriteLine(item.ToString());
+                            }
+                            return true;
+                        }
+                        catch
+                        {
+                            return false;
+                        }
+                    }
                     catch (Exception ex)
                     {
                         LoiGanNhat = ex.Message;

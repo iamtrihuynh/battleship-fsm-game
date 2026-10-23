@@ -167,6 +167,8 @@ namespace BattleshipGame.Logic
             return null;
         }
 
+        public static bool DaDungFallbackSystemSound { get; set; } = false;
+
         // Phat hieu ung am thanh
         public static void PhatSFX(string file)
         {
@@ -176,11 +178,19 @@ namespace BattleshipGame.Logic
             try
             {
                 SoundPlayer p = LayPlayer(file);
-                if (p != null) p.Play();
-                else SystemSounds.Beep.Play();
+                if (p != null)
+                {
+                    p.Play();
+                }
+                else
+                {
+                    DaDungFallbackSystemSound = true;
+                    try { SystemSounds.Beep.Play(); } catch { }
+                }
             }
             catch
             {
+                DaDungFallbackSystemSound = true;
                 try { SystemSounds.Beep.Play(); } catch { }
             }
         }

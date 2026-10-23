@@ -12,6 +12,7 @@ namespace BattleshipGame.Views
         private Label lblGameTitle;
         private Label lblGameSubtitle;
         private TacticalButton btnSoundToggle;
+        private TacticalVolumeSlider sliderVolume;
         private SonarScannerControl sonarScanner;
 
         private Panel pnlButtonContainer;
@@ -50,6 +51,7 @@ namespace BattleshipGame.Views
             this.lblGameTitle = new Label();
             this.lblGameSubtitle = new Label();
             this.btnSoundToggle = new TacticalButton();
+            this.sliderVolume = new TacticalVolumeSlider();
             this.sonarScanner = new SonarScannerControl();
 
             this.pnlButtonContainer = new Panel();
@@ -116,13 +118,21 @@ namespace BattleshipGame.Views
             // 
             // btnSoundToggle
             // 
-            this.btnSoundToggle.Location = new Point(680, 16);
-            this.btnSoundToggle.Size = new Size(180, 38);
-            this.btnSoundToggle.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
+            this.btnSoundToggle.Location = new Point(660, 14);
+            this.btnSoundToggle.Size = new Size(200, 34);
+            this.btnSoundToggle.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
             this.btnSoundToggle.Text = "🔊 Âm thanh: BẬT";
             this.btnSoundToggle.CornerRadius = 6;
             this.btnSoundToggle.Click += new EventHandler(this.btnSoundToggle_Click);
             this.Controls.Add(this.btnSoundToggle);
+
+            // 
+            // sliderVolume
+            // 
+            this.sliderVolume.Location = new Point(660, 52);
+            this.sliderVolume.Size = new Size(200, 32);
+            this.sliderVolume.ValueChanged += new EventHandler(this.sliderVolume_ValueChanged);
+            this.Controls.Add(this.sliderVolume);
 
             // 
             // sonarScanner

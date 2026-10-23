@@ -25,6 +25,15 @@ namespace BattleshipGame.Views
             CapNhatNutAmThanh();
             CapNhatHienThiTenNguoiChoi();
 
+            // Đăng ký nhận sự kiện thay đổi âm lượng toàn cục
+            TacticalVolumeSlider.GlobalVolumeChanged += (s, e) =>
+            {
+                if (!IsDisposed && IsHandleCreated)
+                {
+                    BeginInvoke(new Action(CapNhatNutAmThanh));
+                }
+            };
+
             Shown += (s, e) =>
             {
                 BringToFront();
@@ -42,9 +51,19 @@ namespace BattleshipGame.Views
         {
             if (pnlButtonContainer == null) return;
 
-            // Nút âm thanh neo ở góc phải trên
-            btnSoundToggle.Left = ClientSize.Width - btnSoundToggle.Width - 20;
-            btnSoundToggle.Top = 16;
+            // Cụm điều khiển âm lượng neo ở góc phải trên
+            if (sliderVolume != null)
+            {
+                sliderVolume.Left = ClientSize.Width - sliderVolume.Width - 20;
+                sliderVolume.Top = 52;
+                btnSoundToggle.Left = ClientSize.Width - btnSoundToggle.Width - 20;
+                btnSoundToggle.Top = 14;
+            }
+            else
+            {
+                btnSoundToggle.Left = ClientSize.Width - btnSoundToggle.Width - 20;
+                btnSoundToggle.Top = 16;
+            }
 
             // Canh giữa SonarScanner
             sonarScanner.Left = (ClientSize.Width - sonarScanner.Width) / 2;
@@ -77,16 +96,45 @@ namespace BattleshipGame.Views
 
         private void CapNhatNutAmThanh()
         {
-            bool bat = cAmThanh.DaBatAmThanh;
-            btnSoundToggle.Text = bat ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT";
-            btnSoundToggle.ForeColor = bat ? UITheme.AccentNeon : UITheme.MissGray;
-            btnSoundToggle.BorderColor = bat ? UITheme.AccentNeon : UITheme.BorderDefault;
+            try
+            {
+                bool bat = sliderVolume != null ? (!sliderVolume.IsMuted && sliderVolume.Value > 0) : cAmThanh.DaBatAmThanh;
+                btnSoundToggle.Text = bat ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT (MUTE)";
+                btnSoundToggle.ForeColor = bat ? UITheme.AccentNeon : UITheme.MissGray;
+                btnSoundToggle.BorderColor = bat ? UITheme.AccentNeon : UITheme.BorderDefault;
+                btnSoundToggle.Invalidate();
+            }
+            catch { }
         }
 
         private void btnSoundToggle_Click(object sender, EventArgs e)
         {
-            cAmThanh.BatTatAmThanh();
-            CapNhatNutAmThanh();
+            try
+            {
+                if (sliderVolume != null)
+                {
+                    sliderVolume.ToggleMute();
+                }
+                cAmThanh.BatTatAmThanh();
+                CapNhatNutAmThanh();
+            }
+            catch { }
+        }
+
+        private void sliderVolume_ValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (sliderVolume != null)
+                {
+                    if (sliderVolume.IsMuted && cAmThanh.DaBatAmThanh)
+                        cAmThanh.BatTatAmThanh();
+                    else if (!sliderVolume.IsMuted && !cAmThanh.DaBatAmThanh && sliderVolume.Value > 0)
+                        cAmThanh.BatTatAmThanh();
+                }
+                CapNhatNutAmThanh();
+            }
+            catch { }
         }
 
         private void CapNhatHienThiTenNguoiChoi()
@@ -222,32 +270,44 @@ namespace BattleshipGame.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    "Không thể mở Bảng thành tích: " + ex.Message,
-                    "Bảng Xếp Hạng",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
+                TacticalMessageBox.ShowWarning(
+                    this,
+                    "LỖI BẢNG XẾP HẠNG",
+                    "Không thể mở Bảng thành tích: " + ex.Message
                 );
             }
         }
 
         private void btnAbout_Click(object sender, EventArgs e)
         {
-            using (var f = new frmAbout())
+            try
             {
-                f.ShowDialog(this);
+                using (var f = new frmAbout())
+                {
+                    f.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                TacticalMessageBox.ShowWarning(
+                    this,
+                    "LỖI HƯỚNG DẪN",
+                    "Không thể mở Hướng dẫn: " + ex.Message
+                );
             }
         }
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            var res = MessageBox.Show(
-                "Đồng chí Đô đốc có chắc chắn muốn rời khỏi sở chỉ huy và thoát trò chơi?",
-                "Xác nhận thoát",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
-            if (res == DialogResult.Yes)
+            try
+            {
+                var res = TacticalMessageBox.ShowExitConfirm(this);
+                if (res == DialogResult.Yes)
+                {
+                    Application.Exit();
+                }
+            }
+            catch
             {
                 Application.Exit();
             }
@@ -255,13 +315,25 @@ namespace BattleshipGame.Views
 
         private void MoManHinhTranDau(string cheDo, string tenNguoiChoi = "Thuyền Trưởng")
         {
-            Hide();
-            using (var f = new frmBanTau(cheDo, tenNguoiChoi))
+            try
             {
-                f.ShowDialog(this);
+                Hide();
+                using (var f = new frmBanTau(cheDo, tenNguoiChoi))
+                {
+                    f.ShowDialog(this);
+                }
+                Show();
+                CapNhatNutAmThanh();
             }
-            Show();
-            CapNhatNutAmThanh();
+            catch (Exception ex)
+            {
+                Show();
+                TacticalMessageBox.ShowWarning(
+                    this,
+                    "LỖI KHỞI ĐỘNG TRẬN ĐẤU",
+                    "Đã xảy ra sự cố khi tải trận đấu: " + ex.Message
+                );
+            }
         }
     }
 }

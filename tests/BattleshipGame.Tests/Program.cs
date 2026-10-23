@@ -621,6 +621,40 @@ namespace BattleshipGame.Tests
                 var botRecords = cThanhTichDAO.DocThanhTich();
                 bool botOk = botSaveSuccess && botRecords.Count == 1 && botRecords[0].TenNguoiChoi == "DoDocNam" && botRecords[0].CheDo.StartsWith("PvE");
                 Assert(botOk, "TC-76: Ghi danh Bảng Xếp Hạng chuẩn xác cho chế độ Bot AI với tên Đô đốc tùy chỉnh");
+
+                Console.WriteLine("\n--- PHẦN 7: MEMBER 3 - NGÀY 5 & 6 (BẪY LỖI TOÀN DIỆN & EXCEPTION HANDLING) ---");
+
+                // Test 77: Bẫy lỗi thiếu file âm thanh: Tự động fallback sang SystemSounds.Beep
+                cAmThanh.DaDungFallbackSystemSound = false;
+                cAmThanh.PhatSFX("file_am_thanh_khong_ton_tai_123.wav");
+                Assert(cAmThanh.DaDungFallbackSystemSound,
+                    "TC-77: Bẫy lỗi thiếu file âm thanh .wav tự động fallback sang SystemSounds.Beep không crash");
+
+                // Test 78: Bẫy lỗi mất file thanhtichs.txt: Tự động khởi tạo file mẫu mới
+                string missingFile = Path.Combine(tempTestDir, "NonExistentDir", "thanhtichs_test_missing.txt");
+                cThanhTichDAO.DuongDanFile = missingFile;
+                var missingRecords = cThanhTichDAO.DocDanhSach();
+                Assert(File.Exists(missingFile) && missingRecords.Count == 5,
+                    "TC-78: Bẫy lỗi mất file thanhtichs.txt tự động tái tạo file mẫu với 5 kỷ lục chuẩn");
+
+                // Test 79: Bẫy lỗi quyền truy cập file ghi: Bắt UnauthorizedAccessException và fallback ghi AppData
+                string roFile = Path.Combine(tempTestDir, "readonly_test.txt");
+                File.WriteAllText(roFile, "2026-10-18 14:20:15|DoDocHaiQuan|1850|24|115|PvE - Nâng cao|Thắng\n");
+                File.SetAttributes(roFile, FileAttributes.ReadOnly);
+                cThanhTichDAO.DuongDanFile = roFile;
+                bool roSuccess = cThanhTichDAO.LuuThanhTich("ThuyenTruongPhat", 1900, 20, 80, "PvE - Nâng cao", "Thắng");
+                File.SetAttributes(roFile, FileAttributes.Normal);
+                Assert(roSuccess && cThanhTichDAO.LoiGanNhat != null,
+                    "TC-79: Bẫy lỗi quyền truy cập file readonly kích hoạt cơ chế fallback AppData an toàn");
+
+                // Test 80: Đóng băng mã nguồn & Kiểm thử toàn diện 100% không văng lỗi khi tham số dị thường
+                cAmThanh.PhatNhacNen(null);
+                cAmThanh.DungNhacNen(true);
+                cAmThanh.PhatSFX(null);
+                cAmThanh.PhatSFX("");
+                var tc80NullFiltered = cThanhTichDAO.LocTheoCheDo(null, null);
+                Assert(!cAmThanh.DangPhatNhacNen && tc80NullFiltered != null && tc80NullFiltered.Count == 0,
+                    "TC-80: Xử lý ngoại lệ toàn diện các đầu vào null/rỗng cho Audio và DAO an toàn tuyệt đối");
             }
             finally
             {
