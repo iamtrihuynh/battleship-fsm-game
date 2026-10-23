@@ -24,8 +24,7 @@ namespace BattleshipGame.Views
         }
 
         private readonly string _cheDoChoi;
-        private string _tenNguoiChoi = "Thuyền Trưởng";
-        private int _nguoiChoiHienTai = 1; // 1: Nguoi choi 1, 2: Nguoi choi 2 (che do PvP Hotseat)
+        private string _tenNguoiChoi = "Người chơi";
         private bool _huongNgang = true; // true: Ngang (Horizontal), false: Dọc (Vertical)
         private int _matchSeconds = 0;
         private int _turnSeconds = 30;
@@ -40,34 +39,8 @@ namespace BattleshipGame.Views
             PhaoKichDienRong
         }
         private CheDoKyNang _kyNangHienTai = CheDoKyNang.KhongCo;
-        private bool _daDungSkillRadarP1 = false;
-        private bool _daDungSkillRadarP2 = false;
-        private bool _daDungSkillBombP1 = false;
-        private bool _daDungSkillBombP2 = false;
-
-        private bool DaDungSkillRadarHienTai => (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
-            ? _daDungSkillRadarP2
-            : _daDungSkillRadarP1;
-
-        private bool DaDungSkillBombHienTai => (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
-            ? _daDungSkillBombP2
-            : _daDungSkillBombP1;
-
-        private void DanhDauDaDungRadar()
-        {
-            if (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
-                _daDungSkillRadarP2 = true;
-            else
-                _daDungSkillRadarP1 = true;
-        }
-
-        private void DanhDauDaDungBomb()
-        {
-            if (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
-                _daDungSkillBombP2 = true;
-            else
-                _daDungSkillBombP1 = true;
-        }
+        private bool _daDungSkillRadar = false;
+        private bool _daDungSkillBomb = false;
 
         // Ban co logic
         private readonly cBanCo _banCoTa = new cBanCo(10);
@@ -80,19 +53,6 @@ namespace BattleshipGame.Views
         private readonly int[,] _maTranDoiNha = new int[10, 10];
         // Ma trận radar (0: Chưa bắn, 2: Trúng, 3: Trượt)
         private readonly int[,] _maTranRadar = new int[10, 10];
-        private readonly int[,] _maTranRadarP2 = new int[10, 10];
-
-        private int[,] MaTranRadarHienTai => (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
-            ? _maTranRadarP2
-            : _maTranRadar;
-
-        private cBanCo BanCoMucTieuHienTai => (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
-            ? _banCoTa
-            : _banCoDoiThu;
-
-        private cBanCo BanCoDoiNhaHienTai => (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
-            ? _banCoDoiThu
-            : _banCoTa;
 
         // Mảng 2 chiều chứa 100 Button giao diện cho mỗi bàn cờ
         private readonly Button[,] _btnPlayerGrid = new Button[10, 10];
@@ -100,22 +60,7 @@ namespace BattleshipGame.Views
 
         private Point _oDangHover = new Point(-1, -1);
         private int _tongPhatBan = 0;
-        private int _tongPhatBanP1 = 0;
-        private int _tongPhatBanP2 = 0;
         private int _soPhatTrung = 0;
-
-        private int TongPhatBanHienTai => (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
-            ? _tongPhatBanP2
-            : _tongPhatBanP1;
-
-        private void TangPhatBan()
-        {
-            _tongPhatBan++;
-            if (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 2)
-                _tongPhatBanP2++;
-            else
-                _tongPhatBanP1++;
-        }
 
         // Danh sách 5 chiến hạm quy chuẩn theo tài liệu đề tài
         private readonly List<ThongTinTauUI> _danhSachTauUI = new List<ThongTinTauUI>
@@ -127,16 +72,17 @@ namespace BattleshipGame.Views
             new ThongTinTauUI { TenTau = "Tàu tuần tra (2 ô)", DoDai = 2 }
         };
 
-        public frmBanTau(string cheDoChoi = "PvE", string tenNguoiChoi = "Thuyền Trưởng")
+        public frmBanTau(string cheDoChoi = "PvE - Dễ", string tenNguoiChoi = "Người chơi")
         {
             InitializeComponent();
             DoubleBuffered = true;
             StartPosition = FormStartPosition.CenterScreen;
-            MinimumSize = new Size(1180, 720);
-            Text = "Trận Địa Hải Chiến - Bắn Tàu (Giao Diện Bàn Cờ Động Ngày 2 - TV2)";
+            ClientSize = new Size(1260, 580);
+            MinimumSize = new Size(1260, 580);
+            Text = "Bắn Tàu";
 
             _cheDoChoi = cheDoChoi;
-            _tenNguoiChoi = string.IsNullOrWhiteSpace(tenNguoiChoi) ? "Thuyền Trưởng" : tenNguoiChoi.Trim();
+            _tenNguoiChoi = string.IsNullOrWhiteSpace(tenNguoiChoi) ? "Người chơi" : tenNguoiChoi.Trim();
             _botAI = new cMayBanAI(_cheDoChoi.IndexOf("Dễ", StringComparison.OrdinalIgnoreCase) >= 0 ? DoKhoAI.De : DoKhoAI.Kho, 10);
             KhoiTaoThongTinChung();
 
@@ -385,125 +331,6 @@ namespace BattleshipGame.Views
             btn.Text = "⚓";
             btn.Cursor = Cursors.Default;
         }
-
-        /// <summary>
-        /// Đồng bộ giao diện 2 bàn cờ (Đội nhà và Radar) theo lượt chơi của Người chơi 1 hoặc 2 trong chế độ PvP Hotseat
-        /// </summary>
-        public void DongBoGiaoDienTheoLuotChoi()
-        {
-            if (!_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)) return;
-
-            cBanCo banCoNha = BanCoDoiNhaHienTai;
-            cBanCo banCoDich = BanCoMucTieuHienTai;
-            int[,] radar = MaTranRadarHienTai;
-
-            lblLeftBoardTitle.Text = $"BÀN CỜ ĐỘI NHÀ (NGƯỜI CHƠI {_nguoiChoiHienTai})";
-            lblRightBoardTitle.Text = $"RADAR TÁC CHIẾN (ĐỐI THỦ: NGƯỜI CHƠI {(_nguoiChoiHienTai == 1 ? 2 : 1)})";
-
-            // Đồng bộ bàn cờ đội nhà bên trái
-            for (int r = 0; r < 10; r++)
-            {
-                for (int c = 0; c < 10; c++)
-                {
-                    Button btn = _btnPlayerGrid[r, c];
-                    cO o = banCoNha.MaTranO[c, r];
-
-                    if (o.TrangThai == TrangThaiO.Sunk)
-                    {
-                        btn.BackColor = UITheme.SunkAshBackground;
-                        btn.FlatAppearance.BorderColor = UITheme.SunkThickBorder;
-                        btn.FlatAppearance.BorderSize = UITheme.SunkBorderThickness;
-                        btn.ForeColor = UITheme.SunkAshText;
-                        btn.Font = new Font("Segoe UI", 12f, FontStyle.Bold);
-                        btn.Text = "X";
-                    }
-                    else if (o.TrangThai == TrangThaiO.Hit)
-                    {
-                        XuLyDoHoa_OTrung(btn);
-                    }
-                    else if (o.TrangThai == TrangThaiO.Miss)
-                    {
-                        XuLyDoHoa_OTruot(btn);
-                    }
-                    else if (o.CoTau)
-                    {
-                        XuLyDoHoa_OTau(btn);
-                    }
-                    else
-                    {
-                        XuLyDoHoa_ONuoc(btn);
-                    }
-                }
-            }
-
-            // Đồng bộ bàn cờ radar bên phải
-            for (int r = 0; r < 10; r++)
-            {
-                for (int c = 0; c < 10; c++)
-                {
-                    Button btn = _btnRadarGrid[r, c];
-                    int st = radar[r, c];
-
-                    if (st == 2) // Trúng
-                    {
-                        cO oDich = banCoDich.MaTranO[c, r];
-                        if (oDich.TrangThai == TrangThaiO.Sunk)
-                        {
-                            btn.BackColor = UITheme.SunkAshBackground;
-                            btn.FlatAppearance.BorderColor = UITheme.SunkThickBorder;
-                            btn.FlatAppearance.BorderSize = UITheme.SunkBorderThickness;
-                            btn.ForeColor = UITheme.SunkAshText;
-                            btn.Font = new Font("Segoe UI", 12f, FontStyle.Bold);
-                            btn.Text = "X";
-                        }
-                        else
-                        {
-                            XuLyDoHoa_OTrung(btn);
-                        }
-                    }
-                    else if (st == 3) // Trượt
-                    {
-                        XuLyDoHoa_OTruot(btn);
-                    }
-                    else
-                    {
-                        XuLyDoHoa_ONuoc(btn);
-                    }
-                }
-            }
-
-            // Đồng bộ trạng thái kỹ năng cho người chơi hiện tại và hủy arm kỹ năng cũ
-            _kyNangHienTai = CheDoKyNang.KhongCo;
-            btnSkillRadar.Enabled = !DaDungSkillRadarHienTai && !_giaiDoanXepTau && !_tranDauKetThuc;
-            btnSkillRadar.BackColor = UITheme.PanelBackground;
-            btnSkillRadar.ForeColor = DaDungSkillRadarHienTai ? UITheme.MissGray : UITheme.PrimaryCyan;
-
-            btnSkillCrossBomb.Enabled = !DaDungSkillBombHienTai && !_giaiDoanXepTau && !_tranDauKetThuc;
-            btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
-            btnSkillCrossBomb.ForeColor = DaDungSkillBombHienTai ? UITheme.MissGray : UITheme.AccentNeon;
-        }
-
-        /// <summary>
-        /// Kích hoạt màn che sương mù cho chế độ PvP Hotseat
-        /// </summary>
-        public void KichHoatManCheSuongMu(int nguoiChoiTiepTheo = 2)
-        {
-            if (pnlFogOverlay == null) return;
-
-            _kyNangHienTai = CheDoKyNang.KhongCo;
-            // [BUG FIX] Dừng ngay timer đếm ngược lượt khi sương mù phủ, khóa bàn cờ để chống trôi thời gian
-            tmrTurnCountdown.Stop();
-            pnlRadarBoard.Enabled = false;
-
-            pnlFogOverlay.Visible = true;
-            pnlFogOverlay.BringToFront();
-            lblFogTitle.Text = "🌫️ MÀN CHẮN SƯƠNG MÙ CHIẾN THUẬT";
-            lblFogMessage.Text = "Để đảm bảo bí mật chiến thuật tuyệt đối giữa hai người chơi tác chiến trên cùng 1 máy tính,\n" +
-                                 "toàn bộ hạm đội và radar đã được che kín bởi màn sương mù dày đặc.\n\n" +
-                                 $"Xin mời NGƯỜI CHƠI {nguoiChoiTiepTheo} nhận máy và bấm nút bên dưới để mở bàn cờ tác chiến của bạn:";
-            btnFogContinue.Text = $"⚓ Người chơi {nguoiChoiTiepTheo}: Sẵn sàng";
-            CanChinhGiaoDien();
-        }
         #endregion
 
         #region XỬ LÝ BÓNG MỜ (PREVIEW SHADOW) KHI XẾP TÀU
@@ -727,7 +554,7 @@ namespace BattleshipGame.Views
 
             // Đồng bộ trực tiếp với model logic cBanCo
             int shipIdx = cboSelectShip.SelectedIndex;
-            cBanCo banCoNha = BanCoDoiNhaHienTai;
+            cBanCo banCoNha = _banCoTa;
             if (shipIdx >= 0 && shipIdx < banCoNha.DanhSachTau.Count)
             {
                 var tauModel = banCoNha.DanhSachTau[shipIdx];
@@ -747,32 +574,28 @@ namespace BattleshipGame.Views
             // Kiểm tra số lượng tàu đã hoàn tất
             int soTauDaDat = _danhSachTauUI.Count(t => t.DaDat);
             int tongSoO = _danhSachTauUI.Where(t => t.DaDat).Sum(t => t.DoDai);
-            string tenDoiNha = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
-                ? $"Hạm đội Người chơi {_nguoiChoiHienTai}"
-                : "Hạm đội ta";
-            lblPlayerFleetStatus.Text = $"{tenDoiNha}: {soTauDaDat}/5 tàu ({tongSoO} ô)";
+            string tenDoiNha = "Tàu bạn";
+            lblPlayerFleetStatus.Text = $"{tenDoiNha}: {soTauDaDat}/5 ({tongSoO} ô)";
 
             if (soTauDaDat == 5)
             {
                 btnStartBattle.Enabled = true;
                 btnStartBattle.BackColor = UITheme.AccentNeon;
                 btnStartBattle.ForeColor = UITheme.HeaderBackground;
-                lblTurnIndicator.Text = "HẠM ĐỘI ĐÃ SẴN SÀNG!";
+                lblTurnIndicator.Text = "Hạm đội sẵn sàng";
                 lblTurnIndicator.ForeColor = UITheme.AccentNeon;
-                lblTurnMessage.Text = (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 1)
-                    ? "🎉 Người chơi 1 đã xếp đủ 5/5 tàu! Hãy bấm nút bên dưới để chuyển sang Người chơi 2."
-                    : "🎉 Đã xếp đủ 5/5 tàu! Hãy bấm 'Bắt đầu chiến đấu' để khai hỏa!";
+                lblTurnMessage.Text = "Đã xếp đủ 5 tàu. Nhấn 'Vào trận' để bắt đầu!";
                 lblTurnMessage.ForeColor = UITheme.AccentNeon;
             }
             else
             {
-                lblTurnMessage.Text = $"Đã đặt thành công {tauDangChon.TenTau}! Tiến độ: {soTauDaDat}/5 tàu.";
+                lblTurnMessage.Text = $"Đã đặt {tauDangChon.TenTau}. Tiến độ: {soTauDaDat}/5 tàu.";
                 lblTurnMessage.ForeColor = UITheme.SuccessGreen;
             }
             }
             catch (Exception ex)
             {
-                TacticalMessageBox.ShowWarning(this, "LỖI ĐẶT TÀU", "Đã xảy ra sự cố khi đặt tàu: " + ex.Message);
+                TacticalMessageBox.ShowWarning(this, "Lỗi đặt tàu", "Đã xảy ra sự cố khi đặt tàu: " + ex.Message);
             }
         }
 
@@ -808,7 +631,7 @@ namespace BattleshipGame.Views
         {
             if (!_giaiDoanXepTau) return;
 
-            cBanCo banCoNha = BanCoDoiNhaHienTai;
+            cBanCo banCoNha = _banCoTa;
             banCoNha.XoaTatCaTau();
 
             for (int r = 0; r < 10; r++)
@@ -833,8 +656,8 @@ namespace BattleshipGame.Views
             btnStartBattle.BackColor = UITheme.PanelBackground;
             btnStartBattle.ForeColor = UITheme.MissGray;
 
-            _daDungSkillRadarP1 = false; _daDungSkillRadarP2 = false;
-            _daDungSkillBombP1 = false; _daDungSkillBombP2 = false;
+            _daDungSkillRadar = false;
+            _daDungSkillBomb = false;
             _kyNangHienTai = CheDoKyNang.KhongCo;
             btnSkillRadar.Enabled = true;
             btnSkillRadar.BackColor = UITheme.PanelBackground;
@@ -843,20 +666,15 @@ namespace BattleshipGame.Views
             btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
             btnSkillCrossBomb.ForeColor = UITheme.AccentNeon;
 
-            string tenDoiNha = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
-                ? $"Hạm đội Người chơi {_nguoiChoiHienTai}"
-                : "Hạm đội ta";
-            lblPlayerFleetStatus.Text = $"{tenDoiNha}: 0/5 tàu (0 ô)";
-            lblTurnIndicator.Text = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
-                ? $"GIAI ĐOẠN: NGƯỜI CHƠI {_nguoiChoiHienTai} BỐ TRÍ HẠM ĐỘI"
-                : "GIAI ĐOẠN: BỐ TRÍ HẠM ĐỘI";
+            lblPlayerFleetStatus.Text = "Tàu bạn: 0/5 (0 ô)";
+            lblTurnIndicator.Text = "Bố trí hạm đội";
             lblTurnIndicator.ForeColor = UITheme.PrimaryCyan;
-            lblTurnMessage.Text = "Đã thu hồi toàn bộ hạm đội về kho. Hãy click đặt tàu hoặc bấm 'Xếp ngẫu nhiên'.";
+            lblTurnMessage.Text = "Đã thu hồi hạm đội. Nhấn chuột để đặt tàu hoặc xếp tự động.";
             lblTurnMessage.ForeColor = UITheme.TextSecondary;
         }
 
         /// <summary>
-        /// Nút Xếp ngẫu nhiên (Auto Place): Hỗ trợ người chơi sinh tự động 5 tàu ngay ngắn trên bàn cờ.
+        /// Nút Xếp tự động: Sinh tự động 5 tàu hợp lệ trên bàn cờ.
         /// </summary>
         private void btnAutoPlace_Click(object? sender, EventArgs e)
         {
@@ -871,7 +689,7 @@ namespace BattleshipGame.Views
             // Xoa ban co truoc khi xep
             btnResetBoard_Click(this, EventArgs.Empty);
 
-            cBanCo banCoNha = BanCoDoiNhaHienTai;
+            cBanCo banCoNha = _banCoTa;
             bool ok = banCoNha.TuDongSinhBanCoNgauNhien();
             if (ok)
             {
@@ -899,22 +717,11 @@ namespace BattleshipGame.Views
                 btnStartBattle.BackColor = UITheme.AccentNeon;
                 btnStartBattle.ForeColor = UITheme.HeaderBackground;
 
-                string tenDoiNha = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
-                    ? $"Hạm đội Người chơi {_nguoiChoiHienTai}"
-                    : "Hạm đội ta";
-                lblPlayerFleetStatus.Text = $"{tenDoiNha}: 5/5 tàu (17 ô)";
-                lblTurnIndicator.Text = "HẠM ĐỘI ĐÃ SẴN SÀNG!";
+                lblPlayerFleetStatus.Text = "Tàu bạn: 5/5 (17 ô)";
+                lblTurnIndicator.Text = "Hạm đội sẵn sàng";
                 lblTurnIndicator.ForeColor = UITheme.AccentNeon;
-                lblTurnMessage.Text = (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 1)
-                    ? "⚡ Đã xếp ngẫu nhiên 5/5 tàu! Hãy bấm nút bên dưới để chuyển sang Người chơi 2."
-                    : "⚡ Đã xếp ngẫu nhiên 5/5 chiến hạm ngay ngắn trên bàn cờ!";
+                lblTurnMessage.Text = "Đã xếp tự động 5 tàu. Nhấn 'Vào trận' để bắt đầu!";
                 lblTurnMessage.ForeColor = UITheme.AccentNeon;
-
-                TacticalMessageBox.ShowInfo(
-                    this,
-                    "XẾP TÀU TỰ ĐỘNG",
-                    "⚡ Đã tự động xếp ngẫu nhiên toàn bộ 5 tàu ngay ngắn trên bàn cờ 10x10!"
-                );
             }
         }
 
@@ -924,15 +731,15 @@ namespace BattleshipGame.Views
             {
                 TacticalMessageBox.ShowWarning(
                     this,
-                    "CHƯA BỐ TRÍ ĐỦ TÀU",
-                    "Vui lòng bố trí đủ 5 tàu trước khi tiếp tục!"
+                    "Chưa đủ tàu",
+                    "Vui lòng bố trí đủ 5 tàu trước khi vào trận!"
                 );
                 return;
             }
 
-            cBanCo banCoNha = BanCoDoiNhaHienTai;
+            cBanCo banCoNha = _banCoTa;
 
-            // Đồng bộ an toàn lần cuối giữa UI và model lõi của người chơi hiện tại
+            // Đồng bộ an toàn lần cuối giữa UI và model lõi
             for (int i = 0; i < _danhSachTauUI.Count && i < banCoNha.DanhSachTau.Count; i++)
             {
                 var uiShip = _danhSachTauUI[i];
@@ -946,90 +753,28 @@ namespace BattleshipGame.Views
                 }
             }
 
-            // Nếu đang ở chế độ PvP Hotseat và Người chơi 1 vừa xếp xong -> chuyển sang Người chơi 2 xếp tàu
-            if (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) && _nguoiChoiHienTai == 1)
-            {
-                // Chuyển sang Người chơi 2
-                _nguoiChoiHienTai = 2;
-
-                // Xóa ma trận và danh sách tàu UI để Người chơi 2 xếp từ đầu
-                Array.Clear(_maTranDoiNha, 0, _maTranDoiNha.Length);
-                foreach (var tau in _danhSachTauUI)
-                {
-                    tau.DaDat = false;
-                    tau.CacViTri.Clear();
-                }
-
-                LamMoiMauBanCoDoiNha();
-                CapNhatGiaoDienKhoTau();
-
-                btnStartBattle.Text = "⚔️ BẮT ĐẦU CHIẾN ĐẤU";
-                btnStartBattle.Enabled = false;
-                btnStartBattle.BackColor = UITheme.PanelBackground;
-                btnStartBattle.ForeColor = UITheme.MissGray;
-
-                pnlPlacementControls.Enabled = false;
-                KichHoatManCheSuongMu(2);
-                lblFogTitle.Text = "🌫️ MÀN CHẮN SƯƠNG MÙ - CHUYỂN LƯỢT XẾP TÀU";
-                lblFogMessage.Text = "Người chơi 1 đã bố trí xong hạm đội!\n\n" +
-                                     "Để đảm bảo bí mật vị trí chiến hạm tuyệt đối giữa hai người chơi,\n" +
-                                     "Người chơi 1 vui lòng nhường máy lại cho NGƯỜI CHƠI 2.\n\n" +
-                                     "Người chơi 2 hãy nhận máy và bấm nút bên dưới để bắt đầu xếp hạm đội của mình:";
-                btnFogContinue.Text = "⚓ Người chơi 2: Sẵn sàng xếp tàu";
-                return;
-            }
-
-            // Đến đây nghĩa là: Hoặc PvE đã xếp xong, HOẶC PvP Người chơi 2 đã xếp xong!
             _giaiDoanXepTau = false;
-            pnlPlacementControls.Enabled = false;
+            pnlPlacementControls.Visible = false;
+            pnlCombatControls.Visible = true;
             pnlCombatControls.Enabled = true;
 
-            if (_cheDoChoi.StartsWith("PvE", StringComparison.OrdinalIgnoreCase))
-            {
-                // Sinh ngẫu nhiên hạm đội đối thủ (Bot)
-                _banCoDoiThu.TuDongSinhBanCoNgauNhien();
-                _botAI.KhoiTao();
-                _cacOBotDaBan.Clear();
+            // Sinh ngẫu nhiên hạm đội đối thủ (Bot)
+            _banCoDoiThu.TuDongSinhBanCoNgauNhien();
+            _botAI.KhoiTao();
+            _cacOBotDaBan.Clear();
 
-                // Bật nhạc nền trận chiến
-                cAmThanh.PhatNhacNen("bgm_battle.wav");
+            // Nhạc nền trận chiến
+            cAmThanh.PhatNhacNen("bgm_battle.wav");
 
-                // Khởi động đồng hồ trận đấu
-                _turnSeconds = 30;
-                tmrMatch.Start();
-                tmrTurnCountdown.Start();
+            // Khởi động đồng hồ trận đấu
+            _turnSeconds = 30;
+            tmrMatch.Start();
+            tmrTurnCountdown.Start();
 
-                lblTurnIndicator.Text = "LƯỢT: BẠN KHAI HỎA";
-                lblTurnIndicator.ForeColor = UITheme.AccentNeon;
-                lblTurnMessage.Text = "Click ô trên Radar đối phương để khai hỏa!";
-                lblTurnMessage.ForeColor = UITheme.AccentNeon;
-
-                TacticalMessageBox.ShowInfo(
-                    this,
-                    "GIAI ĐOẠN CHIẾN ĐẤU",
-                    "⚔️ Chuyển sang giai đoạn Chiến đấu thành công!\nCác ô trên Radar đối phương đã sẵn sàng tiếp nhận phát bắn."
-                );
-            }
-            else
-            {
-                // PvP Hotseat: Cả hai người chơi đều đã xếp xong hạm đội!
-                btnPauseGame.Visible = false;
-                btnPauseGame.Enabled = false;
-
-                // Bật nhạc nền trận chiến và khởi động đồng hồ thời gian ván đấu
-                cAmThanh.PhatNhacNen("bgm_battle.wav");
-                tmrMatch.Start();
-
-                // Lượt 1 sẽ thuộc về Người chơi 1! Kích hoạt màn sương mù để Người chơi 1 nhận lại máy
-                _nguoiChoiHienTai = 1;
-                KichHoatManCheSuongMu(1);
-                lblFogTitle.Text = "⚔️ CẢ HAI HẠM ĐỘI ĐÃ SẴN SÀNG!";
-                lblFogMessage.Text = "Người chơi 2 đã hoàn tất bố trí hạm đội!\n\n" +
-                                     "Cả hai bên đã sẵn sàng bước vào cuộc hải chiến rực lửa.\n" +
-                                     "Người chơi 2 vui lòng nhường máy lại cho NGƯỜI CHƠI 1 để khai hỏa phát bắn đầu tiên!\n\n" +
-                                     "Người chơi 1 hãy nhận máy và bấm nút bên dưới:";
-                btnFogContinue.Text = "⚓ Người chơi 1: Vào trận khai hỏa";
-            }
+            lblTurnIndicator.Text = "Lượt của bạn";
+            lblTurnIndicator.ForeColor = UITheme.AccentNeon;
+            lblTurnMessage.Text = "Nhấn ô trên radar đối thủ để khai hỏa!";
+            lblTurnMessage.ForeColor = UITheme.AccentNeon;
         }
         #endregion
 
@@ -1040,12 +785,12 @@ namespace BattleshipGame.Views
             {
                 int col = pt.X;
                 int row = pt.Y;
-                if (MaTranRadarHienTai[row, col] == 0)
+                if (_maTranRadar[row, col] == 0)
                 {
                     btn.FlatAppearance.BorderColor = UITheme.AccentNeon;
                     btn.BackColor = Color.FromArgb(20, 35, 60);
                 }
-                lblTurnMessage.Text = $"🎯 Tọa độ ngắm bắn Radar: {((char)('A' + row))}{col + 1}";
+                lblTurnMessage.Text = $"Tọa độ ngắm bắn: {((char)('A' + row))}{col + 1}";
                 lblTurnMessage.ForeColor = UITheme.AccentNeon;
             }
         }
@@ -1056,7 +801,7 @@ namespace BattleshipGame.Views
             {
                 int col = pt.X;
                 int row = pt.Y;
-                if (MaTranRadarHienTai[row, col] == 0)
+                if (_maTranRadar[row, col] == 0)
                 {
                     btn.FlatAppearance.BorderColor = UITheme.BorderDefault;
                     btn.BackColor = Color.FromArgb(15, 23, 42);
@@ -1085,9 +830,9 @@ namespace BattleshipGame.Views
                 return;
             }
 
-            if (MaTranRadarHienTai[row, col] != 0)
+            if (_maTranRadar[row, col] != 0)
             {
-                lblTurnMessage.Text = $"⚠️ Tọa độ {((char)('A' + row))}{col + 1} đã được bắn trước đó! Hãy chọn tọa độ khác.";
+                lblTurnMessage.Text = $"Tọa độ {((char)('A' + row))}{col + 1} đã được bắn! Hãy chọn tọa độ khác.";
                 lblTurnMessage.ForeColor = UITheme.DangerRed;
                 return;
             }
@@ -1095,33 +840,33 @@ namespace BattleshipGame.Views
             _dangXuLyBan = true;
             try
             {
-                TangPhatBan();
-                _turnSeconds = 30; // reset countdown luot
+                _tongPhatBan++;
+                _turnSeconds = 30; // reset countdown lượt
 
-                // Phat tieng dai bac
+                // Phát tiếng đại bác
                 cAmThanh.PhatShot();
 
-                // Tiep nhan phat ban thuc su tu ban co doi thu
-                KetQuaBan kq = BanCoMucTieuHienTai.TiepNhanPhatBan(new Point(col, row), out cTau tauBiBan);
+                // Tiếp nhận phát bắn từ bàn cờ đối thủ
+                KetQuaBan kq = _banCoDoiThu.TiepNhanPhatBan(new Point(col, row), out cTau tauBiBan);
 
                 if (kq == KetQuaBan.Hit)
                 {
                     _soPhatTrung++;
-                    MaTranRadarHienTai[row, col] = 2; // Trúng
+                    _maTranRadar[row, col] = 2; // Trúng
                     XuLyDoHoa_OTrung(btn);
 
                     cAmThanh.PhatHit();
                     string tenTau = tauBiBan != null ? tauBiBan.TenTau : "Chiến hạm";
-                    lblTurnMessage.Text = $"💥 BẮN TRÚNG {tenTau}! Lửa cháy bùng lên (X). Bạn được thưởng thêm 1 lượt!";
+                    lblTurnMessage.Text = $"Bắn trúng {tenTau}! Bạn được thưởng thêm 1 lượt!";
                     lblTurnMessage.ForeColor = UITheme.HitFireBackground;
                 }
                 else if (kq == KetQuaBan.Sunk)
                 {
                     _soPhatTrung++;
-                    MaTranRadarHienTai[row, col] = 2;
+                    _maTranRadar[row, col] = 2;
                     XuLyDoHoa_OTrung(btn);
 
-                    // Cập nhật toàn bộ ô của con tàu đã chìm sang màu tro tàn (#374151) và viền đậm 2px (#991B1B) chuẩn Ngày 3
+                    // Cập nhật toàn bộ ô của con tàu đã chìm
                     if (tauBiBan != null)
                     {
                         var buttonsTau = new List<Button>();
@@ -1137,11 +882,11 @@ namespace BattleshipGame.Views
 
                     cAmThanh.PhatSunk();
                     string tenTau = tauBiBan != null ? tauBiBan.TenTau : "Chiến hạm";
-                    lblTurnMessage.Text = $"🔥 BẮN CHÌM {tenTau}! Tro tàn phủ kín. Bạn được bắn tiếp!";
+                    lblTurnMessage.Text = $"Bắn chìm {tenTau}! Bạn được bắn tiếp!";
                     lblTurnMessage.ForeColor = UITheme.HitFireBackground;
 
-                    // Kiem tra chien thang
-                    if (BanCoMucTieuHienTai.TatCaTauDaChim)
+                    // Kiểm tra chiến thắng
+                    if (_banCoDoiThu.TatCaTauDaChim)
                     {
                         XuLyKetThucTran(true);
                         return;
@@ -1149,23 +894,14 @@ namespace BattleshipGame.Views
                 }
                 else // Miss
                 {
-                    MaTranRadarHienTai[row, col] = 3; // Trượt
+                    _maTranRadar[row, col] = 3; // Trượt
                     XuLyDoHoa_OTruot(btn);
 
                     cAmThanh.PhatMiss();
-                    lblTurnMessage.Text = $"🌊 BẮN TRƯỢT tại {((char)('A' + row))}{col + 1}! Sóng nước dâng trào (•). Đổi lượt ngắm bắn.";
+                    lblTurnMessage.Text = $"Bắn trượt tại {((char)('A' + row))}{col + 1}! Đổi lượt cho máy.";
                     lblTurnMessage.ForeColor = UITheme.MissRippleText;
 
-                    // May ban tra neu o che do PvE, hoac kich hoat man che suong mu neu PvP
-                    if (_cheDoChoi.StartsWith("PvE", StringComparison.OrdinalIgnoreCase))
-                    {
-                        MayBanTra();
-                    }
-                    else
-                    {
-                        _nguoiChoiHienTai = (_nguoiChoiHienTai == 1) ? 2 : 1;
-                        KichHoatManCheSuongMu(_nguoiChoiHienTai);
-                    }
+                    MayBanTra();
                 }
 
                 // Cập nhật thống kê
@@ -1175,7 +911,7 @@ namespace BattleshipGame.Views
             }
             catch (Exception ex)
             {
-                TacticalMessageBox.ShowWarning(this, "LỖI PHÁT BẮN", "Đã xảy ra sự cố trong quá trình xử lý phát bắn: " + ex.Message);
+                TacticalMessageBox.ShowWarning(this, "Lỗi phát bắn", "Đã xảy ra sự cố trong quá trình xử lý phát bắn: " + ex.Message);
             }
             finally
             {
@@ -1247,7 +983,7 @@ namespace BattleshipGame.Views
             try
             {
                 using var dlg = new Form();
-                dlg.Text = thang ? "🎖️ Ghi Danh Bảng Vàng (Bot AI)" : "☠️ Báo Cáo Chiến Sự (Bot AI)";
+                dlg.Text = thang ? "Ghi danh bảng xếp hạng" : "Kết quả trận đấu";
                 dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
                 dlg.StartPosition = FormStartPosition.CenterParent;
                 dlg.MaximizeBox = false;
@@ -1260,8 +996,8 @@ namespace BattleshipGame.Views
                 var lblPrompt = new Label
                 {
                     Text = thang 
-                        ? $"🎉 Chiến thắng oanh liệt! Điểm số: {diem:N0}\nXin mời Đô đốc xác nhận tên để lưu vào Bảng Xếp Hạng:" 
-                        : $"☠️ Hạm đội đã thất bại! Điểm số: {diem:N0}\nNhập tên Đô đốc để ghi nhận kết quả vào Bảng Xếp Hạng:",
+                        ? $"Chiến thắng! Điểm số: {diem:N0}\nNhập tên để lưu vào bảng xếp hạng:" 
+                        : $"Thất bại! Điểm số: {diem:N0}\nNhập tên để lưu kết quả:",
                     Location = new Point(20, 16),
                     Size = new Size(390, 48),
                     Font = new Font("Segoe UI", 9.5f, FontStyle.Regular),
@@ -1285,7 +1021,7 @@ namespace BattleshipGame.Views
 
                 var lblNote = new Label
                 {
-                    Text = "ℹ️ Thành tích sẽ được lưu vào Bảng Xếp Hạng (chế độ Bot AI).",
+                    Text = "Thành tích sẽ được lưu vào bảng xếp hạng.",
                     Location = new Point(24, 108),
                     Size = new Size(382, 20),
                     Font = new Font("Segoe UI", 8.5f, FontStyle.Italic),
@@ -1295,7 +1031,7 @@ namespace BattleshipGame.Views
 
                 var btnOk = new Button
                 {
-                    Text = "💾 Lưu Vào BXH",
+                    Text = "Lưu vào BXH",
                     DialogResult = DialogResult.OK,
                     Location = new Point(136, 145),
                     Size = new Size(136, 38),
@@ -1348,125 +1084,86 @@ namespace BattleshipGame.Views
             pnlRadarBoard.Enabled = false;
             pnlCombatControls.Enabled = false;
 
-            cBanCo banCoNhaThucTe = BanCoDoiNhaHienTai;
-            int soTauConSong = banCoNhaThucTe.DanhSachTau.Count(t => !t.DaChim);
-            int shotCount = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase) ? TongPhatBanHienTai : _tongPhatBan;
-
-            bool laCheDoBot = _cheDoChoi.StartsWith("PvE", StringComparison.OrdinalIgnoreCase);
+            int soTauConSong = _banCoTa.DanhSachTau.Count(t => !t.DaChim);
+            int shotCount = _tongPhatBan;
 
             if (nguoiChoiThang)
             {
                 cAmThanh.PhatVictory();
-                lblTurnIndicator.Text = "🏆 CHIẾN THẮNG CHUNG CUỘC!";
+                lblTurnIndicator.Text = "Chiến thắng!";
                 lblTurnIndicator.ForeColor = UITheme.AccentNeon;
-                string winMsg = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
-                    ? $"🎉 Người chơi {_nguoiChoiHienTai} đã chiến thắng vang dội!"
-                    : $"🎉 Chúc mừng Đô đốc {_tenNguoiChoi}! Bạn đã tiêu diệt toàn bộ hạm đội địch!";
-                lblTurnMessage.Text = winMsg;
+                lblTurnMessage.Text = $"Chúc mừng {_tenNguoiChoi}! Bạn đã tiêu diệt toàn bộ hạm đội địch!";
             }
             else
             {
                 cAmThanh.PhatDefeat();
-                lblTurnIndicator.Text = "☠️ HẠM ĐỘI ĐÃ BỊ TIÊU DIỆT!";
+                lblTurnIndicator.Text = "Hạm đội bị tiêu diệt!";
                 lblTurnIndicator.ForeColor = UITheme.DangerRed;
-                lblTurnMessage.Text = _cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)
-                    ? "Hạm đội đã chìm hoàn toàn. Trận đấu kết thúc!"
-                    : $"Hạm đội của Đô đốc {_tenNguoiChoi} đã chìm hoàn toàn. Bạn đã thất bại!";
+                lblTurnMessage.Text = $"Hạm đội của {_tenNguoiChoi} đã chìm hoàn toàn. Bạn đã thất bại!";
             }
 
-            if (laCheDoBot)
+            int diem = cThanhTichDAO.TinhDiem(nguoiChoiThang, soTauConSong, shotCount, _matchSeconds);
+            string ketQua = nguoiChoiThang ? "Thắng" : "Thua";
+
+            string? tenLuu = HienThiHopThoaiNhapTen(_tenNguoiChoi, diem, nguoiChoiThang);
+
+            string thongBaoLuu;
+            bool daLuu = false;
+            if (!string.IsNullOrEmpty(tenLuu))
             {
-                // [CHỈ ÁP DỤNG VỚI CHẾ ĐỘ BOT]
-                // 1. Tính điểm tự động theo công thức Game Balance
-                int diem = cThanhTichDAO.TinhDiem(nguoiChoiThang, soTauConSong, shotCount, _matchSeconds);
-                string ketQua = nguoiChoiThang ? "Thắng" : "Thua";
+                _tenNguoiChoi = tenLuu;
+                bool luuOk = cThanhTichDAO.LuuThanhTich(_tenNguoiChoi, diem, shotCount, _matchSeconds, _cheDoChoi, ketQua);
+                daLuu = luuOk;
+                thongBaoLuu = luuOk
+                    ? "Đã ghi danh vào bảng xếp hạng."
+                    : $"Không thể lưu thành tích ({cThanhTichDAO.LoiGanNhat ?? "File bận"}).";
+            }
+            else
+            {
+                thongBaoLuu = "Đã bỏ qua lưu thành tích.";
+            }
 
-                // 2. Hộp thoại nhập / xác nhận tên lưu vào Bảng Xếp Hạng
-                string? tenLuu = HienThiHopThoaiNhapTen(_tenNguoiChoi, diem, nguoiChoiThang);
+            string thongBaoChiTiet = nguoiChoiThang
+                ? $"Chiến thắng xuất sắc!\n\n" +
+                  $"Người chơi: {_tenNguoiChoi}\n" +
+                  $"Chế độ: {_cheDoChoi}\n" +
+                  $"Lượt bắn: {shotCount}\n" +
+                  $"Thời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n" +
+                  $"Điểm: {diem:N0}\n\n" +
+                  $"{thongBaoLuu}"
+                : $"Trận đấu kết thúc!\n\n" +
+                  $"Hạm đội của {_tenNguoiChoi} đã bị bắn chìm.\n" +
+                  $"Lượt bắn: {shotCount}\n" +
+                  $"Thời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n\n" +
+                  $"{thongBaoLuu}";
 
-                string thongBaoLuu;
-                bool daLuu = false;
-                if (!string.IsNullOrEmpty(tenLuu))
+            if (daLuu)
+            {
+                var xemBxh = TacticalMessageBox.ShowVictory(
+                    this,
+                    nguoiChoiThang ? "Chiến thắng" : "Thất bại",
+                    $"{thongBaoChiTiet}\n\nBạn có muốn mở xem Bảng xếp hạng không?",
+                    MessageBoxButtons.YesNo
+                );
+                if (xemBxh == DialogResult.Yes)
                 {
-                    _tenNguoiChoi = tenLuu; // Cập nhật tên nếu người chơi sửa
-                    bool luuOk = cThanhTichDAO.LuuThanhTich(_tenNguoiChoi, diem, shotCount, _matchSeconds, _cheDoChoi, ketQua);
-                    daLuu = luuOk;
-                    thongBaoLuu = luuOk
-                        ? "✅ Thành tích đã được ghi danh vào Bảng Xếp Hạng!"
-                        : $"⚠️ Không thể lưu thành tích ({cThanhTichDAO.LoiGanNhat ?? "File bận"}).";
-                }
-                else
-                {
-                    thongBaoLuu = "ℹ️ Đã bỏ qua lưu thành tích vào Bảng Xếp Hạng.";
-                }
-
-                string thongBaoChiTiet = nguoiChoiThang
-                    ? $"🎉 CHIẾN THẮNG XUẤT SẮC!\n\n" +
-                      $"Đô đốc: {_tenNguoiChoi}\n" +
-                      $"Chế độ: {_cheDoChoi}\n" +
-                      $"Số lượt bắn: {shotCount}\n" +
-                      $"Thời gian tác chiến: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n" +
-                      $"Điểm tích lũy: {diem:N0} điểm\n\n" +
-                      $"{thongBaoLuu}"
-                    : $"☠️ TRẬN ĐẤU KẾT THÚC!\n\n" +
-                      $"Hạm đội của Đô đốc {_tenNguoiChoi} đã bị Bot AI bắn chìm hoàn toàn.\n" +
-                      $"Số lượt bắn: {shotCount}\n" +
-                      $"Thời gian: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n\n" +
-                      $"{thongBaoLuu}";
-
-                if (daLuu)
-                {
-                    var xemBxh = TacticalMessageBox.ShowVictory(
-                        this,
-                        nguoiChoiThang ? "CHIẾN THẮNG HẢI QUÂN" : "THẤT BẠI CHIẾN HẠM",
-                        $"{thongBaoChiTiet}\n\nBạn có muốn mở xem Bảng Xếp Hạng ngay không?",
-                        MessageBoxButtons.YesNo
-                    );
-                    if (xemBxh == DialogResult.Yes)
+                    try
                     {
-                        try
-                        {
-                            using var f = new frmThanhTich();
-                            f.ShowDialog(this);
-                        }
-                        catch { }
+                        using var f = new frmThanhTich();
+                        f.ShowDialog(this);
                     }
-                }
-                else
-                {
-                    if (nguoiChoiThang)
-                    {
-                        TacticalMessageBox.ShowVictory(this, "CHIẾN THẮNG HẢI QUÂN", thongBaoChiTiet);
-                    }
-                    else
-                    {
-                        TacticalMessageBox.ShowDefeat(this, "THẤT BẠI CHIẾN HẠM", thongBaoChiTiet);
-                    }
+                    catch { }
                 }
             }
             else
             {
-                // [CHẾ ĐỘ KHÔNG PHẢI BOT: PvP Hotseat / Custom]
-                // KHÔNG hiển thị hộp thoại lưu tên và KHÔNG lưu vào Bảng Xếp Hạng
-                string thongBaoTieuDe = nguoiChoiThang ? $"🎉 NGƯỜI CHƠI {_nguoiChoiHienTai} CHIẾN THẮNG!" : "☠️ TRẬN ĐẤU KẾT THÚC!";
-                string thongBaoPvP = nguoiChoiThang
-                    ? $"{thongBaoTieuDe}\n\n" +
-                      $"Người chiến thắng: Người chơi {_nguoiChoiHienTai}\n" +
-                      $"Số lượt bắn: {shotCount}\n" +
-                      $"Thời gian ván đấu: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n\n" +
-                      $"ℹ️ Chế độ PvP không lưu vào Bảng Xếp Hạng (chỉ áp dụng với chế độ Bot AI)."
-                    : $"☠️ TRẬN ĐẤU KẾT THÚC!\n\n" +
-                      $"Hạm đội đã bị đối phương bắn chìm hoàn toàn.\n" +
-                      $"Thời gian ván đấu: {_matchSeconds / 60:D2}:{_matchSeconds % 60:D2}\n\n" +
-                      $"ℹ️ Chế độ PvP không lưu vào Bảng Xếp Hạng (chỉ áp dụng với chế độ Bot AI).";
-
                 if (nguoiChoiThang)
                 {
-                    TacticalMessageBox.ShowVictory(this, "KẾT QUẢ TRẬN ĐẤU", thongBaoPvP);
+                    TacticalMessageBox.ShowVictory(this, "Chiến thắng", thongBaoChiTiet);
                 }
                 else
                 {
-                    TacticalMessageBox.ShowDefeat(this, "KẾT QUẢ TRẬN ĐẤU", thongBaoPvP);
+                    TacticalMessageBox.ShowDefeat(this, "Thất bại", thongBaoChiTiet);
                 }
             }
         }
@@ -1475,33 +1172,17 @@ namespace BattleshipGame.Views
         #region BỘ ĐIỀU KHIỂN & ĐỒNG HỒ
         private void KhoiTaoThongTinChung()
         {
-            lblMatchModeInfo.Text = _cheDoChoi switch
-            {
-                var s when s.StartsWith("PvE") => $"Chế độ: Đấu với Máy ({_cheDoChoi}) • Đô đốc: {_tenNguoiChoi} • Bàn cờ 10x10",
-                var s when s.StartsWith("PvP") => "Chế độ: Hai người chơi chung 1 máy (Hotseat) • Màn chắn sương mù",
-                _ => $"Chế độ: {_cheDoChoi} • Bàn cờ 10x10"
-            };
-
-            if (_cheDoChoi.StartsWith("PvE", StringComparison.OrdinalIgnoreCase))
-            {
-                lblLeftBoardTitle.Text = $"🛡️ VÙNG BIỂN CỦA {_tenNguoiChoi.ToUpper()} (HẠM ĐỘI TA)";
-                lblRightBoardTitle.Text = "🎯 RADAR TÁC CHIẾN (VÙNG BIỂN QUÂN ĐỊCH)";
-                btnStartBattle.Text = "⚔️ BẮT ĐẦU CHIẾN ĐẤU";
-            }
-            else
-            {
-                lblLeftBoardTitle.Text = "🛡️ VÙNG BIỂN CỦA BẠN (HẠM ĐỘI NGƯỜI CHƠI 1)";
-                lblRightBoardTitle.Text = "🎯 RADAR TÁC CHIẾN (CHỜ CHIẾN ĐẤU)";
-                btnStartBattle.Text = "➡️ TIẾP TỤC: NGƯỜI CHƠI 2 XẾP TÀU";
-            }
-
+            lblMatchModeInfo.Text = $"Chế độ: Đấu với máy ({_cheDoChoi}) • Đô đốc: {_tenNguoiChoi} • Bàn cờ 10x10";
+            lblLeftBoardTitle.Text = $"Vùng biển của {_tenNguoiChoi} (Hạm đội ta)";
+            lblRightBoardTitle.Text = "Radar tác chiến (Vùng biển quân địch)";
+            btnStartBattle.Text = "Vào trận";
             CapNhatNutAmThanh();
         }
 
         private void CapNhatNutAmThanh()
         {
             bool bat = cAmThanh.DaBatAmThanh && TacticalVolumeSlider.IsSoundActive;
-            btnToggleSound.Text = bat ? "🔊 ÂM THANH: BẬT" : "🔇 ÂM THANH: TẮT";
+            btnToggleSound.Text = bat ? "Âm thanh: Bật" : "Âm thanh: Tắt";
             btnToggleSound.ForeColor = bat ? UITheme.AccentNeon : UITheme.MissGray;
         }
 
@@ -1564,9 +1245,9 @@ namespace BattleshipGame.Views
         {
             if (_giaiDoanXepTau || _tranDauKetThuc) return;
 
-            if (DaDungSkillRadarHienTai)
+            if (_daDungSkillRadar)
             {
-                TacticalMessageBox.ShowWarning(this, "KỸ NĂNG ĐẶC BIỆT", "Kỹ năng Radar trinh sát 3x3 đã được sử dụng trong trận này!");
+                TacticalMessageBox.ShowWarning(this, "Kỹ năng đặc biệt", "Kỹ năng Radar trinh sát 3x3 đã được sử dụng trong trận này!");
                 return;
             }
 
@@ -1575,7 +1256,7 @@ namespace BattleshipGame.Views
                 _kyNangHienTai = CheDoKyNang.KhongCo;
                 btnSkillRadar.BackColor = UITheme.PanelBackground;
                 btnSkillRadar.ForeColor = UITheme.PrimaryCyan;
-                lblTurnMessage.Text = "Đã hủy kích hoạt kỹ năng Radar.";
+                lblTurnMessage.Text = "Đã hủy kỹ năng Radar.";
                 lblTurnMessage.ForeColor = UITheme.TextSecondary;
             }
             else
@@ -1584,13 +1265,13 @@ namespace BattleshipGame.Views
                 btnSkillRadar.BackColor = Color.FromArgb(20, 80, 120);
                 btnSkillRadar.ForeColor = Color.White;
 
-                if (!DaDungSkillBombHienTai)
+                if (!_daDungSkillBomb)
                 {
                     btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
                     btnSkillCrossBomb.ForeColor = UITheme.AccentNeon;
                 }
 
-                lblTurnMessage.Text = "📡 CHẾ ĐỘ TRINH SÁT RADAR: Hãy click 1 ô trên Radar để quét vùng 3x3 quanh ô đó!";
+                lblTurnMessage.Text = "Chế độ Radar: Chọn 1 ô trên radar để quét vùng 3x3 quanh ô đó.";
                 lblTurnMessage.ForeColor = UITheme.AccentNeon;
             }
         }
@@ -1599,9 +1280,9 @@ namespace BattleshipGame.Views
         {
             if (_giaiDoanXepTau || _tranDauKetThuc) return;
 
-            if (DaDungSkillBombHienTai)
+            if (_daDungSkillBomb)
             {
-                TacticalMessageBox.ShowWarning(this, "KỸ NĂNG ĐẶC BIỆT", "Kỹ năng Pháo kích diện rộng (+) đã được sử dụng trong trận này!");
+                TacticalMessageBox.ShowWarning(this, "Kỹ năng đặc biệt", "Kỹ năng Pháo kích diện rộng (+) đã được sử dụng trong trận này!");
                 return;
             }
 
@@ -1610,7 +1291,7 @@ namespace BattleshipGame.Views
                 _kyNangHienTai = CheDoKyNang.KhongCo;
                 btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
                 btnSkillCrossBomb.ForeColor = UITheme.AccentNeon;
-                lblTurnMessage.Text = "Đã hủy kích hoạt kỹ năng Pháo kích.";
+                lblTurnMessage.Text = "Đã hủy kỹ năng Pháo kích.";
                 lblTurnMessage.ForeColor = UITheme.TextSecondary;
             }
             else
@@ -1619,13 +1300,13 @@ namespace BattleshipGame.Views
                 btnSkillCrossBomb.BackColor = Color.FromArgb(120, 30, 30);
                 btnSkillCrossBomb.ForeColor = Color.White;
 
-                if (!DaDungSkillRadarHienTai)
+                if (!_daDungSkillRadar)
                 {
                     btnSkillRadar.BackColor = UITheme.PanelBackground;
                     btnSkillRadar.ForeColor = UITheme.PrimaryCyan;
                 }
 
-                lblTurnMessage.Text = "💥 CHẾ ĐỘ PHÁO KÍCH DIỆN RỘNG (+): Hãy click 1 ô tâm để nã pháo 5 ô!";
+                lblTurnMessage.Text = "Chế độ Pháo kích: Chọn 1 ô tâm để nã pháo 5 ô chữ thập (+).";
                 lblTurnMessage.ForeColor = UITheme.DangerRed;
             }
         }
@@ -1635,7 +1316,7 @@ namespace BattleshipGame.Views
             _dangXuLyBan = true;
             try
             {
-                DanhDauDaDungRadar();
+                _daDungSkillRadar = true;
                 _kyNangHienTai = CheDoKyNang.KhongCo;
                 btnSkillRadar.Enabled = false;
                 btnSkillRadar.BackColor = UITheme.PanelBackground;
@@ -1650,7 +1331,7 @@ namespace BattleshipGame.Views
                     {
                         if (c >= 0 && c < 10 && r >= 0 && r < 10)
                         {
-                            if (BanCoMucTieuHienTai.MaTranO[c, r].CoTau)
+                            if (_banCoDoiThu.MaTranO[c, r].CoTau)
                             {
                                 soOTauPhatHien++;
                             }
@@ -1658,29 +1339,21 @@ namespace BattleshipGame.Views
                     }
                 }
 
-                TangPhatBan();
+                _tongPhatBan++;
                 _turnSeconds = 30;
 
-                lblTurnMessage.Text = $"📡 Radar quét khu vực {((char)('A' + centerRow))}{centerCol + 1} (3x3): Phát hiện {soOTauPhatHien} ô chiến hạm địch! Tiêu tốn 1 lượt.";
+                lblTurnMessage.Text = $"Radar quét khu vực {((char)('A' + centerRow))}{centerCol + 1}: Phát hiện {soOTauPhatHien} ô tàu địch. Đổi lượt cho máy.";
                 lblTurnMessage.ForeColor = soOTauPhatHien > 0 ? UITheme.AccentNeon : UITheme.TextSecondary;
 
                 TacticalMessageBox.ShowInfo(
                     this,
-                    "RADAR TRINH SÁT 3x3",
-                    $"📡 KẾT QUẢ TRINH SÁT RADAR 3x3 quanh tọa độ {((char)('A' + centerRow))}{centerCol + 1}:\n\n" +
-                    $"Số ô chiến hạm địch phát hiện: {soOTauPhatHien} ô.\n\n" +
-                    "⚠️ Kỹ năng trinh sát đã tiêu tốn 1 lượt hợp lệ. Quyền bắn chuyển sang đối thủ!"
+                    "Radar trinh sát 3x3",
+                    $"Kết quả trinh sát quanh {((char)('A' + centerRow))}{centerCol + 1}:\n\n" +
+                    $"Số ô tàu phát hiện: {soOTauPhatHien} ô.\n\n" +
+                    "Đổi lượt cho máy."
                 );
 
-                if (_cheDoChoi.StartsWith("PvE", StringComparison.OrdinalIgnoreCase))
-                {
-                    MayBanTra();
-                }
-                else
-                {
-                    _nguoiChoiHienTai = (_nguoiChoiHienTai == 1) ? 2 : 1;
-                    KichHoatManCheSuongMu(_nguoiChoiHienTai);
-                }
+                MayBanTra();
             }
             finally
             {
@@ -1699,15 +1372,15 @@ namespace BattleshipGame.Views
                 new Point(centerCol, centerRow + 1)
             };
 
-            bool coOMucTieuHopLe = mucTieu.Any(pt => pt.X >= 0 && pt.X < 10 && pt.Y >= 0 && pt.Y < 10 && MaTranRadarHienTai[pt.Y, pt.X] == 0);
+            bool coOMucTieuHopLe = mucTieu.Any(pt => pt.X >= 0 && pt.X < 10 && pt.Y >= 0 && pt.Y < 10 && _maTranRadar[pt.Y, pt.X] == 0);
             if (!coOMucTieuHopLe)
             {
-                lblTurnMessage.Text = "⚠️ Toàn bộ ô quanh tọa độ này đều đã bắn! Hãy chọn tọa độ khác.";
+                lblTurnMessage.Text = "Toàn bộ ô quanh tọa độ này đều đã bắn! Hãy chọn tọa độ khác.";
                 lblTurnMessage.ForeColor = UITheme.DangerRed;
                 TacticalMessageBox.ShowWarning(
                     this,
-                    "PHÁO KÍCH DIỆN RỘNG",
-                    "⚠️ Toàn bộ các ô trong khu vực pháo kích này đều đã được bắn trước đó!\nVui lòng chọn tọa độ mục tiêu khác để không lãng phí kỹ năng."
+                    "Pháo kích diện rộng",
+                    "Toàn bộ các ô trong khu vực này đều đã được bắn trước đó!\nVui lòng chọn tọa độ khác."
                 );
                 return;
             }
@@ -1715,9 +1388,9 @@ namespace BattleshipGame.Views
             _dangXuLyBan = true;
             try
             {
-                DanhDauDaDungBomb();
+                _daDungSkillBomb = true;
                 _kyNangHienTai = CheDoKyNang.KhongCo;
-                _turnSeconds = 30; // reset countdown lượt
+                _turnSeconds = 30;
                 btnSkillCrossBomb.Enabled = false;
                 btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
                 btnSkillCrossBomb.ForeColor = UITheme.MissGray;
@@ -1729,24 +1402,24 @@ namespace BattleshipGame.Views
                 {
                     if (pt.X >= 0 && pt.X < 10 && pt.Y >= 0 && pt.Y < 10)
                     {
-                        if (MaTranRadarHienTai[pt.Y, pt.X] == 0)
+                        if (_maTranRadar[pt.Y, pt.X] == 0)
                         {
-                            TangPhatBan();
-                            KetQuaBan kq = BanCoMucTieuHienTai.TiepNhanPhatBan(pt, out cTau tauBiBan);
+                            _tongPhatBan++;
+                            KetQuaBan kq = _banCoDoiThu.TiepNhanPhatBan(pt, out cTau tauBiBan);
                             var b = _btnRadarGrid[pt.Y, pt.X];
 
                             if (kq == KetQuaBan.Hit)
                             {
                                 _soPhatTrung++;
                                 soPhatTrungPhao++;
-                                MaTranRadarHienTai[pt.Y, pt.X] = 2;
+                                _maTranRadar[pt.Y, pt.X] = 2;
                                 XuLyDoHoa_OTrung(b);
                             }
                             else if (kq == KetQuaBan.Sunk)
                             {
                                 _soPhatTrung++;
                                 soPhatTrungPhao++;
-                                MaTranRadarHienTai[pt.Y, pt.X] = 2;
+                                _maTranRadar[pt.Y, pt.X] = 2;
                                 XuLyDoHoa_OTrung(b);
 
                                 if (tauBiBan != null)
@@ -1764,7 +1437,7 @@ namespace BattleshipGame.Views
                             }
                             else
                             {
-                                MaTranRadarHienTai[pt.Y, pt.X] = 3;
+                                _maTranRadar[pt.Y, pt.X] = 3;
                                 XuLyDoHoa_OTruot(b);
                             }
                         }
@@ -1775,21 +1448,16 @@ namespace BattleshipGame.Views
                 double tiLe = _tongPhatBan > 0 ? (_soPhatTrung * 100.0 / _tongPhatBan) : 0;
                 lblAccuracy.Text = $"Độ chính xác: {tiLe:F1}%";
 
-                lblTurnMessage.Text = $"💥 Pháo kích diện rộng hoàn tất! Đánh trúng {soPhatTrungPhao} mục tiêu.";
+                lblTurnMessage.Text = $"Pháo kích hoàn tất! Trúng {soPhatTrungPhao} mục tiêu.";
                 lblTurnMessage.ForeColor = UITheme.DangerRed;
 
-                if (BanCoMucTieuHienTai.TatCaTauDaChim)
+                if (_banCoDoiThu.TatCaTauDaChim)
                 {
                     XuLyKetThucTran(true);
                 }
-                else if (_cheDoChoi.StartsWith("PvE", StringComparison.OrdinalIgnoreCase))
-                {
-                    MayBanTra();
-                }
                 else
                 {
-                    _nguoiChoiHienTai = (_nguoiChoiHienTai == 1) ? 2 : 1;
-                    KichHoatManCheSuongMu(_nguoiChoiHienTai);
+                    MayBanTra();
                 }
             }
             finally
@@ -1829,59 +1497,13 @@ namespace BattleshipGame.Views
             if (res == DialogResult.Yes)
             {
                 cAmThanh.DungNhacNen();
-                if (_cheDoChoi.StartsWith("PvP", StringComparison.OrdinalIgnoreCase))
-                {
-                    int nguoiDauHang = _nguoiChoiHienTai;
-                    int nguoiThang = (nguoiDauHang == 1) ? 2 : 1;
-                    _nguoiChoiHienTai = nguoiThang;
-                    XuLyKetThucTran(true);
-                }
-                else
-                {
-                    XuLyKetThucTran(false);
-                }
+                XuLyKetThucTran(false);
                 Close();
             }
             else
             {
                 if (wasTurnTimerRunning && !_tranDauKetThuc) tmrTurnCountdown.Start();
                 if (wasMatchTimerRunning && !_tranDauKetThuc) tmrMatch.Start();
-            }
-        }
-
-        private void btnFogContinue_Click(object? sender, EventArgs e)
-        {
-            pnlFogOverlay.Visible = false;
-
-            // Nếu đang trong giai đoạn xếp tàu (Người chơi 2 vừa nhận máy để bắt đầu xếp tàu)
-            if (_giaiDoanXepTau)
-            {
-                pnlPlacementControls.Enabled = true;
-                pnlRadarBoard.Enabled = false;
-                lblLeftBoardTitle.Text = $"🛡️ VÙNG BIỂN CỦA BẠN (HẠM ĐỘI NGƯỜI CHƠI {_nguoiChoiHienTai})";
-                lblRightBoardTitle.Text = "🎯 RADAR TÁC CHIẾN (CHỜ CHIẾN ĐẤU)";
-                lblTurnIndicator.Text = $"GIAI ĐOẠN: NGƯỜI CHƠI {_nguoiChoiHienTai} BỐ TRÍ HẠM ĐỘI";
-                lblTurnIndicator.ForeColor = UITheme.AccentNeon;
-                lblTurnMessage.Text = $"Người chơi {_nguoiChoiHienTai}: Hãy click đặt 5 tàu hoặc bấm 'Xếp ngẫu nhiên'.";
-                lblTurnMessage.ForeColor = UITheme.AccentNeon;
-                lblPlayerFleetStatus.Text = $"Hạm đội Người chơi {_nguoiChoiHienTai}: 0/5 tàu (0 ô)";
-                LamMoiMauBanCoDoiNha();
-                CapNhatGiaoDienKhoTau();
-                return;
-            }
-
-            pnlRadarBoard.Enabled = true;
-            _turnSeconds = 30;
-            lblTurnTimer.Text = $"⏳ Lượt: {_turnSeconds}s";
-            prgTurnTime.Value = 30;
-            lblTurnIndicator.Text = $"LƯỢT: NGƯỜI CHƠI {_nguoiChoiHienTai} KHAI HỎA";
-            lblTurnMessage.Text = $"Đến lượt Người chơi {_nguoiChoiHienTai}! Hãy chọn tọa độ trên radar.";
-            lblTurnMessage.ForeColor = UITheme.AccentNeon;
-            DongBoGiaoDienTheoLuotChoi();
-
-            if (!_tranDauKetThuc)
-            {
-                tmrTurnCountdown.Start();
             }
         }
 
@@ -1901,7 +1523,7 @@ namespace BattleshipGame.Views
         {
             try
             {
-                if (_giaiDoanXepTau || _tranDauKetThuc || _dangXuLyBan || (pnlFogOverlay != null && pnlFogOverlay.Visible)) return;
+                if (_giaiDoanXepTau || _tranDauKetThuc || _dangXuLyBan) return;
 
                 if (_turnSeconds > 0)
                 {
@@ -1914,23 +1536,10 @@ namespace BattleshipGame.Views
                 {
                     _turnSeconds = 30;
                     _kyNangHienTai = CheDoKyNang.KhongCo;
-                    lblTurnMessage.Text = "⏰ Hết 30 giây! Bạn bị mất lượt.";
+                    lblTurnMessage.Text = "Hết 30 giây! Bạn bị mất lượt.";
                     lblTurnMessage.ForeColor = UITheme.DangerRed;
 
-                    if (_cheDoChoi.StartsWith("PvE", StringComparison.OrdinalIgnoreCase))
-                    {
-                        MayBanTra();
-                    }
-                    else
-                    {
-                        if (pnlFogOverlay != null)
-                        {
-                            _nguoiChoiHienTai = (_nguoiChoiHienTai == 1) ? 2 : 1;
-                            KichHoatManCheSuongMu(_nguoiChoiHienTai);
-                            lblFogTitle.Text = "⏰ HẾT THỜI GIAN LƯỢT BẮN!";
-                            lblFogMessage.Text = $"Đã hết 30 giây! Hãy chuyển lượt cho Người chơi {_nguoiChoiHienTai} tiếp tục.";
-                        }
-                    }
+                    MayBanTra();
                 }
             }
             catch
@@ -1956,21 +1565,8 @@ namespace BattleshipGame.Views
             int startX = Math.Max(16, (ClientSize.Width - totalWidth) / 2);
 
             pnlLeftBoardContainer.Left = startX;
-            if (pnlLeftNote != null) pnlLeftNote.Left = startX;
-
             pnlCenterDashboard.Left = startX + pnlLeftBoardContainer.Width + 10;
-
-            int rightX = pnlCenterDashboard.Right + 10;
-            pnlRightBoardContainer.Left = rightX;
-            if (pnlRightNote != null) pnlRightNote.Left = rightX;
-
-            // Canh giữa màn che sương mù
-            if (pnlFogOverlay != null && pnlFogOverlay.Visible)
-            {
-                lblFogTitle.Left = (pnlFogOverlay.Width - lblFogTitle.Width) / 2;
-                lblFogMessage.Left = (pnlFogOverlay.Width - lblFogMessage.Width) / 2;
-                btnFogContinue.Left = (pnlFogOverlay.Width - btnFogContinue.Width) / 2;
-            }
+            pnlRightBoardContainer.Left = pnlCenterDashboard.Right + 10;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -1979,8 +1575,8 @@ namespace BattleshipGame.Views
             {
                 var res = TacticalMessageBox.ShowConfirm(
                     this,
-                    "XÁC NHẬN RỜI TRẬN ĐẤU",
-                    "Trận đấu đang diễn ra. Bạn có chắc chắn muốn thoát khỏi ván đấu?"
+                    "Rời trận đấu",
+                    "Trận đấu đang diễn ra. Bạn có chắc chắn muốn rời ván đấu?"
                 );
                 if (res != DialogResult.Yes)
                 {

@@ -65,9 +65,14 @@ namespace BattleshipGame.Views
             DoubleBuffered = true;
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
 
-            int lineCount = (_customMessage != null) ? _customMessage.Split('\n').Length : 1;
-            int extraHeight = Math.Max(0, (lineCount - 5) * 20);
-            Size = new Size(520, 290 + extraHeight);
+            Font msgFont = new Font("Segoe UI", 10f, FontStyle.Regular);
+            int contentWidth = 360;
+            Size measured = TextRenderer.MeasureText(_customMessage ?? "", msgFont, new Size(contentWidth, 0), TextFormatFlags.WordBreak);
+            int msgHeight = Math.Max(36, measured.Height + 10);
+
+            int formWidth = 480;
+            int formHeight = 42 + 48 + msgHeight + 20 + 60; // Header(42) + Title(48) + Message + Gap(20) + Buttons(60)
+            Size = new Size(formWidth, formHeight);
             BackColor = UITheme.BackgroundDark;
 
             // Màu chủ đạo theo loại hộp thoại
@@ -77,8 +82,8 @@ namespace BattleshipGame.Views
                 TacticalDialogType.Defeat => UITheme.DangerRed,
                 TacticalDialogType.Surrender => UITheme.WarningAmber,
                 TacticalDialogType.Warning => UITheme.WarningAmber,
-                TacticalDialogType.Exit => UITheme.PrimaryCyan,
-                TacticalDialogType.Confirm => UITheme.AccentNeon,
+                TacticalDialogType.Exit => UITheme.DangerRed,
+                TacticalDialogType.Confirm => UITheme.PrimaryCyan,
                 _ => UITheme.AccentNeon
             };
 
@@ -90,34 +95,34 @@ namespace BattleshipGame.Views
                 TacticalDialogType.Warning => "⚠️",
                 TacticalDialogType.Exit => "🚪",
                 TacticalDialogType.Confirm => "⚓",
-                _ => "📡"
+                _ => "ℹ️"
             };
 
             string headerBadge = _dialogType switch
             {
-                TacticalDialogType.Victory => "BÁO CÁO CHIẾN CÔNG HẢI QUÂN",
-                TacticalDialogType.Defeat => "BÁO CÁO TỔN THẤT HẠM ĐỘI",
-                TacticalDialogType.Surrender => "MỆNH LỆNH RÚT QUÂN HẢI QUÂN",
-                TacticalDialogType.Warning => "CẢNH BÁO TÁC CHIẾN CHIẾN HẠM",
-                TacticalDialogType.Exit => "SỞ CHỈ HUY QUÂN SỰ",
-                TacticalDialogType.Confirm => "XÁC NHẬN LỆNH ĐÔ ĐỐC",
-                _ => "THÔNG ĐIỆP TỔNG HÀNH DINH"
+                TacticalDialogType.Victory => "Chiến thắng",
+                TacticalDialogType.Defeat => "Thất bại",
+                TacticalDialogType.Surrender => "Xác nhận đầu hàng",
+                TacticalDialogType.Warning => "Cảnh báo",
+                TacticalDialogType.Exit => "Xác nhận thoát",
+                TacticalDialogType.Confirm => "Xác nhận",
+                _ => "Thông báo"
             };
 
             // 1. Header Bar
             Panel pnlHeader = new Panel
             {
                 Location = new Point(0, 0),
-                Size = new Size(Width, 42),
+                Size = new Size(Width, 40),
                 BackColor = UITheme.HeaderBackground
             };
 
             _lblHeader = new Label
             {
-                Text = $"⚓  {headerBadge}",
+                Text = headerBadge,
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
                 ForeColor = accentColor,
-                Location = new Point(14, 11),
+                Location = new Point(14, 10),
                 AutoSize = true
             };
             pnlHeader.Controls.Add(_lblHeader);
@@ -125,9 +130,9 @@ namespace BattleshipGame.Views
             _btnCloseX = new TacticalButton
             {
                 Text = "✕",
-                Font = new Font("Segoe UI", 10f, FontStyle.Bold),
-                Location = new Point(Width - 46, 7),
-                Size = new Size(34, 28),
+                Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                Location = new Point(Width - 42, 6),
+                Size = new Size(32, 28),
                 CornerRadius = 4,
                 BaseFillColor = Color.Transparent,
                 BorderColor = Color.Transparent,
@@ -149,9 +154,9 @@ namespace BattleshipGame.Views
             _lblIcon = new Label
             {
                 Text = iconText,
-                Font = new Font("Segoe UI Emoji", 34f, FontStyle.Regular),
-                Location = new Point(20, 56),
-                Size = new Size(64, 64),
+                Font = new Font("Segoe UI Emoji", 26f, FontStyle.Regular),
+                Location = new Point(16, 52),
+                Size = new Size(54, 54),
                 TextAlign = ContentAlignment.MiddleCenter,
                 ForeColor = accentColor
             };
@@ -161,10 +166,10 @@ namespace BattleshipGame.Views
             _lblTitle = new Label
             {
                 Text = _customTitle,
-                Font = new Font("Segoe UI", 13f, FontStyle.Bold),
+                Font = new Font("Segoe UI", 12f, FontStyle.Bold),
                 ForeColor = accentColor,
-                Location = new Point(94, 58),
-                Size = new Size(Width - 110, 32),
+                Location = new Point(78, 54),
+                Size = new Size(Width - 94, 28),
                 AutoEllipsis = true
             };
             Controls.Add(_lblTitle);
@@ -173,10 +178,10 @@ namespace BattleshipGame.Views
             _lblMessage = new Label
             {
                 Text = _customMessage,
-                Font = new Font("Segoe UI", 10f, FontStyle.Regular),
+                Font = msgFont,
                 ForeColor = UITheme.TextPrimary,
-                Location = new Point(96, 96),
-                Size = new Size(Width - 116, 110 + extraHeight),
+                Location = new Point(78, 86),
+                Size = new Size(Width - 94, msgHeight),
                 AutoEllipsis = false
             };
             Controls.Add(_lblMessage);
@@ -184,8 +189,8 @@ namespace BattleshipGame.Views
             // 5. Cụm nút bấm
             Panel pnlButtons = new Panel
             {
-                Location = new Point(0, Height - 66),
-                Size = new Size(Width, 66),
+                Location = new Point(0, Height - 58),
+                Size = new Size(Width, 58),
                 BackColor = UITheme.PanelBackground
             };
 
@@ -193,24 +198,29 @@ namespace BattleshipGame.Views
             {
                 string yesText = _dialogType switch
                 {
-                    TacticalDialogType.Surrender => "🏳️ ĐẦU HÀNG",
-                    TacticalDialogType.Exit => "🚪 THOÁT GAME",
-                    _ => "✓ ĐỒNG Ý"
+                    TacticalDialogType.Surrender => "Đầu hàng",
+                    TacticalDialogType.Exit => "Thoát",
+                    _ => "Đồng ý"
                 };
 
                 string noText = _dialogType switch
                 {
-                    TacticalDialogType.Surrender => "⚔️ CHIẾN ĐẤU TIẾP",
-                    TacticalDialogType.Exit => "⚓ Ở LẠI SỞ CHỈ HUY",
-                    _ => "✕ HỦY BỎ"
+                    TacticalDialogType.Surrender => "Tiếp tục chơi",
+                    TacticalDialogType.Exit => "Ở lại",
+                    _ => "Hủy"
                 };
+
+                int btnW = 140;
+                int btnH = 38;
+                int gap = 16;
+                int startBtnX = (Width - (btnW * 2 + gap)) / 2;
 
                 _btnPrimary = new TacticalButton
                 {
                     Text = yesText,
-                    Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
-                    Size = new Size(180, 42),
-                    Location = new Point(Width - 390, 12),
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                    Size = new Size(btnW, btnH),
+                    Location = new Point(startBtnX, 10),
                     CornerRadius = 6,
                     BaseFillColor = Color.FromArgb(24, 38, 58),
                     BorderColor = accentColor,
@@ -224,9 +234,9 @@ namespace BattleshipGame.Views
                 _btnSecondary = new TacticalButton
                 {
                     Text = noText,
-                    Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
-                    Size = new Size(180, 42),
-                    Location = new Point(Width - 198, 12),
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                    Size = new Size(btnW, btnH),
+                    Location = new Point(startBtnX + btnW + gap, 10),
                     CornerRadius = 6,
                     BaseFillColor = Color.FromArgb(20, 28, 42),
                     BorderColor = UITheme.BorderDefault,
@@ -245,17 +255,19 @@ namespace BattleshipGame.Views
             {
                 string okText = _dialogType switch
                 {
-                    TacticalDialogType.Victory => "🏆 TIẾP TỤC",
-                    TacticalDialogType.Defeat => "🔄 ĐÃ RÕ",
-                    _ => "⚓ TIẾP TỤC"
+                    TacticalDialogType.Victory => "Tiếp tục",
+                    TacticalDialogType.Defeat => "Đóng",
+                    _ => "Đóng"
                 };
 
+                int btnW = 130;
+                int btnH = 36;
                 _btnPrimary = new TacticalButton
                 {
                     Text = okText,
-                    Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
-                    Size = new Size(180, 42),
-                    Location = new Point((Width - 180) / 2, 12),
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                    Size = new Size(btnW, btnH),
+                    Location = new Point((Width - btnW) / 2, 10),
                     CornerRadius = 6,
                     BaseFillColor = Color.FromArgb(24, 38, 58),
                     BorderColor = accentColor,
@@ -306,11 +318,11 @@ namespace BattleshipGame.Views
                 g.DrawRectangle(pen, rect);
             }
 
-            // Đường phân cách dưới Header
+            // Đường phân cách dưới Header và trên cụm nút
             using (Pen linePen = new Pen(UITheme.BorderDefault, 1f))
             {
-                g.DrawLine(linePen, 0, 42, Width, 42);
-                g.DrawLine(linePen, 0, Height - 66, Width, Height - 66);
+                g.DrawLine(linePen, 0, 40, Width, 40);
+                g.DrawLine(linePen, 0, Height - 58, Width, Height - 58);
             }
         }
 
@@ -330,7 +342,7 @@ namespace BattleshipGame.Views
         }
 
         /// <summary>
-        /// Hộp thoại cảnh báo tác chiến
+        /// Hộp thoại cảnh báo
         /// </summary>
         public static void ShowWarning(IWin32Window? owner, string title, string message)
         {
@@ -338,7 +350,7 @@ namespace BattleshipGame.Views
         }
 
         /// <summary>
-        /// Hộp thoại thông tin tác chiến
+        /// Hộp thoại thông tin
         /// </summary>
         public static void ShowInfo(IWin32Window? owner, string title, string message)
         {
@@ -346,7 +358,7 @@ namespace BattleshipGame.Views
         }
 
         /// <summary>
-        /// Hộp thoại xác nhận mệnh lệnh hải quân (Yes/No)
+        /// Hộp thoại xác nhận
         /// </summary>
         public static DialogResult ShowConfirm(IWin32Window? owner, string title, string message)
         {
@@ -354,29 +366,28 @@ namespace BattleshipGame.Views
         }
 
         /// <summary>
-        /// Hộp thoại Đô đốc xác nhận đầu hàng (Surrender Confirmation)
+        /// Hộp thoại xác nhận đầu hàng
         /// </summary>
         public static DialogResult ShowSurrenderConfirm(IWin32Window? owner)
         {
             return Show(
                 owner,
-                "LỆNH ĐẦU HÀNG CHIẾN HẠM",
-                "Đồng chí Đô đốc có chắc chắn muốn phát tín hiệu cờ trắng đầu hàng và rút toàn bộ hạm đội về căn cứ?\n\n" +
-                "⚠️ Thao tác này sẽ kết thúc ván đấu ngay lập tức và tính phần thắng cho đối phương!",
+                "Đầu hàng",
+                "Bạn có chắc chắn muốn đầu hàng không?",
                 TacticalDialogType.Surrender,
                 MessageBoxButtons.YesNo
             );
         }
 
         /// <summary>
-        /// Hộp thoại xác nhận rời khỏi Sở chỉ huy (Exit Confirmation)
+        /// Hộp thoại xác nhận thoát
         /// </summary>
         public static DialogResult ShowExitConfirm(IWin32Window? owner)
         {
             return Show(
                 owner,
-                "RỜI KHỎI SỞ CHỈ HUY",
-                "Đồng chí Đô đốc có chắc chắn muốn đóng sở chỉ huy và thoát khỏi trò chơi Bắn Tàu?",
+                "Thoát trò chơi",
+                "Bạn có chắc chắn muốn thoát khỏi trò chơi?",
                 TacticalDialogType.Exit,
                 MessageBoxButtons.YesNo
             );
@@ -403,7 +414,7 @@ namespace BattleshipGame.Views
         {
             Show(
                 owner,
-                "HẠM ĐỘI BỊ TIÊU DIỆT",
+                "Thất bại",
                 message,
                 TacticalDialogType.Defeat,
                 MessageBoxButtons.OK

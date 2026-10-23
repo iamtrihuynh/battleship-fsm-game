@@ -68,7 +68,7 @@ namespace BattleshipGame.Views
             this.lblSubTitle.Name = "lblSubTitle";
             this.lblSubTitle.Size = new System.Drawing.Size(920, 24);
             this.lblSubTitle.TabIndex = 1;
-            this.lblSubTitle.Text = "LỊCH SỬ THI ĐẤU & KỶ LỤC TÁC CHIẾN HẢI QUÂN";
+            this.lblSubTitle.Text = "Lịch sử thi đấu tác chiến";
             this.lblSubTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblTitle
@@ -80,7 +80,7 @@ namespace BattleshipGame.Views
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(920, 48);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "⚓ BẢNG VINH DANH CHIẾN HẠM ⚓";
+            this.lblTitle.Text = "Bảng xếp hạng";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pnlControls
@@ -155,8 +155,8 @@ namespace BattleshipGame.Views
             this.cboCheDo.FormattingEnabled = true;
             this.cboCheDo.Items.AddRange(new object[] {
             "Tất cả",
-            "PvE",
-            "PvP Hotseat"});
+            "PvE - Dễ",
+            "PvE - Nâng cao"});
             this.cboCheDo.Location = new System.Drawing.Point(135, 12);
             this.cboCheDo.Name = "cboCheDo";
             this.cboCheDo.Size = new System.Drawing.Size(180, 25);

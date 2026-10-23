@@ -88,6 +88,11 @@ namespace BattleshipGame.Logic
                 return;
             }
 
+            if (DangPhatNhacNen && string.Equals(_currentBgm, ten, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
             DangPhatNhacNen = true;
             _currentBgm = ten;
 
@@ -112,7 +117,10 @@ namespace BattleshipGame.Logic
                         if (err == 0 || err == 266) // 266: MCIERR_DEVICE_NOT_INSTALLED (headless/no audio card in CI/test env)
                         {
                             if (DangPhatNhacNen && err == 0)
+                            {
                                 mciSendString("play bgm repeat", null, 0, IntPtr.Zero);
+                                mciSendString("setaudio bgm volume to 800", null, 0, IntPtr.Zero);
+                            }
                             else if (!DangPhatNhacNen)
                                 mciSendString("close bgm", null, 0, IntPtr.Zero);
                         }

@@ -14,14 +14,14 @@ namespace BattleshipGame.Views
     public partial class frmMenu : Form
     {
 
-        private string _tenNguoiChoi = "Thuyền Trưởng";
+        private string _tenNguoiChoi = "Người chơi";
 
         public frmMenu()
         {
             InitializeComponent();
             DoubleBuffered = true;
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Bắn Tàu - Tactical Naval Warfare";
+            Text = "Bắn Tàu";
             CapNhatNutAmThanh();
             CapNhatHienThiTenNguoiChoi();
 
@@ -39,6 +39,7 @@ namespace BattleshipGame.Views
                 BringToFront();
                 Activate();
                 CanChinhGiaoDien();
+                cAmThanh.PhatNhacNen("bgm_battle.wav");
             };
         }
 
@@ -99,7 +100,7 @@ namespace BattleshipGame.Views
             try
             {
                 bool bat = sliderVolume != null ? (!sliderVolume.IsMuted && sliderVolume.Value > 0) : cAmThanh.DaBatAmThanh;
-                btnSoundToggle.Text = bat ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT (MUTE)";
+                btnSoundToggle.Text = bat ? "🔊 Âm thanh: Bật" : "🔇 Âm thanh: Tắt";
                 btnSoundToggle.ForeColor = bat ? UITheme.AccentNeon : UITheme.MissGray;
                 btnSoundToggle.BorderColor = bat ? UITheme.AccentNeon : UITheme.BorderDefault;
                 btnSoundToggle.Invalidate();
@@ -130,7 +131,7 @@ namespace BattleshipGame.Views
         {
             if (lblCurrentPlayer != null)
             {
-                lblCurrentPlayer.Text = $"👤 Đô đốc: {_tenNguoiChoi}";
+                lblCurrentPlayer.Text = $"👤 Người chơi: {_tenNguoiChoi}";
             }
         }
 
@@ -138,10 +139,10 @@ namespace BattleshipGame.Views
         {
             using (Form prompt = new Form())
             {
-                prompt.Width = 400;
-                prompt.Height = 190;
+                prompt.Width = 380;
+                prompt.Height = 180;
                 prompt.FormBorderStyle = FormBorderStyle.FixedDialog;
-                prompt.Text = "Đổi Tên Đô Đốc";
+                prompt.Text = "Đổi tên";
                 prompt.StartPosition = FormStartPosition.CenterParent;
                 prompt.BackColor = UITheme.BackgroundDark;
                 prompt.ForeColor = Color.White;
@@ -152,9 +153,9 @@ namespace BattleshipGame.Views
                 {
                     Left = 24,
                     Top = 18,
-                    Width = 340,
+                    Width = 330,
                     Height = 22,
-                    Text = "Nhập tên Đô đốc mới (dùng cho chế độ Đấu Máy):",
+                    Text = "Nhập tên mới:",
                     ForeColor = UITheme.PrimaryCyan,
                     Font = new Font("Segoe UI", 9.5f, FontStyle.Bold)
                 };
@@ -162,8 +163,8 @@ namespace BattleshipGame.Views
                 TextBox txtInput = new TextBox()
                 {
                     Left = 24,
-                    Top = 48,
-                    Width = 336,
+                    Top = 46,
+                    Width = 320,
                     Text = _tenNguoiChoi,
                     MaxLength = 30,
                     BackColor = Color.FromArgb(15, 23, 42),
@@ -175,9 +176,9 @@ namespace BattleshipGame.Views
                 TacticalButton btnXacNhan = new TacticalButton()
                 {
                     Text = "Xác nhận",
-                    Left = 140,
-                    Width = 105,
-                    Top = 95,
+                    Left = 130,
+                    Width = 100,
+                    Top = 90,
                     Height = 36,
                     BorderColor = UITheme.PrimaryCyan,
                     DialogResult = DialogResult.OK
@@ -186,9 +187,9 @@ namespace BattleshipGame.Views
                 TacticalButton btnHuy = new TacticalButton()
                 {
                     Text = "Hủy",
-                    Left = 255,
-                    Width = 105,
-                    Top = 95,
+                    Left = 244,
+                    Width = 100,
+                    Top = 90,
                     Height = 36,
                     BorderColor = UITheme.BorderLight,
                     DialogResult = DialogResult.Cancel
@@ -221,7 +222,6 @@ namespace BattleshipGame.Views
         private void btnPvE_Click(object sender, EventArgs e)
         {
             // Hiển thị panel chọn độ khó AI
-            lblDifficultyDesc.Text = $"Đô đốc hiện tại: {_tenNguoiChoi}\nHãy chọn cấp độ để sẵn sàng vào trận!";
             pnlDifficultySelection.Visible = true;
             pnlDifficultySelection.BringToFront();
         }
@@ -243,11 +243,6 @@ namespace BattleshipGame.Views
             pnlDifficultySelection.Visible = false;
         }
 
-        private void btnPvP_Click(object sender, EventArgs e)
-        {
-            MoManHinhTranDau("PvP Hotseat");
-        }
-
         private void btnLeaderboard_Click(object sender, EventArgs e)
         {
             try
@@ -261,8 +256,8 @@ namespace BattleshipGame.Views
             {
                 TacticalMessageBox.ShowWarning(
                     this,
-                    "LỖI BẢNG XẾP HẠNG",
-                    "Không thể mở Bảng thành tích: " + ex.Message
+                    "Lỗi bảng xếp hạng",
+                    "Không thể mở bảng xếp hạng: " + ex.Message
                 );
             }
         }
@@ -280,8 +275,8 @@ namespace BattleshipGame.Views
             {
                 TacticalMessageBox.ShowWarning(
                     this,
-                    "LỖI HƯỚNG DẪN",
-                    "Không thể mở Hướng dẫn: " + ex.Message
+                    "Lỗi hướng dẫn",
+                    "Không thể mở hướng dẫn: " + ex.Message
                 );
             }
         }
@@ -302,7 +297,7 @@ namespace BattleshipGame.Views
             }
         }
 
-        private void MoManHinhTranDau(string cheDo, string tenNguoiChoi = "Thuyền Trưởng")
+        private void MoManHinhTranDau(string cheDo, string tenNguoiChoi = "Người chơi")
         {
             try
             {
@@ -312,6 +307,7 @@ namespace BattleshipGame.Views
                     f.ShowDialog(this);
                 }
                 Show();
+                cAmThanh.PhatNhacNen("bgm_battle.wav");
                 CapNhatNutAmThanh();
             }
             catch (Exception ex)
@@ -319,7 +315,7 @@ namespace BattleshipGame.Views
                 Show();
                 TacticalMessageBox.ShowWarning(
                     this,
-                    "LỖI KHỞI ĐỘNG TRẬN ĐẤU",
+                    "Lỗi khởi động",
                     "Đã xảy ra sự cố khi tải trận đấu: " + ex.Message
                 );
             }
