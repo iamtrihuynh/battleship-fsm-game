@@ -77,8 +77,8 @@ namespace BattleshipGame.Views
             InitializeComponent();
             DoubleBuffered = true;
             StartPosition = FormStartPosition.CenterScreen;
-            ClientSize = new Size(1260, 580);
-            MinimumSize = new Size(1260, 580);
+            ClientSize = new Size(1320, 640);
+            MinimumSize = new Size(1320, 640);
             Text = "Bắn Tàu";
 
             _cheDoChoi = cheDoChoi;
@@ -1561,12 +1561,12 @@ namespace BattleshipGame.Views
             btnToggleSound.Left = pnlTopBar.Width - btnToggleSound.Width - 20;
 
             // Canh giữa 3 khu vực khi mở to / toàn màn hình
-            int totalWidth = pnlLeftBoardContainer.Width + 10 + pnlCenterDashboard.Width + 10 + pnlRightBoardContainer.Width;
+            int totalWidth = pnlLeftBoardContainer.Width + 14 + pnlCenterDashboard.Width + 14 + pnlRightBoardContainer.Width;
             int startX = Math.Max(16, (ClientSize.Width - totalWidth) / 2);
 
             pnlLeftBoardContainer.Left = startX;
-            pnlCenterDashboard.Left = startX + pnlLeftBoardContainer.Width + 10;
-            pnlRightBoardContainer.Left = pnlCenterDashboard.Right + 10;
+            pnlCenterDashboard.Left = startX + pnlLeftBoardContainer.Width + 14;
+            pnlRightBoardContainer.Left = pnlCenterDashboard.Right + 14;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

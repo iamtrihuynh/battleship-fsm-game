@@ -131,8 +131,8 @@ namespace BattleshipGame.Views
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = UITheme.BackgroundDark;
-            this.ClientSize = new Size(1260, 580);
-            this.MinimumSize = new Size(1260, 580);
+            this.ClientSize = new Size(1320, 640);
+            this.MinimumSize = new Size(1320, 640);
             this.FormBorderStyle = FormBorderStyle.Sizable;
             this.MaximizeBox = true;
             this.Name = "frmBanTau";
@@ -147,15 +147,15 @@ namespace BattleshipGame.Views
             // 
             this.pnlTopBar.BackColor = UITheme.HeaderBackground;
             this.pnlTopBar.Dock = DockStyle.Top;
-            this.pnlTopBar.Height = 65;
+            this.pnlTopBar.Height = 56;
             this.pnlTopBar.BorderStyle = BorderStyle.FixedSingle;
             this.Controls.Add(this.pnlTopBar);
 
             // 
             // btnBackToMenu
             // 
-            this.btnBackToMenu.Location = new Point(14, 12);
-            this.btnBackToMenu.Size = new Size(130, 38);
+            this.btnBackToMenu.Location = new Point(14, 9);
+            this.btnBackToMenu.Size = new Size(120, 38);
             this.btnBackToMenu.Text = "⬅ Menu";
             this.btnBackToMenu.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.btnBackToMenu.CornerRadius = 6;
@@ -166,9 +166,9 @@ namespace BattleshipGame.Views
             // lblMatchTitle
             // 
             this.lblMatchTitle.AutoSize = false;
-            this.lblMatchTitle.Location = new Point(160, 8);
-            this.lblMatchTitle.Size = new Size(720, 28);
-            this.lblMatchTitle.Font = new Font("Segoe UI", 16f, FontStyle.Bold);
+            this.lblMatchTitle.Location = new Point(148, 6);
+            this.lblMatchTitle.Size = new Size(260, 24);
+            this.lblMatchTitle.Font = new Font("Segoe UI", 13f, FontStyle.Bold);
             this.lblMatchTitle.ForeColor = UITheme.AccentNeon;
             this.lblMatchTitle.Text = "Trận địa bắn tàu";
             this.pnlTopBar.Controls.Add(this.lblMatchTitle);
@@ -177,9 +177,9 @@ namespace BattleshipGame.Views
             // lblMatchModeInfo
             // 
             this.lblMatchModeInfo.AutoSize = false;
-            this.lblMatchModeInfo.Location = new Point(162, 36);
-            this.lblMatchModeInfo.Size = new Size(720, 20);
-            this.lblMatchModeInfo.Font = new Font("Segoe UI", 9.5f, FontStyle.Regular);
+            this.lblMatchModeInfo.Location = new Point(150, 30);
+            this.lblMatchModeInfo.Size = new Size(800, 20);
+            this.lblMatchModeInfo.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
             this.lblMatchModeInfo.ForeColor = UITheme.PrimaryCyan;
             this.lblMatchModeInfo.Text = "Chế độ: Đấu với máy (AI)";
             this.pnlTopBar.Controls.Add(this.lblMatchModeInfo);
@@ -187,7 +187,7 @@ namespace BattleshipGame.Views
             // 
             // btnToggleSound
             // 
-            this.btnToggleSound.Location = new Point(1090, 12);
+            this.btnToggleSound.Location = new Point(1150, 9);
             this.btnToggleSound.Size = new Size(150, 38);
             this.btnToggleSound.Text = "🔊 Âm thanh";
             this.btnToggleSound.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
@@ -200,21 +200,21 @@ namespace BattleshipGame.Views
             // 
             this.pnlLeftBoardContainer.BackColor = UITheme.PanelBackground;
             this.pnlLeftBoardContainer.BorderStyle = BorderStyle.FixedSingle;
-            this.pnlLeftBoardContainer.Location = new Point(16, 78);
-            this.pnlLeftBoardContainer.Size = new Size(420, 480);
+            this.pnlLeftBoardContainer.Location = new Point(16, 70);
+            this.pnlLeftBoardContainer.Size = new Size(424, 550);
             this.Controls.Add(this.pnlLeftBoardContainer);
 
             this.lblLeftBoardTitle.AutoSize = false;
             this.lblLeftBoardTitle.Location = new Point(10, 8);
-            this.lblLeftBoardTitle.Size = new Size(400, 24);
+            this.lblLeftBoardTitle.Size = new Size(404, 24);
             this.lblLeftBoardTitle.Font = new Font("Segoe UI", 12f, FontStyle.Bold);
             this.lblLeftBoardTitle.ForeColor = UITheme.PrimaryCyan;
             this.lblLeftBoardTitle.TextAlign = ContentAlignment.MiddleCenter;
             this.lblLeftBoardTitle.Text = "🛡️ Hạm đội của bạn";
             this.pnlLeftBoardContainer.Controls.Add(this.lblLeftBoardTitle);
 
-            this.pnlPlayerBoard.Location = new Point(10, 36);
-            this.pnlPlayerBoard.Size = new Size(400, 434);
+            this.pnlPlayerBoard.Location = new Point(12, 38);
+            this.pnlPlayerBoard.Size = new Size(400, 498);
             this.pnlPlayerBoard.BackColor = UITheme.HeaderBackground;
             this.pnlPlayerBoard.BorderStyle = BorderStyle.FixedSingle;
             this.pnlLeftBoardContainer.Controls.Add(this.pnlPlayerBoard);
@@ -224,21 +224,21 @@ namespace BattleshipGame.Views
             // 
             this.pnlRightBoardContainer.BackColor = UITheme.PanelBackground;
             this.pnlRightBoardContainer.BorderStyle = BorderStyle.FixedSingle;
-            this.pnlRightBoardContainer.Location = new Point(824, 78);
-            this.pnlRightBoardContainer.Size = new Size(420, 480);
+            this.pnlRightBoardContainer.Location = new Point(880, 70);
+            this.pnlRightBoardContainer.Size = new Size(424, 550);
             this.Controls.Add(this.pnlRightBoardContainer);
 
             this.lblRightBoardTitle.AutoSize = false;
             this.lblRightBoardTitle.Location = new Point(10, 8);
-            this.lblRightBoardTitle.Size = new Size(400, 24);
+            this.lblRightBoardTitle.Size = new Size(404, 24);
             this.lblRightBoardTitle.Font = new Font("Segoe UI", 12f, FontStyle.Bold);
             this.lblRightBoardTitle.ForeColor = UITheme.AccentNeon;
             this.lblRightBoardTitle.TextAlign = ContentAlignment.MiddleCenter;
             this.lblRightBoardTitle.Text = "🎯 Radar đối thủ";
             this.pnlRightBoardContainer.Controls.Add(this.lblRightBoardTitle);
 
-            this.pnlRadarBoard.Location = new Point(10, 36);
-            this.pnlRadarBoard.Size = new Size(400, 434);
+            this.pnlRadarBoard.Location = new Point(12, 38);
+            this.pnlRadarBoard.Size = new Size(400, 498);
             this.pnlRadarBoard.BackColor = UITheme.HeaderBackground;
             this.pnlRadarBoard.BorderStyle = BorderStyle.FixedSingle;
             this.pnlRightBoardContainer.Controls.Add(this.pnlRadarBoard);
@@ -248,14 +248,14 @@ namespace BattleshipGame.Views
             // 
             this.pnlCenterDashboard.BackColor = UITheme.PanelBackground;
             this.pnlCenterDashboard.BorderStyle = BorderStyle.FixedSingle;
-            this.pnlCenterDashboard.Location = new Point(446, 78);
-            this.pnlCenterDashboard.Size = new Size(368, 480);
+            this.pnlCenterDashboard.Location = new Point(454, 70);
+            this.pnlCenterDashboard.Size = new Size(412, 550);
             this.Controls.Add(this.pnlCenterDashboard);
 
             // Chỉ báo lượt
             this.lblTurnIndicator.AutoSize = false;
             this.lblTurnIndicator.Location = new Point(10, 8);
-            this.lblTurnIndicator.Size = new Size(348, 28);
+            this.lblTurnIndicator.Size = new Size(392, 28);
             this.lblTurnIndicator.Font = new Font("Segoe UI", 13f, FontStyle.Bold);
             this.lblTurnIndicator.ForeColor = UITheme.AccentNeon;
             this.lblTurnIndicator.TextAlign = ContentAlignment.MiddleCenter;
@@ -263,8 +263,8 @@ namespace BattleshipGame.Views
             this.pnlCenterDashboard.Controls.Add(this.lblTurnIndicator);
 
             this.lblTurnMessage.AutoSize = false;
-            this.lblTurnMessage.Location = new Point(10, 38);
-            this.lblTurnMessage.Size = new Size(348, 20);
+            this.lblTurnMessage.Location = new Point(10, 36);
+            this.lblTurnMessage.Size = new Size(392, 20);
             this.lblTurnMessage.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
             this.lblTurnMessage.ForeColor = UITheme.TextSecondary;
             this.lblTurnMessage.TextAlign = ContentAlignment.MiddleCenter;
@@ -274,29 +274,29 @@ namespace BattleshipGame.Views
             // Bộ đồng hồ
             this.pnlTimers.BackColor = UITheme.HeaderBackground;
             this.pnlTimers.BorderStyle = BorderStyle.FixedSingle;
-            this.pnlTimers.Location = new Point(12, 62);
-            this.pnlTimers.Size = new Size(344, 58);
+            this.pnlTimers.Location = new Point(14, 62);
+            this.pnlTimers.Size = new Size(382, 60);
             this.pnlCenterDashboard.Controls.Add(this.pnlTimers);
 
             this.lblMatchTimer.AutoSize = false;
-            this.lblMatchTimer.Location = new Point(10, 6);
-            this.lblMatchTimer.Size = new Size(150, 20);
+            this.lblMatchTimer.Location = new Point(12, 6);
+            this.lblMatchTimer.Size = new Size(170, 20);
             this.lblMatchTimer.Font = new Font("Consolas", 11f, FontStyle.Bold);
             this.lblMatchTimer.ForeColor = UITheme.TextPrimary;
             this.lblMatchTimer.Text = "⏱ Trận: 00:00";
             this.pnlTimers.Controls.Add(this.lblMatchTimer);
 
             this.lblTurnTimer.AutoSize = false;
-            this.lblTurnTimer.Location = new Point(180, 6);
-            this.lblTurnTimer.Size = new Size(150, 20);
+            this.lblTurnTimer.Location = new Point(200, 6);
+            this.lblTurnTimer.Size = new Size(170, 20);
             this.lblTurnTimer.Font = new Font("Consolas", 11f, FontStyle.Bold);
             this.lblTurnTimer.ForeColor = UITheme.AccentNeon;
             this.lblTurnTimer.TextAlign = ContentAlignment.TopRight;
             this.lblTurnTimer.Text = "⏳ Lượt: 30s";
             this.pnlTimers.Controls.Add(this.lblTurnTimer);
 
-            this.prgTurnTime.Location = new Point(10, 30);
-            this.prgTurnTime.Size = new Size(324, 18);
+            this.prgTurnTime.Location = new Point(12, 32);
+            this.prgTurnTime.Size = new Size(358, 18);
             this.prgTurnTime.Maximum = 30;
             this.prgTurnTime.Value = 30;
             this.pnlTimers.Controls.Add(this.prgTurnTime);
@@ -304,45 +304,45 @@ namespace BattleshipGame.Views
             // Thống kê trận đấu
             this.pnlStats.BackColor = UITheme.HeaderBackground;
             this.pnlStats.BorderStyle = BorderStyle.FixedSingle;
-            this.pnlStats.Location = new Point(12, 126);
-            this.pnlStats.Size = new Size(344, 94);
+            this.pnlStats.Location = new Point(14, 130);
+            this.pnlStats.Size = new Size(382, 102);
             this.pnlCenterDashboard.Controls.Add(this.pnlStats);
 
             this.lblStatsTitle.AutoSize = false;
-            this.lblStatsTitle.Location = new Point(8, 6);
-            this.lblStatsTitle.Size = new Size(328, 18);
+            this.lblStatsTitle.Location = new Point(10, 6);
+            this.lblStatsTitle.Size = new Size(362, 18);
             this.lblStatsTitle.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
             this.lblStatsTitle.ForeColor = UITheme.PrimaryCyan;
             this.lblStatsTitle.Text = "📊 Thống kê trận đấu";
             this.pnlStats.Controls.Add(this.lblStatsTitle);
 
             this.lblPlayerFleetStatus.AutoSize = false;
-            this.lblPlayerFleetStatus.Location = new Point(8, 26);
-            this.lblPlayerFleetStatus.Size = new Size(160, 20);
+            this.lblPlayerFleetStatus.Location = new Point(10, 28);
+            this.lblPlayerFleetStatus.Size = new Size(175, 20);
             this.lblPlayerFleetStatus.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
             this.lblPlayerFleetStatus.ForeColor = UITheme.TextPrimary;
             this.lblPlayerFleetStatus.Text = "Tàu bạn: 5/5";
             this.pnlStats.Controls.Add(this.lblPlayerFleetStatus);
 
             this.lblEnemyFleetStatus.AutoSize = false;
-            this.lblEnemyFleetStatus.Location = new Point(170, 26);
-            this.lblEnemyFleetStatus.Size = new Size(160, 20);
+            this.lblEnemyFleetStatus.Location = new Point(195, 28);
+            this.lblEnemyFleetStatus.Size = new Size(175, 20);
             this.lblEnemyFleetStatus.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
             this.lblEnemyFleetStatus.ForeColor = UITheme.TextPrimary;
             this.lblEnemyFleetStatus.Text = "Tàu máy: 5/5";
             this.pnlStats.Controls.Add(this.lblEnemyFleetStatus);
 
             this.lblShotCounts.AutoSize = false;
-            this.lblShotCounts.Location = new Point(8, 46);
-            this.lblShotCounts.Size = new Size(328, 20);
+            this.lblShotCounts.Location = new Point(10, 52);
+            this.lblShotCounts.Size = new Size(362, 20);
             this.lblShotCounts.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
             this.lblShotCounts.ForeColor = UITheme.TextSecondary;
             this.lblShotCounts.Text = "Số phát bắn: 0 • Trúng: 0";
             this.pnlStats.Controls.Add(this.lblShotCounts);
 
             this.lblAccuracy.AutoSize = false;
-            this.lblAccuracy.Location = new Point(8, 68);
-            this.lblAccuracy.Size = new Size(328, 20);
+            this.lblAccuracy.Location = new Point(10, 74);
+            this.lblAccuracy.Size = new Size(362, 20);
             this.lblAccuracy.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
             this.lblAccuracy.ForeColor = UITheme.AccentNeon;
             this.lblAccuracy.Text = "Độ chính xác: 0.0%";
@@ -350,13 +350,13 @@ namespace BattleshipGame.Views
 
             // Panel Bố trí hạm đội (Kho tàu)
             this.pnlPlacementControls.BackColor = UITheme.PanelBackground;
-            this.pnlPlacementControls.Location = new Point(12, 226);
-            this.pnlPlacementControls.Size = new Size(344, 246);
+            this.pnlPlacementControls.Location = new Point(14, 242);
+            this.pnlPlacementControls.Size = new Size(382, 296);
             this.pnlCenterDashboard.Controls.Add(this.pnlPlacementControls);
 
             this.lblPlacementTitle.AutoSize = false;
-            this.lblPlacementTitle.Location = new Point(4, 4);
-            this.lblPlacementTitle.Size = new Size(336, 20);
+            this.lblPlacementTitle.Location = new Point(6, 4);
+            this.lblPlacementTitle.Size = new Size(370, 20);
             this.lblPlacementTitle.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.lblPlacementTitle.ForeColor = UITheme.PrimaryCyan;
             this.lblPlacementTitle.Text = "⚓ Chọn tàu để đặt:";
@@ -366,35 +366,35 @@ namespace BattleshipGame.Views
             this.cboSelectShip.BackColor = UITheme.HeaderBackground;
             this.cboSelectShip.ForeColor = UITheme.TextPrimary;
             this.cboSelectShip.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
-            this.cboSelectShip.Location = new Point(6, 26);
-            this.cboSelectShip.Size = new Size(332, 26);
+            this.cboSelectShip.Location = new Point(8, 28);
+            this.cboSelectShip.Size = new Size(366, 28);
             this.cboSelectShip.SelectedIndexChanged += new EventHandler(this.cboSelectShip_SelectedIndexChanged);
             this.pnlPlacementControls.Controls.Add(this.cboSelectShip);
 
-            this.btnRotateShip.Location = new Point(6, 58);
-            this.btnRotateShip.Size = new Size(332, 34);
-            this.btnRotateShip.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+            this.btnRotateShip.Location = new Point(8, 68);
+            this.btnRotateShip.Size = new Size(366, 40);
+            this.btnRotateShip.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.btnRotateShip.Text = "🔄 Xoay hướng (Phím R): Ngang";
             this.btnRotateShip.Click += new EventHandler(this.btnRotateShip_Click);
             this.pnlPlacementControls.Controls.Add(this.btnRotateShip);
 
-            this.btnAutoPlace.Location = new Point(6, 98);
-            this.btnAutoPlace.Size = new Size(160, 34);
-            this.btnAutoPlace.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+            this.btnAutoPlace.Location = new Point(8, 120);
+            this.btnAutoPlace.Size = new Size(176, 42);
+            this.btnAutoPlace.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.btnAutoPlace.Text = "⚡ Xếp tự động";
             this.btnAutoPlace.Click += new EventHandler(this.btnAutoPlace_Click);
             this.pnlPlacementControls.Controls.Add(this.btnAutoPlace);
 
-            this.btnResetBoard.Location = new Point(178, 98);
-            this.btnResetBoard.Size = new Size(160, 34);
-            this.btnResetBoard.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+            this.btnResetBoard.Location = new Point(198, 120);
+            this.btnResetBoard.Size = new Size(176, 42);
+            this.btnResetBoard.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.btnResetBoard.Text = "🗑️ Đặt lại";
             this.btnResetBoard.BorderColor = UITheme.DangerRed;
             this.btnResetBoard.Click += new EventHandler(this.btnResetBoard_Click);
             this.pnlPlacementControls.Controls.Add(this.btnResetBoard);
 
-            this.btnStartBattle.Location = new Point(6, 140);
-            this.btnStartBattle.Size = new Size(332, 44);
+            this.btnStartBattle.Location = new Point(8, 174);
+            this.btnStartBattle.Size = new Size(366, 50);
             this.btnStartBattle.Font = new Font("Segoe UI", 12f, FontStyle.Bold);
             this.btnStartBattle.Text = "⚔️ Vào trận";
             this.btnStartBattle.BorderColor = UITheme.AccentNeon;
@@ -405,43 +405,43 @@ namespace BattleshipGame.Views
 
             // Panel Chiến đấu (Kỹ năng & Tạm dừng)
             this.pnlCombatControls.BackColor = UITheme.PanelBackground;
-            this.pnlCombatControls.Location = new Point(12, 226);
-            this.pnlCombatControls.Size = new Size(344, 246);
+            this.pnlCombatControls.Location = new Point(14, 242);
+            this.pnlCombatControls.Size = new Size(382, 296);
             this.pnlCombatControls.Visible = false;
             this.pnlCenterDashboard.Controls.Add(this.pnlCombatControls);
 
             this.lblCombatSkillsTitle.AutoSize = false;
-            this.lblCombatSkillsTitle.Location = new Point(4, 4);
-            this.lblCombatSkillsTitle.Size = new Size(336, 20);
+            this.lblCombatSkillsTitle.Location = new Point(6, 4);
+            this.lblCombatSkillsTitle.Size = new Size(370, 20);
             this.lblCombatSkillsTitle.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.lblCombatSkillsTitle.ForeColor = UITheme.AccentNeon;
             this.lblCombatSkillsTitle.Text = "✨ Kỹ năng đặc biệt (1 lần/trận):";
             this.pnlCombatControls.Controls.Add(this.lblCombatSkillsTitle);
 
-            this.btnSkillRadar.Location = new Point(6, 28);
-            this.btnSkillRadar.Size = new Size(332, 36);
-            this.btnSkillRadar.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+            this.btnSkillRadar.Location = new Point(8, 30);
+            this.btnSkillRadar.Size = new Size(366, 42);
+            this.btnSkillRadar.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.btnSkillRadar.Text = "📡 Radar trinh sát 3x3 [Sẵn sàng]";
             this.btnSkillRadar.Click += new EventHandler(this.btnSkillRadar_Click);
             this.pnlCombatControls.Controls.Add(this.btnSkillRadar);
 
-            this.btnSkillCrossBomb.Location = new Point(6, 70);
-            this.btnSkillCrossBomb.Size = new Size(332, 36);
-            this.btnSkillCrossBomb.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+            this.btnSkillCrossBomb.Location = new Point(8, 84);
+            this.btnSkillCrossBomb.Size = new Size(366, 42);
+            this.btnSkillCrossBomb.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.btnSkillCrossBomb.Text = "💥 Pháo kích chữ thập 5 ô [Sẵn sàng]";
             this.btnSkillCrossBomb.Click += new EventHandler(this.btnSkillCrossBomb_Click);
             this.pnlCombatControls.Controls.Add(this.btnSkillCrossBomb);
 
-            this.btnPauseGame.Location = new Point(6, 116);
-            this.btnPauseGame.Size = new Size(160, 38);
-            this.btnPauseGame.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+            this.btnPauseGame.Location = new Point(8, 138);
+            this.btnPauseGame.Size = new Size(176, 44);
+            this.btnPauseGame.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.btnPauseGame.Text = "⏸ Tạm dừng";
             this.btnPauseGame.Click += new EventHandler(this.btnPauseGame_Click);
             this.pnlCombatControls.Controls.Add(this.btnPauseGame);
 
-            this.btnSurrender.Location = new Point(178, 116);
-            this.btnSurrender.Size = new Size(160, 38);
-            this.btnSurrender.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+            this.btnSurrender.Location = new Point(198, 138);
+            this.btnSurrender.Size = new Size(176, 44);
+            this.btnSurrender.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.btnSurrender.Text = "🏳 Đầu hàng";
             this.btnSurrender.BorderColor = UITheme.DangerRed;
             this.btnSurrender.Click += new EventHandler(this.btnSurrender_Click);
