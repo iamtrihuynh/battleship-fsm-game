@@ -242,7 +242,7 @@ namespace BattleshipGame.Views
         private void btnStartPvEHard_Click(object sender, EventArgs e)
         {
             pnlDifficultySelection.Visible = false;
-            MoManHinhTranDau("PvE - Nâng cao", _tenNguoiChoi);
+            MoManHinhTranDau("PvE - Khó", _tenNguoiChoi);
         }
 
         private void btnCloseDifficulty_Click(object sender, EventArgs e)

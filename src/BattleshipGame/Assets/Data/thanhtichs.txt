@@ -1,5 +1,5 @@
-2026-10-18 14:20:15|DoDocHaiQuan|1850|24|115|PvE - Nâng cao|Thắng
+2026-10-18 14:20:15|DoDocHaiQuan|1850|24|115|PvE - Khó|Thắng
 2026-10-18 16:05:40|ThuyenTruongTri|1620|28|145|PvE - Dễ|Thắng
-2026-10-19 09:30:10|HaiTacHungCute|1480|32|170|PvP Hotseat|Thắng
-2026-10-19 11:15:22|ChienBinhHoaPho|1350|36|190|Custom|Thắng
-2026-10-19 15:45:00|TanBinhBien|820|48|260|PvE - Nâng cao|Thua
+2026-10-19 09:30:10|HaiTacHungCute|1550|30|130|PvE - Khó|Thắng
+2026-10-19 11:15:22|ChienBinhHoaPho|1420|32|150|PvE - Dễ|Thắng
+2026-10-19 14:00:00|ThuyenPhoPhat|1380|35|160|PvE - Dễ|Thắng

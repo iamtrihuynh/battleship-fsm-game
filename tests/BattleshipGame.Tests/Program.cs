@@ -709,6 +709,20 @@ namespace BattleshipGame.Tests
                 int scoreLoss = cThanhTichDAO.TinhDiem(false, 5, 17, 10);
                 Assert(scoreNeg == 1000 && scoreOverflow == 2000 && scoreLoss == 0,
                     "TC-85: cThanhTichDAO.TinhDiem kẹp biên an toàn các tham số âm, số tàu vượt 5 và trả về 0 khi thua");
+
+                // Test 86: LocTheoCheDo phân loại chuẩn Dễ / Khó và xác thực seed mẫu không chứa PvP/Custom/Thua
+                var testSeedList = new List<ThanhTichItem>
+                {
+                    new ThanhTichItem(DateTime.Now, "PlayerEasy", 1200, 25, 120, "PvE - Dễ", "Thắng"),
+                    new ThanhTichItem(DateTime.Now, "PlayerHard", 1800, 20, 100, "PvE - Khó", "Thắng"),
+                    new ThanhTichItem(DateTime.Now, "PlayerLegacyHard", 1500, 24, 110, "PvE - Nâng cao", "Thắng")
+                };
+                var listDe = cThanhTichDAO.LocTheoCheDo(testSeedList, "Dễ");
+                var listKho = cThanhTichDAO.LocTheoCheDo(testSeedList, "Khó");
+                Assert(listDe.Count == 1 && listDe[0].TenNguoiChoi == "PlayerEasy" &&
+                       listKho.Count == 2 &&
+                       missingRecords.All(r => r.KetQua == "Thắng" && !r.CheDo.Contains("PvP") && !r.CheDo.Contains("Custom")),
+                    "TC-86: Bảng xếp hạng phân loại chuẩn xác Dễ/Khó và file seed chỉ lưu chiến thắng hợp lệ");
             }
             finally
             {

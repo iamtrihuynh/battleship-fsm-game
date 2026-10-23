@@ -96,11 +96,11 @@ namespace BattleshipGame.DataAccess
 
                     using (StreamWriter sw = new StreamWriter(path, false, _utf8))
                     {
-                        sw.WriteLine("2026-10-18 14:20:15|DoDocHaiQuan|1850|24|115|PvE - Nâng cao|Thắng");
+                        sw.WriteLine("2026-10-18 14:20:15|DoDocHaiQuan|1850|24|115|PvE - Khó|Thắng");
                         sw.WriteLine("2026-10-18 16:05:40|ThuyenTruongTri|1620|28|145|PvE - Dễ|Thắng");
-                        sw.WriteLine("2026-10-19 09:30:10|HaiTacHungCute|1480|32|170|PvP Hotseat|Thắng");
-                        sw.WriteLine("2026-10-19 11:15:22|ChienBinhHoaPho|1350|36|190|Custom|Thắng");
-                        sw.WriteLine("2026-10-19 15:45:00|TanBinhBien|820|48|260|PvE - Nâng cao|Thua");
+                        sw.WriteLine("2026-10-19 09:30:10|HaiTacHungCute|1550|30|130|PvE - Khó|Thắng");
+                        sw.WriteLine("2026-10-19 11:15:22|ChienBinhHoaPho|1420|32|150|PvE - Dễ|Thắng");
+                        sw.WriteLine("2026-10-19 14:00:00|ThuyenPhoPhat|1380|35|160|PvE - Dễ|Thắng");
                     }
                 }
             }
@@ -294,22 +294,27 @@ namespace BattleshipGame.DataAccess
             }
         }
 
-        // Loc theo che do choi
+        // Loc theo che do choi (Ho tro "Tất cả", "Dễ", "Khó", "PvE - Dễ", "PvE - Khó", "PvE", "PvP")
         public static List<ThanhTichItem> LocTheoCheDo(List<ThanhTichItem> list, string cheDo)
         {
             if (list == null) return new List<ThanhTichItem>();
             if (string.IsNullOrWhiteSpace(cheDo) || cheDo.Equals("Tất cả", StringComparison.OrdinalIgnoreCase))
                 return list.Where(t => t != null).ToList();
 
-            bool isGenericPve = cheDo.Equals("PvE", StringComparison.OrdinalIgnoreCase);
-            bool isPvpFilter = cheDo.StartsWith("PvP", StringComparison.OrdinalIgnoreCase);
+            string cd = cheDo.Trim();
+            bool isGenericPve = cd.Equals("PvE", StringComparison.OrdinalIgnoreCase);
+            bool isPvpFilter = cd.StartsWith("PvP", StringComparison.OrdinalIgnoreCase);
+            bool isDeFilter = cd.Equals("Dễ", StringComparison.OrdinalIgnoreCase);
+            bool isKhoFilter = cd.Equals("Khó", StringComparison.OrdinalIgnoreCase);
 
             return list
                 .Where(t => t != null && !string.IsNullOrEmpty(t.CheDo) &&
-                            (t.CheDo.Equals(cheDo, StringComparison.OrdinalIgnoreCase) ||
-                             t.CheDo.StartsWith(cheDo + " -", StringComparison.OrdinalIgnoreCase) ||
+                            (t.CheDo.Equals(cd, StringComparison.OrdinalIgnoreCase) ||
+                             t.CheDo.StartsWith(cd + " -", StringComparison.OrdinalIgnoreCase) ||
                              (isGenericPve && t.CheDo.StartsWith("PvE", StringComparison.OrdinalIgnoreCase)) ||
-                             (isPvpFilter && t.CheDo.StartsWith("PvP", StringComparison.OrdinalIgnoreCase))))
+                             (isPvpFilter && t.CheDo.StartsWith("PvP", StringComparison.OrdinalIgnoreCase)) ||
+                             (isDeFilter && t.CheDo.IndexOf("Dễ", StringComparison.OrdinalIgnoreCase) >= 0) ||
+                             (isKhoFilter && (t.CheDo.IndexOf("Khó", StringComparison.OrdinalIgnoreCase) >= 0 || t.CheDo.IndexOf("Nâng cao", StringComparison.OrdinalIgnoreCase) >= 0))))
                 .ToList();
         }
 

@@ -159,8 +159,8 @@ namespace BattleshipGame.Views
             this.cboCheDo.FormattingEnabled = true;
             this.cboCheDo.Items.AddRange(new object[] {
             "Tất cả",
-            "PvE - Dễ",
-            "PvE - Nâng cao"});
+            "Dễ",
+            "Khó"});
             this.cboCheDo.Location = new System.Drawing.Point(135, 12);
             this.cboCheDo.Name = "cboCheDo";
             this.cboCheDo.Size = new System.Drawing.Size(180, 25);

@@ -105,7 +105,7 @@ namespace BattleshipGame.Models
                 case CheDoChoi.PvE_De:
                     return "PvE - Dễ";
                 case CheDoChoi.PvE_Kho:
-                    return "PvE - Nâng cao";
+                    return "PvE - Khó";
                 case CheDoChoi.PvP_Hotseat:
                     return "PvP Hotseat";
                 case CheDoChoi.Custom:
