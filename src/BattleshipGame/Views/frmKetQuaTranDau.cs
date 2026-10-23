@@ -16,7 +16,7 @@ namespace BattleshipGame.Views
 
     /// <summary>
     /// Hộp thoại hiển thị kết quả trận đấu (Chiến thắng / Thất bại) phong cách Hải quân hiện đại.
-    /// Thiết kế đồ họa chuyên nghiệp, tích hợp bảng chiến tích, ghi danh Bảng Xếp Hạng và phím điều hướng tác chiến.
+    /// Thiết kế đối xứng, cân đối trung tâm, đường nét sắc sảo và thanh lịch.
     /// </summary>
     public class frmKetQuaTranDau : Form
     {
@@ -72,8 +72,8 @@ namespace BattleshipGame.Views
                 true
             );
 
-            int formWidth = 530;
-            int formHeight = _thang ? 560 : 470;
+            int formWidth = 520;
+            int formHeight = _thang ? 520 : 420;
             Size = new Size(formWidth, formHeight);
             BackColor = UITheme.HeaderBackground;
             ForeColor = UITheme.TextPrimary;
@@ -86,7 +86,7 @@ namespace BattleshipGame.Views
             {
                 Text = "✕",
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-                Location = new Point(Width - 44, 12),
+                Location = new Point(Width - 42, 10),
                 Size = new Size(32, 28),
                 CornerRadius = 4,
                 BaseFillColor = Color.Transparent,
@@ -98,235 +98,191 @@ namespace BattleshipGame.Views
             btnCloseX.Click += (s, e) => { UserAction = KetQuaTranAction.Dong; Close(); };
             Controls.Add(btnCloseX);
 
-            // Icon biểu tượng kết quả
+            int contentWidth = 440;
+            int contentX = (Width - contentWidth) / 2; // Canh lề 40px đều hai bên
+
+            // 1. Icon trung tâm
             var lblIcon = new Label
             {
                 Text = _thang ? "🏆" : "💀",
-                Font = new Font("Segoe UI Emoji", 34f, FontStyle.Regular),
-                Location = new Point(24, 16),
-                Size = new Size(62, 64),
+                Font = new Font("Segoe UI Emoji", 32f, FontStyle.Regular),
+                Location = new Point((Width - 80) / 2, 16),
+                Size = new Size(80, 48),
                 TextAlign = ContentAlignment.MiddleCenter
             };
             Controls.Add(lblIcon);
 
-            // Tiêu đề chính
+            // 2. Tiêu đề chính căn giữa
             var lblMainTitle = new Label
             {
-                Text = _thang ? "CHIẾN THẮNG HUY HOÀNG" : "HẠM ĐỘI BỊ TIÊU DIỆT",
-                Font = new Font("Segoe UI", 16f, FontStyle.Bold),
+                Text = _thang ? "CHIẾN THẮNG" : "THẤT BẠI",
+                Font = new Font("Segoe UI", 18f, FontStyle.Bold),
                 ForeColor = _thang ? UITheme.GoldAccent : UITheme.DangerRed,
-                Location = new Point(94, 20),
-                Size = new Size(Width - 146, 32),
-                TextAlign = ContentAlignment.MiddleLeft
+                Location = new Point(contentX, 66),
+                Size = new Size(contentWidth, 32),
+                TextAlign = ContentAlignment.MiddleCenter
             };
             Controls.Add(lblMainTitle);
 
-            // Tiêu đề phụ
+            // 3. Phụ đề căn giữa
             var lblSubtitle = new Label
             {
                 Text = _thang
-                    ? "Hạm đội đối phương đã hoàn toàn bị xóa sổ trên biển!"
-                    : "Toàn bộ 5 chiến hạm của bạn đã bị đối thủ bắn chìm!",
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular),
+                    ? "Đô đốc đã đánh chìm toàn bộ hạm đội đối phương!"
+                    : "Toàn bộ 5 chiến hạm của bạn đã bị bắn chìm!",
+                Font = new Font("Segoe UI", 10f, FontStyle.Regular),
                 ForeColor = _thang ? UITheme.AccentNeon : UITheme.TextSecondary,
-                Location = new Point(96, 52),
-                Size = new Size(Width - 148, 20),
-                TextAlign = ContentAlignment.MiddleLeft
+                Location = new Point(contentX, 98),
+                Size = new Size(contentWidth, 22),
+                TextAlign = ContentAlignment.MiddleCenter
             };
             Controls.Add(lblSubtitle);
 
-            // Thông tin chế độ
-            var lblModeBadge = new Label
-            {
-                Text = $"🎖️ Chế độ: {_cheDoChoi}  •  Đô đốc: {_tenNguoiChoi}",
-                Font = new Font("Segoe UI", 8.5f, FontStyle.Italic),
-                ForeColor = UITheme.TextMuted,
-                Location = new Point(96, 74),
-                Size = new Size(Width - 148, 18),
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            Controls.Add(lblModeBadge);
+            int currentY = 126;
 
-            // -------------------------------------------------------------
-            // BẢNG THỐNG KÊ CHIẾN TÍCH (STATS CARD)
-            // -------------------------------------------------------------
-            int cardY = 104;
-            int cardH = _thang ? 228 : 250;
-            var pnlStatsCard = new Panel
-            {
-                Location = new Point(24, cardY),
-                Size = new Size(Width - 48, cardH),
-                BackColor = Color.FromArgb(18, 29, 48)
-            };
-            pnlStatsCard.Paint += (s, pe) =>
-            {
-                var g = pe.Graphics;
-                UITheme.SetHighQuality(g);
-                Color bColor = _thang ? UITheme.PrimaryCyan : Color.FromArgb(90, 40, 50);
-                using var p = new Pen(bColor, 1.2f);
-                using var path = UITheme.CreateRoundedPath(new RectangleF(0.6f, 0.6f, pnlStatsCard.Width - 1.2f, pnlStatsCard.Height - 1.2f), 10);
-                g.DrawPath(p, path);
-            };
-
-            // Banner điểm số (Thắng) hoặc Cảnh báo (Thua)
-            var pnlScoreRibbon = new Panel
-            {
-                Location = new Point(10, 10),
-                Size = new Size(pnlStatsCard.Width - 20, _thang ? 52 : 46),
-                BackColor = _thang ? Color.FromArgb(28, 44, 72) : Color.FromArgb(42, 22, 28)
-            };
-            pnlScoreRibbon.Paint += (s, pe) =>
-            {
-                var g = pe.Graphics;
-                UITheme.SetHighQuality(g);
-                Color rbBorder = _thang ? UITheme.GoldAccent : UITheme.DangerRed;
-                using var p = new Pen(rbBorder, 1.2f);
-                using var path = UITheme.CreateRoundedPath(new RectangleF(0.6f, 0.6f, pnlScoreRibbon.Width - 1.2f, pnlScoreRibbon.Height - 1.2f), 8);
-                g.DrawPath(p, path);
-            };
-
+            // 4. Khối điểm số (Chỉ dành cho Chiến thắng) hoặc Khối chế độ (Thất bại)
             if (_thang)
             {
+                var pnlScorePlate = new Panel
+                {
+                    Location = new Point(contentX, currentY),
+                    Size = new Size(contentWidth, 54),
+                    BackColor = Color.FromArgb(22, 36, 60)
+                };
+                pnlScorePlate.Paint += (s, pe) =>
+                {
+                    var g = pe.Graphics;
+                    UITheme.SetHighQuality(g);
+                    using var pen = new Pen(UITheme.GoldAccent, 1.2f);
+                    using var path = UITheme.CreateRoundedPath(new RectangleF(0.6f, 0.6f, pnlScorePlate.Width - 1.2f, pnlScorePlate.Height - 1.2f), 8);
+                    g.DrawPath(pen, path);
+                };
+
                 var lblScoreTag = new Label
                 {
                     Text = "⭐ ĐIỂM SỐ TÁC CHIẾN",
-                    Font = new Font("Segoe UI", 9f, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
                     ForeColor = UITheme.GoldAccent,
-                    Location = new Point(14, 6),
-                    Size = new Size(180, 16)
+                    Location = new Point(0, 5),
+                    Size = new Size(contentWidth, 16),
+                    TextAlign = ContentAlignment.MiddleCenter
                 };
-                pnlScoreRibbon.Controls.Add(lblScoreTag);
+                pnlScorePlate.Controls.Add(lblScoreTag);
 
                 var lblScoreValue = new Label
                 {
                     Text = $"{_diemSo:N0} ĐIỂM",
                     Font = new Font("Segoe UI", 16f, FontStyle.Bold),
                     ForeColor = UITheme.AccentNeon,
-                    Location = new Point(14, 22),
-                    Size = new Size(pnlScoreRibbon.Width - 28, 26)
+                    Location = new Point(0, 22),
+                    Size = new Size(contentWidth, 26),
+                    TextAlign = ContentAlignment.MiddleCenter
                 };
-                pnlScoreRibbon.Controls.Add(lblScoreValue);
+                pnlScorePlate.Controls.Add(lblScoreValue);
+
+                Controls.Add(pnlScorePlate);
+                currentY += 62;
             }
             else
             {
-                var lblDefeatBanner = new Label
+                var pnlModePlate = new Panel
                 {
-                    Text = "⚠️ TRẬN ĐẤU THẤT BẠI - HẠM ĐỘI BỊ ĐẮM",
-                    Font = new Font("Segoe UI", 10f, FontStyle.Bold),
-                    ForeColor = UITheme.DangerRed,
-                    Location = new Point(14, 6),
-                    Size = new Size(pnlScoreRibbon.Width - 28, 18)
+                    Location = new Point(contentX, currentY),
+                    Size = new Size(contentWidth, 34),
+                    BackColor = Color.FromArgb(26, 20, 30)
                 };
-                pnlScoreRibbon.Controls.Add(lblDefeatBanner);
+                pnlModePlate.Paint += (s, pe) =>
+                {
+                    var g = pe.Graphics;
+                    UITheme.SetHighQuality(g);
+                    using var pen = new Pen(Color.FromArgb(85, 35, 45), 1f);
+                    using var path = UITheme.CreateRoundedPath(new RectangleF(0.5f, 0.5f, pnlModePlate.Width - 1f, pnlModePlate.Height - 1f), 6);
+                    g.DrawPath(pen, path);
+                };
 
-                var lblDefeatSub = new Label
+                var lblModeText = new Label
                 {
-                    Text = "Không đủ điều kiện ghi nhận vào Bảng Xếp Hạng tác chiến.",
-                    Font = new Font("Segoe UI", 8.5f, FontStyle.Italic),
-                    ForeColor = UITheme.TextMuted,
-                    Location = new Point(14, 24),
-                    Size = new Size(pnlScoreRibbon.Width - 28, 16)
+                    Text = $"🎖️ Chế độ: {_cheDoChoi}  •  Đô đốc: {_tenNguoiChoi}",
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(220, 120, 130),
+                    Dock = DockStyle.Fill,
+                    TextAlign = ContentAlignment.MiddleCenter
                 };
-                pnlScoreRibbon.Controls.Add(lblDefeatSub);
+                pnlModePlate.Controls.Add(lblModeText);
+                Controls.Add(pnlModePlate);
+                currentY += 44;
             }
-            pnlStatsCard.Controls.Add(pnlScoreRibbon);
 
-            // 4 Ô thông số chiến thuật (2x2 Grid)
-            int gridStartY = _thang ? 70 : 66;
-            int tileW = (pnlStatsCard.Width - 28) / 2;
-            int tileH = 68;
+            // 5. Lưới 4 ô thông số chiến thuật (2x2 Grid) cân đối
+            int tileW = (contentWidth - 10) / 2; // 215px
+            int tileH = _thang ? 56 : 62;
 
             double tiLeChinhXac = _tongPhatBan > 0 ? (_soPhatTrung * 100.0 / _tongPhatBan) : 0;
             int soTruot = Math.Max(0, _tongPhatBan - _soPhatTrung);
             string thoiGianStr = $"{_thoiGianGiay / 60:D2}:{_thoiGianGiay % 60:D2}";
 
-            // Tile 1: Phát bắn
-            pnlStatsCard.Controls.Add(TaoTileThongSo(
-                new Point(10, gridStartY),
+            // Tile 1: Khai hỏa
+            Controls.Add(TaoTileThongSo(
+                new Point(contentX, currentY),
                 new Size(tileW, tileH),
-                "🎯 Tổng phát bắn",
+                "🎯 Khai hỏa",
                 $"{_tongPhatBan} phát",
-                $"Trúng: {_soPhatTrung}  •  Trượt: {soTruot}",
+                $"Trúng {_soPhatTrung} • Trượt {soTruot}",
                 UITheme.PrimaryCyan
             ));
 
             // Tile 2: Độ chính xác
-            Color accuracyColor = tiLeChinhXac >= 60 ? UITheme.SuccessGreen :
-                                  tiLeChinhXac >= 40 ? UITheme.WarningAmber : UITheme.TextSecondary;
-            pnlStatsCard.Controls.Add(TaoTileThongSo(
-                new Point(18 + tileW, gridStartY),
+            Color accColor = tiLeChinhXac >= 60 ? UITheme.SuccessGreen :
+                             tiLeChinhXac >= 40 ? UITheme.WarningAmber : UITheme.TextSecondary;
+            Controls.Add(TaoTileThongSo(
+                new Point(contentX + tileW + 10, currentY),
                 new Size(tileW, tileH),
                 "⚡ Độ chính xác",
                 $"{tiLeChinhXac:F1}%",
-                tiLeChinhXac >= 60 ? "Xạ thủ cừ khôi" : "Cần ngắm chuẩn hơn",
-                accuracyColor
+                tiLeChinhXac >= 60 ? "Xạ thủ cừ khôi" : "Hiệu suất bắn",
+                accColor
             ));
 
-            // Tile 3: Thời gian tác chiến
-            pnlStatsCard.Controls.Add(TaoTileThongSo(
-                new Point(10, gridStartY + tileH + 8),
+            // Tile 3: Thời gian
+            Controls.Add(TaoTileThongSo(
+                new Point(contentX, currentY + tileH + 8),
                 new Size(tileW, tileH),
                 "⏱️ Thời gian",
                 thoiGianStr,
-                "Thời gian trận đấu",
+                "Thời gian tác chiến",
                 UITheme.AccentNeon
             ));
 
             // Tile 4: Tàu ta sống sót
-            pnlStatsCard.Controls.Add(TaoTileThongSo(
-                new Point(18 + tileW, gridStartY + tileH + 8),
+            Controls.Add(TaoTileThongSo(
+                new Point(contentX + tileW + 10, currentY + tileH + 8),
                 new Size(tileW, tileH),
                 "🛡️ Chiến hạm ta",
-                $"{_soTauTaCon}/5 sống sót",
-                _thang ? $"{_soTauTaCon} tàu toàn mạng" : "Đã bị đắm hoàn toàn",
+                $"{_soTauTaCon}/5 tàu",
+                _thang ? $"{_soTauTaCon} tàu sống sót" : "Đã bị bắn chìm",
                 _thang ? UITheme.SuccessGreen : UITheme.DangerRed
             ));
 
-            // Lời khuyên tác chiến cho chế độ Thất bại
-            if (!_thang)
-            {
-                var pnlAdvice = new Panel
-                {
-                    Location = new Point(10, gridStartY + (tileH + 8) * 2),
-                    Size = new Size(pnlStatsCard.Width - 20, 36),
-                    BackColor = Color.FromArgb(24, 34, 52)
-                };
-                var lblAdvice = new Label
-                {
-                    Text = "💡 Lời khuyên: Hãy phân bố tàu so le ở các góc và dùng Radar 3x3 để dò tìm tàu tuần tra địch.",
-                    Font = new Font("Segoe UI", 8.5f, FontStyle.Italic),
-                    ForeColor = UITheme.WarningAmber,
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleLeft,
-                    Padding = new Padding(8, 0, 8, 0)
-                };
-                pnlAdvice.Controls.Add(lblAdvice);
-                pnlStatsCard.Controls.Add(pnlAdvice);
-            }
+            currentY += (tileH * 2) + 16;
 
-            Controls.Add(pnlStatsCard);
-
-            // -------------------------------------------------------------
-            // PHẦN NHẬP TÊN GHI DANH BẢNG XẾP HẠNG (CHỈ DÀNH CHO CHIẾN THẮNG)
-            // -------------------------------------------------------------
+            // 6. Nhập tên ghi danh Bảng Xếp Hạng (CHỈ KHI CHIẾN THẮNG)
             if (_thang)
             {
-                int inputY = cardY + cardH + 12;
-
                 var lblInputPrompt = new Label
                 {
-                    Text = "🎖️ Ghi danh Đô đốc vào Bảng Xếp Hạng:",
+                    Text = "Tên chỉ huy ghi danh Bảng Xếp Hạng:",
                     Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
                     ForeColor = UITheme.GoldAccent,
-                    Location = new Point(24, inputY),
-                    Size = new Size(Width - 48, 20)
+                    Location = new Point(contentX, currentY),
+                    Size = new Size(contentWidth, 18),
+                    TextAlign = ContentAlignment.MiddleLeft
                 };
                 Controls.Add(lblInputPrompt);
 
                 var pnlTxtBox = new Panel
                 {
-                    Location = new Point(24, inputY + 22),
-                    Size = new Size(Width - 48, 38),
+                    Location = new Point(contentX, currentY + 22),
+                    Size = new Size(contentWidth, 38),
                     BackColor = Color.FromArgb(20, 32, 52)
                 };
                 pnlTxtBox.Paint += (s, pe) =>
@@ -355,28 +311,29 @@ namespace BattleshipGame.Views
 
                 _lblSaveStatus = new Label
                 {
-                    Text = "Thành tích của bạn sẽ được lưu vĩnh viễn trên bảng xếp hạng tác chiến.",
+                    Text = "Thành tích sẽ được lưu vào Bảng Xếp Hạng tác chiến.",
                     Font = new Font("Segoe UI", 8.5f, FontStyle.Italic),
                     ForeColor = UITheme.TextSecondary,
-                    Location = new Point(24, inputY + 64),
-                    Size = new Size(Width - 48, 18)
+                    Location = new Point(contentX, currentY + 62),
+                    Size = new Size(contentWidth, 16),
+                    TextAlign = ContentAlignment.MiddleLeft
                 };
                 Controls.Add(_lblSaveStatus);
             }
 
-            // -------------------------------------------------------------
-            // CỤM NÚT BẤM ĐIỀU HƯỚNG TÁC CHIẾN (BOTTOM BUTTONS)
-            // -------------------------------------------------------------
-            int btnY = Height - 60;
-
+            // 7. Cụm nút bấm điều hướng (Bottom Buttons) cân đối, đối xứng
             if (_thang)
             {
+                int btnW = 140;
+                int btnGap = 10;
+                int startBtnX = contentX; // 40px
+
                 _btnSaveRank = new TacticalButton
                 {
                     Text = "💾 Lưu & Xem BXH",
                     Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-                    Location = new Point(24, btnY),
-                    Size = new Size(160, 44),
+                    Location = new Point(startBtnX, Height - 58),
+                    Size = new Size(btnW, 42),
                     CornerRadius = 6,
                     BorderColor = UITheme.GoldAccent,
                     NormalTextColor = UITheme.GoldAccent,
@@ -388,19 +345,18 @@ namespace BattleshipGame.Views
 
                 var btnPlayAgain = new TacticalButton
                 {
-                    Text = "🔄 Chơi ván mới",
+                    Text = "🔄 Chơi lại",
                     Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-                    Location = new Point(194, btnY),
-                    Size = new Size(160, 44),
+                    Location = new Point(startBtnX + btnW + btnGap, Height - 58),
+                    Size = new Size(btnW, 42),
                     CornerRadius = 6,
-                    BorderColor = UITheme.AccentNeon,
-                    NormalTextColor = UITheme.AccentNeon,
+                    BorderColor = UITheme.PrimaryCyan,
+                    NormalTextColor = UITheme.PrimaryCyan,
                     HoverBorderColor = Color.White,
                     HoverTextColor = Color.White
                 };
                 btnPlayAgain.Click += (s, e) =>
                 {
-                    // Tự động lưu nếu chưa lưu
                     TuDongLuuNeuChuaLuu();
                     UserAction = KetQuaTranAction.ChoiLai;
                     Close();
@@ -411,10 +367,10 @@ namespace BattleshipGame.Views
                 {
                     Text = "🚪 Về Menu",
                     Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-                    Location = new Point(364, btnY),
-                    Size = new Size(142, 44),
+                    Location = new Point(startBtnX + (btnW + btnGap) * 2, Height - 58),
+                    Size = new Size(btnW, 42),
                     CornerRadius = 6,
-                    BorderColor = UITheme.BorderLight,
+                    BorderColor = UITheme.BorderDefault,
                     NormalTextColor = UITheme.TextSecondary,
                     HoverBorderColor = Color.White,
                     HoverTextColor = Color.White
@@ -431,12 +387,16 @@ namespace BattleshipGame.Views
             }
             else
             {
+                int btnW = 210;
+                int btnGap = 20;
+                int startBtnX = contentX; // 40px
+
                 var btnPlayAgain = new TacticalButton
                 {
                     Text = "🔄 Phục thù (Chơi lại)",
-                    Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
-                    Location = new Point(48, btnY),
-                    Size = new Size(240, 44),
+                    Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                    Location = new Point(startBtnX, Height - 60),
+                    Size = new Size(btnW, 44),
                     CornerRadius = 6,
                     BorderColor = UITheme.AccentNeon,
                     NormalTextColor = UITheme.AccentNeon,
@@ -453,11 +413,11 @@ namespace BattleshipGame.Views
                 var btnMenu = new TacticalButton
                 {
                     Text = "🚪 Về Menu chính",
-                    Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
-                    Location = new Point(300, btnY),
-                    Size = new Size(182, 44),
+                    Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                    Location = new Point(startBtnX + btnW + btnGap, Height - 60),
+                    Size = new Size(btnW, 44),
                     CornerRadius = 6,
-                    BorderColor = UITheme.BorderLight,
+                    BorderColor = UITheme.BorderDefault,
                     NormalTextColor = UITheme.TextSecondary,
                     HoverBorderColor = Color.White,
                     HoverTextColor = Color.White
@@ -489,7 +449,7 @@ namespace BattleshipGame.Views
             {
                 Location = loc,
                 Size = sz,
-                BackColor = Color.FromArgb(24, 38, 62)
+                BackColor = Color.FromArgb(20, 32, 52)
             };
             pnl.Paint += (s, pe) =>
             {
@@ -505,8 +465,9 @@ namespace BattleshipGame.Views
                 Text = title,
                 Font = new Font("Segoe UI", 8.5f, FontStyle.Regular),
                 ForeColor = UITheme.TextSecondary,
-                Location = new Point(8, 6),
-                Size = new Size(sz.Width - 16, 16)
+                Location = new Point(10, 6),
+                Size = new Size(sz.Width - 20, 16),
+                TextAlign = ContentAlignment.MiddleLeft
             };
             pnl.Controls.Add(lblT);
 
@@ -515,20 +476,25 @@ namespace BattleshipGame.Views
                 Text = val,
                 Font = new Font("Segoe UI", 13f, FontStyle.Bold),
                 ForeColor = accent,
-                Location = new Point(8, 22),
-                Size = new Size(sz.Width - 16, 24)
+                Location = new Point(10, 22),
+                Size = new Size(sz.Width - 20, 20),
+                TextAlign = ContentAlignment.MiddleLeft
             };
             pnl.Controls.Add(lblV);
 
-            var lblS = new Label
+            if (sz.Height >= 58 && !string.IsNullOrEmpty(sub))
             {
-                Text = sub,
-                Font = new Font("Segoe UI", 8f, FontStyle.Regular),
-                ForeColor = UITheme.TextMuted,
-                Location = new Point(8, 46),
-                Size = new Size(sz.Width - 16, 16)
-            };
-            pnl.Controls.Add(lblS);
+                var lblS = new Label
+                {
+                    Text = sub,
+                    Font = new Font("Segoe UI", 8f, FontStyle.Regular),
+                    ForeColor = UITheme.TextMuted,
+                    Location = new Point(10, 42),
+                    Size = new Size(sz.Width - 20, 14),
+                    TextAlign = ContentAlignment.MiddleLeft
+                };
+                pnl.Controls.Add(lblS);
+            }
 
             return pnl;
         }
