@@ -15,9 +15,9 @@
 | **Ngày 1** | Thiết lập Solution, Mô hình Dữ liệu (Models), Khung Form & Tài nguyên | **DONE** |
 | **Ngày 2** | Thuật toán Xếp tàu, Ma trận 100 Button động & Hệ thống Âm thanh | **DONE** |
 | **Ngày 3** | Trí tuệ Nhân tạo Bot AI (FSM Hunt & Target), Đồ họa Phát bắn & DAO | **DONE** |
-| **Ngày 4** | Quản lý ván đấu, Đếm ngược 30s, Thưởng lượt & Màn che PvP Hotseat | **DONE** |
-| **Ngày 5** | Bẫy lỗi toàn diện (Exception Handling), Kỹ năng đặc biệt & Tối ưu UX | **DONE** |
-| **Ngày 6** | Kiểm thử chéo (Cross-Testing), Ma trận Test Case & Viết Báo cáo Word | **DONE** (TV3 hoàn thành Ma trận & Khung báo cáo) |
+| **Ngày 4** | Quản lý ván đấu, Đếm ngược 30s, Thưởng lượt & Màn che PvP Hotseat | **DONE** (Cả 3 thành viên hoàn thành) |
+| **Ngày 5** | Bẫy lỗi toàn diện (Exception Handling), Kỹ năng đặc biệt & Tối ưu UX | **PARTIAL** (Hưng & Phát đã xong; Trí chưa làm) |
+| **Ngày 6** | Kiểm thử chéo (Cross-Testing), Ma trận Test Case & Viết Báo cáo Word | **PARTIAL** (Hưng & Phát đã xong; Trí chưa viết báo cáo AI) |
 | **Ngày 7** | Build Release, Thiết kế Slide báo cáo, Quay Video Demo & Đóng gói | **IN PROGRESS** |
 
 ---
@@ -87,8 +87,8 @@
 
 | Thành viên | Nhiệm vụ chi tiết | File liên quan | Trạng thái |
 | :--- | :--- | :--- | :---: |
-| **Trí (TV1)** | Rà soát AI không bắn trùng ô, không lặp vô tận khi tàu chìm | `Logic/cMayBanAI.cs` | **DONE** |
-| **Trí (TV1)** | Kỹ năng đặc biệt: Radar trinh sát $3 \times 3$ và Pháo kích diện rộng dấu `+` | `Views/frmBanTau.cs` | **DONE** |
+| **Trí (TV1)** | Rà soát AI không bắn trùng ô, không lặp vô tận khi tàu chìm | `Logic/cMayBanAI.cs` | **NOT DONE** (Dừng ở Ngày 4) |
+| **Trí (TV1)** | Kỹ năng đặc biệt: Radar trinh sát $3 \times 3$ và Pháo kích diện rộng dấu `+` | `Views/frmBanTau.cs` | **NOT DONE** (Dừng ở Ngày 4) |
 | **Hưng (TV2)** | Nút bật/tắt âm thanh (Mute/Unmute) trên thanh công cụ kết hợp slider | `Views/frmMenu.cs` | **DONE** |
 | **Hưng (TV2)** | Khóa toàn bộ các nút không hợp lệ khi đang trong trận đấu | `Views/frmBanTau.cs` | **DONE** |
 | **Hưng (TV2)** | Chống chớp giật giao diện (DoubleBuffered) và căn chỉnh giao diện tự co giãn | `Views/` | **DONE** |
@@ -103,10 +103,10 @@
 
 | Thành viên | Nhiệm vụ chi tiết | Trạng thái |
 | :--- | :--- | :---: |
-| **Cả nhóm** | Chạy kiểm thử tự động toàn diện và test tay trên Windows 10/11 | **DONE** (82 Test Cases PASSED 100%) |
-| **Trí (TV1)** | Viết phần báo cáo: Mô hình lớp (Class Diagram), FSM & Thuật toán AI | **DONE** |
+| **Cả nhóm** | Chạy kiểm thử tự động toàn diện và test tay trên Windows 10/11 | **DONE** (87 Test Cases PASSED 100%) |
+| **Trí (TV1)** | Viết phần báo cáo: Mô hình lớp (Class Diagram), FSM & Thuật toán AI | **NOT DONE** (Chưa viết) |
 | **Hưng (TV2)** | Tinh chỉnh hộp thoại `TacticalMessageBox` (Chiến thắng, Thất bại, Đầu hàng) & Báo cáo UI | **DONE** |
-| **Phát (TV3)** | Tổng hợp bảng Ma trận kiểm thử (Test Case Matrix 82 Kịch bản Pass 100%) | **DONE** (`docs/TEST_CASE_MATRIX.md`) |
+| **Phát (TV3)** | Tổng hợp bảng Ma trận kiểm thử (Test Case Matrix 87 Kịch bản Pass 100%) | **DONE** (`docs/TEST_CASE_MATRIX.md`) |
 | **Phát (TV3)** | Soạn thảo khung Báo cáo đồ án Word theo mẫu chuẩn khoa CNTT | **DONE** (`docs/BAO_CAO_DO_AN_MAU.md`) |
 | **Phát (TV3)** | Đóng băng mã nguồn (Code Freeze), chuẩn bị bàn giao và xuất bản Release | **DONE** |
 
