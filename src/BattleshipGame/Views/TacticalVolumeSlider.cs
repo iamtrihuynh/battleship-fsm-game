@@ -64,10 +64,27 @@ namespace BattleshipGame.Views
             CapNhatAmThanhMci(_globalVolume, _globalMuted);
             BattleshipGame.Logic.cAmThanh.DaBatAmThanh = !_globalMuted && (_globalVolume > 0);
 
+            if (!BattleshipGame.Logic.cAmThanh.DaBatAmThanh)
+            {
+                BattleshipGame.Logic.cAmThanh.DungNhacNen(donSachTrack: false);
+            }
+            else if (!string.IsNullOrEmpty(BattleshipGame.Logic.cAmThanh.CurrentBgm) && !BattleshipGame.Logic.cAmThanh.DangPhatNhacNen)
+            {
+                BattleshipGame.Logic.cAmThanh.PhatNhacNen(BattleshipGame.Logic.cAmThanh.CurrentBgm);
+            }
+
             if (changed)
             {
                 GlobalVolumeChanged?.Invoke(origin, EventArgs.Empty);
             }
+        }
+
+        public static bool ToggleGlobalMute(object origin = null)
+        {
+            bool willBeMuted = IsSoundActive;
+            int vol = willBeMuted ? 0 : (_globalSavedVolume > 0 ? _globalSavedVolume : 80);
+            SetGlobalState(vol, willBeMuted, origin);
+            return IsSoundActive;
         }
         #endregion
 

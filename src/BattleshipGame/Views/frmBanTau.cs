@@ -1526,10 +1526,7 @@ namespace BattleshipGame.Views
         {
             try
             {
-                bool bat = cAmThanh.BatTatAmThanh();
-                int currentVol = TacticalVolumeSlider.GlobalVolume;
-                int targetVol = bat ? (currentVol > 0 ? currentVol : 80) : currentVol;
-                TacticalVolumeSlider.SetGlobalState(targetVol, !bat, this);
+                TacticalVolumeSlider.ToggleGlobalMute(this);
                 CapNhatNutAmThanh();
             }
             catch { }

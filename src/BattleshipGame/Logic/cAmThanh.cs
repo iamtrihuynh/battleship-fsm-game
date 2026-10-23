@@ -22,6 +22,7 @@ namespace BattleshipGame.Logic
         public static int SoLanDungNhacNen { get; private set; } = 0;
         private static string _audioDir = null;
         private static string _currentBgm = null;
+        public static string CurrentBgm => _currentBgm;
 
         public static string ThuMucAudio
         {
@@ -88,6 +89,7 @@ namespace BattleshipGame.Logic
             }
 
             DangPhatNhacNen = true;
+            _currentBgm = ten;
 
             Task.Run(() =>
             {
@@ -96,7 +98,6 @@ namespace BattleshipGame.Logic
                     try
                     {
                         if (!DangPhatNhacNen) return;
-                        _currentBgm = ten;
                         mciSendString("close bgm", null, 0, IntPtr.Zero);
                         int err = mciSendString(string.Format("open \"{0}\" type mpegvideo alias bgm", path), null, 0, IntPtr.Zero);
                         if (err != 0)

@@ -111,11 +111,7 @@ namespace BattleshipGame.Views
         {
             try
             {
-                if (sliderVolume != null)
-                {
-                    sliderVolume.ToggleMute();
-                }
-                cAmThanh.BatTatAmThanh();
+                TacticalVolumeSlider.ToggleGlobalMute(this);
                 CapNhatNutAmThanh();
             }
             catch { }
@@ -125,13 +121,6 @@ namespace BattleshipGame.Views
         {
             try
             {
-                if (sliderVolume != null)
-                {
-                    if (sliderVolume.IsMuted && cAmThanh.DaBatAmThanh)
-                        cAmThanh.BatTatAmThanh();
-                    else if (!sliderVolume.IsMuted && !cAmThanh.DaBatAmThanh && sliderVolume.Value > 0)
-                        cAmThanh.BatTatAmThanh();
-                }
                 CapNhatNutAmThanh();
             }
             catch { }

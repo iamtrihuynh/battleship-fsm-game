@@ -655,6 +655,60 @@ namespace BattleshipGame.Tests
                 var tc80NullFiltered = cThanhTichDAO.LocTheoCheDo(null, null);
                 Assert(!cAmThanh.DangPhatNhacNen && tc80NullFiltered != null && tc80NullFiltered.Count == 0,
                     "TC-80: Xử lý ngoại lệ toàn diện các đầu vào null/rỗng cho Audio và DAO an toàn tuyệt đối");
+
+                Console.WriteLine("\n--- PHẦN 8: FINAL VERIFICATION (RELEASE CANDIDATE TESTS) ---");
+
+                // Test 81: cAmThanh.BatTatAmThanh hoạt động xác định và không bị trạng thái kẹt
+                cAmThanh.DaBatAmThanh = true;
+                bool state1 = cAmThanh.BatTatAmThanh(); // -> false
+                bool state2 = cAmThanh.BatTatAmThanh(); // -> true
+                Assert(!state1 && state2 && cAmThanh.DaBatAmThanh,
+                    "TC-81: cAmThanh.BatTatAmThanh chuyển đổi trạng thái deterministically, chống kẹt trạng thái");
+
+                // Test 82: CurrentBgm property bảo toàn tên track khi tạm dừng / khôi phục
+                cAmThanh.PhatNhacNen("bgm_battle.wav");
+                string track = cAmThanh.CurrentBgm;
+                cAmThanh.DungNhacNen(donSachTrack: false);
+                bool bgmStoppedOnPause = !cAmThanh.DangPhatNhacNen;
+                cAmThanh.PhatNhacNen(track);
+                Assert(track == "bgm_battle.wav" && bgmStoppedOnPause,
+                    "TC-82: cAmThanh.CurrentBgm bảo toàn tên bản nhạc và dừng/khôi phục phát an toàn");
+
+                // Test 83: cBanCo chặn triệt để đặt tàu đè và tràn biên
+                cBanCo testBoard = new cBanCo(10);
+                var ship1 = testBoard.DanhSachTau[0]; // 5 ô
+                var ship2 = testBoard.DanhSachTau[1]; // 4 ô
+                bool put1 = testBoard.DatTau(ship1, new Point(0, 0), HuongTau.Ngang);
+                bool putOverlap = testBoard.DatTau(ship2, new Point(2, 0), HuongTau.Doc); // Đè tại (2, 0)
+                bool putOverflow = testBoard.DatTau(ship2, new Point(8, 8), HuongTau.Ngang); // Tràn biên 8+4 > 10
+                Assert(put1 && !putOverlap && !putOverflow && ship1.DaDatXong,
+                    "TC-83: cBanCo chặn triệt để đặt tàu đè lấn và tràn biên, bảo toàn tàu hợp lệ");
+
+                // Test 84: cMayBanAI chọn 100 tọa độ liên tiếp không bao giờ trùng lặp hay ngoài biên
+                cMayBanAI aiTest = new cMayBanAI(DoKhoAI.Kho, 10);
+                HashSet<Point> aiShots = new HashSet<Point>();
+                bool aiValid = true;
+                for (int i = 0; i < 100; i++)
+                {
+                    Point pt = aiTest.ChonToaDoBan();
+                    if (pt.X < 0 || pt.X >= 10 || pt.Y < 0 || pt.Y >= 10 || aiShots.Contains(pt))
+                    {
+                        aiValid = false;
+                        break;
+                    }
+                    aiShots.Add(pt);
+                    aiTest.CapNhatKetQua(pt, KetQuaBan.Miss, null);
+                }
+                Point exhaustedShot = aiTest.ChonToaDoBan();
+                Assert(aiValid && aiShots.Count == 100 && exhaustedShot == new Point(-1, -1),
+                    "TC-84: cMayBanAI bắn 100 phát liên tiếp không trùng lặp, kẹp biên [0..9] và trả (-1,-1) khi hết ô");
+
+                // Test 85: cThanhTichDAO.TinhDiem xử lý an toàn các trường hợp cực đoan
+                int scoreNeg = cThanhTichDAO.TinhDiem(true, -10, -50, -100);
+                int scoreOverflow = cThanhTichDAO.TinhDiem(true, 100, 0, 0); // ship capped at 5
+                int scoreLoss = cThanhTichDAO.TinhDiem(false, 5, 17, 10);
+                Assert(scoreNeg == 1000 && scoreOverflow == 2000 && scoreLoss == 0,
+                    "TC-85: cThanhTichDAO.TinhDiem kẹp biên an toàn các tham số âm, số tàu vượt 5 và trả về 0 khi thua");
             }
             finally
             {
