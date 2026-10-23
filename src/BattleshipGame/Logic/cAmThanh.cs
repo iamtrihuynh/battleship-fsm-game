@@ -69,6 +69,20 @@ namespace BattleshipGame.Logic
             string path = Path.Combine(ThuMucAudio, ten);
             if (!File.Exists(path))
             {
+                if (ten.Equals("bgm_battle.wav", StringComparison.OrdinalIgnoreCase))
+                {
+                    string alt = Path.Combine(ThuMucAudio, "bmg_battle.wav");
+                    if (File.Exists(alt)) { path = alt; ten = "bmg_battle.wav"; }
+                }
+                else if (ten.Equals("bmg_battle.wav", StringComparison.OrdinalIgnoreCase))
+                {
+                    string alt = Path.Combine(ThuMucAudio, "bgm_battle.wav");
+                    if (File.Exists(alt)) { path = alt; ten = "bgm_battle.wav"; }
+                }
+            }
+
+            if (!File.Exists(path))
+            {
                 DangPhatNhacNen = false;
                 return;
             }

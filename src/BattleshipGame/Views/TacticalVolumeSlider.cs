@@ -62,6 +62,7 @@ namespace BattleshipGame.Views
             _globalMuted = muted;
 
             CapNhatAmThanhMci(_globalVolume, _globalMuted);
+            BattleshipGame.Logic.cAmThanh.DaBatAmThanh = !_globalMuted && (_globalVolume > 0);
 
             if (changed)
             {

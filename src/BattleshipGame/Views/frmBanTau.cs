@@ -140,6 +140,8 @@ namespace BattleshipGame.Views
             _botAI = new cMayBanAI(_cheDoChoi.IndexOf("Dễ", StringComparison.OrdinalIgnoreCase) >= 0 ? DoKhoAI.De : DoKhoAI.Kho, 10);
             KhoiTaoThongTinChung();
 
+            TacticalVolumeSlider.GlobalVolumeChanged += OnGlobalVolumeChanged;
+
             Shown += (s, e) =>
             {
                 BringToFront();
@@ -1498,15 +1500,39 @@ namespace BattleshipGame.Views
 
         private void CapNhatNutAmThanh()
         {
-            bool bat = cAmThanh.DaBatAmThanh;
+            bool bat = cAmThanh.DaBatAmThanh && TacticalVolumeSlider.IsSoundActive;
             btnToggleSound.Text = bat ? "🔊 ÂM THANH: BẬT" : "🔇 ÂM THANH: TẮT";
             btnToggleSound.ForeColor = bat ? UITheme.AccentNeon : UITheme.MissGray;
         }
 
+        private void OnGlobalVolumeChanged(object? sender, EventArgs e)
+        {
+            if (this.IsDisposed || !this.IsHandleCreated) return;
+            try
+            {
+                if (this.InvokeRequired)
+                {
+                    this.BeginInvoke(new Action(CapNhatNutAmThanh));
+                }
+                else
+                {
+                    CapNhatNutAmThanh();
+                }
+            }
+            catch { }
+        }
+
         private void btnToggleSound_Click(object? sender, EventArgs e)
         {
-            cAmThanh.BatTatAmThanh();
-            CapNhatNutAmThanh();
+            try
+            {
+                bool bat = cAmThanh.BatTatAmThanh();
+                int currentVol = TacticalVolumeSlider.GlobalVolume;
+                int targetVol = bat ? (currentVol > 0 ? currentVol : 80) : currentVol;
+                TacticalVolumeSlider.SetGlobalState(targetVol, !bat, this);
+                CapNhatNutAmThanh();
+            }
+            catch { }
         }
 
         private void btnBackToMenu_Click(object? sender, EventArgs e)
@@ -1968,6 +1994,7 @@ namespace BattleshipGame.Views
 
             try
             {
+                TacticalVolumeSlider.GlobalVolumeChanged -= OnGlobalVolumeChanged;
                 tmrMatch?.Stop();
                 tmrTurnCountdown?.Stop();
                 cAmThanh.DungNhacNen();
