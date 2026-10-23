@@ -110,8 +110,8 @@ namespace BattleshipGame.Views
                     g.FillPath(brush, path);
                 }
 
-                // Vẽ viền
-                using (Pen pen = new Pen(borderColor, _isHovered ? 2f : 1.2f))
+                // Vẽ viền sắc nét, nổi bật rõ ràng
+                using (Pen pen = new Pen(borderColor, _isHovered ? 2.2f : 1.8f))
                 {
                     g.DrawPath(pen, path);
                 }
@@ -119,10 +119,10 @@ namespace BattleshipGame.Views
                 // Vẽ hiệu ứng viền phát sáng nhẹ khi hover
                 if (_isHovered && Enabled)
                 {
-                    using (Pen glowPen = new Pen(Color.FromArgb(50, HoverBorderColor), 4f))
+                    using (Pen glowPen = new Pen(Color.FromArgb(60, HoverBorderColor), 3.5f))
                     {
                         Rectangle glowRect = new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2);
-                        using (GraphicsPath glowPath = UITheme.CreateRoundedPath(glowRect, CornerRadius))
+                        using (GraphicsPath glowPath = UITheme.CreateRoundedPath(glowRect, Math.Max(2, CornerRadius - 1)))
                         {
                             g.DrawPath(glowPen, glowPath);
                         }

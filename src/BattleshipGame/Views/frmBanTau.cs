@@ -103,6 +103,7 @@ namespace BattleshipGame.Views
         {
             SinhBanCoDong();
             CapNhatGiaoDienKhoTau();
+            CapNhatThongKeTranDau();
         }
 
         /// <summary>
@@ -573,9 +574,7 @@ namespace BattleshipGame.Views
 
             // Kiểm tra số lượng tàu đã hoàn tất
             int soTauDaDat = _danhSachTauUI.Count(t => t.DaDat);
-            int tongSoO = _danhSachTauUI.Where(t => t.DaDat).Sum(t => t.DoDai);
-            string tenDoiNha = "Tàu bạn";
-            lblPlayerFleetStatus.Text = $"{tenDoiNha}: {soTauDaDat}/5 ({tongSoO} ô)";
+            CapNhatThongKeTranDau();
 
             if (soTauDaDat == 5)
             {
@@ -597,6 +596,39 @@ namespace BattleshipGame.Views
             {
                 TacticalMessageBox.ShowWarning(this, "Lỗi đặt tàu", "Đã xảy ra sự cố khi đặt tàu: " + ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Cập nhật hiển thị trạng thái hạm đội và số liệu bắn trên bảng thống kê tác chiến.
+        /// </summary>
+        private void CapNhatThongKeTranDau()
+        {
+            if (lblPlayerFleetStatus == null || lblEnemyFleetStatus == null || lblShotCounts == null || lblAccuracy == null) return;
+
+            if (_giaiDoanXepTau)
+            {
+                int soTauDaDat = _danhSachTauUI.Count(t => t.DaDat);
+                int tongSoO = _danhSachTauUI.Where(t => t.DaDat).Sum(t => t.DoDai);
+                lblPlayerFleetStatus.Text = $"🛡️ Bạn: {soTauDaDat}/5 tàu ({tongSoO} ô)";
+                lblEnemyFleetStatus.Text = "🤖 Máy: 5/5 tàu (17 ô)";
+                lblShotCounts.Text = "🎯 Khai hỏa: 0  |  Trúng: 0  |  Trượt: 0";
+                lblAccuracy.Text = "⚡ Độ chính xác: 0.0%";
+                return;
+            }
+
+            int tauTaCon = _banCoTa.DanhSachTau.Count(t => !t.DaChim);
+            int mauTaCon = _banCoTa.DanhSachTau.Sum(t => t.SoOConLai);
+            int tauMayCon = _banCoDoiThu.DanhSachTau.Count(t => !t.DaChim);
+            int mauMayCon = _banCoDoiThu.DanhSachTau.Sum(t => t.SoOConLai);
+
+            lblPlayerFleetStatus.Text = $"🛡️ Bạn: {tauTaCon}/5 tàu ({mauTaCon} ô)";
+            lblEnemyFleetStatus.Text = $"🤖 Máy: {tauMayCon}/5 tàu ({mauMayCon} ô)";
+
+            int soTruot = Math.Max(0, _tongPhatBan - _soPhatTrung);
+            lblShotCounts.Text = $"🎯 Bắn: {_tongPhatBan} phát  |  Trúng: {_soPhatTrung}  |  Trượt: {soTruot}";
+
+            double tiLe = _tongPhatBan > 0 ? (_soPhatTrung * 100.0 / _tongPhatBan) : 0;
+            lblAccuracy.Text = $"⚡ Độ chính xác: {tiLe:F1}%";
         }
 
         private void CapNhatGiaoDienKhoTau()
@@ -662,11 +694,13 @@ namespace BattleshipGame.Views
             btnSkillRadar.Enabled = true;
             btnSkillRadar.BackColor = UITheme.PanelBackground;
             btnSkillRadar.ForeColor = UITheme.PrimaryCyan;
+            btnSkillRadar.Text = "📡 Radar trinh sát (3x3)";
             btnSkillCrossBomb.Enabled = true;
             btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
             btnSkillCrossBomb.ForeColor = UITheme.AccentNeon;
+            btnSkillCrossBomb.Text = "💥 Pháo kích diện rộng (+)";
 
-            lblPlayerFleetStatus.Text = "Tàu bạn: 0/5 (0 ô)";
+            CapNhatThongKeTranDau();
             lblTurnIndicator.Text = "Bố trí hạm đội";
             lblTurnIndicator.ForeColor = UITheme.PrimaryCyan;
             lblTurnMessage.Text = "Đã thu hồi hạm đội. Nhấn chuột để đặt tàu hoặc xếp tự động.";
@@ -717,7 +751,7 @@ namespace BattleshipGame.Views
                 btnStartBattle.BackColor = UITheme.AccentNeon;
                 btnStartBattle.ForeColor = UITheme.HeaderBackground;
 
-                lblPlayerFleetStatus.Text = "Tàu bạn: 5/5 (17 ô)";
+                CapNhatThongKeTranDau();
                 lblTurnIndicator.Text = "Hạm đội sẵn sàng";
                 lblTurnIndicator.ForeColor = UITheme.AccentNeon;
                 lblTurnMessage.Text = "Đã xếp tự động 5 tàu. Nhấn 'Vào trận' để bắt đầu!";
@@ -762,6 +796,9 @@ namespace BattleshipGame.Views
             _banCoDoiThu.TuDongSinhBanCoNgauNhien();
             _botAI.KhoiTao();
             _cacOBotDaBan.Clear();
+
+            // Cập nhật thống kê khi bắt đầu trận chiến
+            CapNhatThongKeTranDau();
 
             // Nhạc nền trận chiến
             cAmThanh.PhatNhacNen("bgm_battle.wav");
@@ -905,9 +942,7 @@ namespace BattleshipGame.Views
                 }
 
                 // Cập nhật thống kê
-                lblShotCounts.Text = $"Phát bắn: {_tongPhatBan} (Trúng: {_soPhatTrung} • Trượt: {_tongPhatBan - _soPhatTrung})";
-                double tiLe = _tongPhatBan > 0 ? (_soPhatTrung * 100.0 / _tongPhatBan) : 0;
-                lblAccuracy.Text = $"Độ chính xác: {tiLe:F1}%";
+                CapNhatThongKeTranDau();
             }
             catch (Exception ex)
             {
@@ -934,6 +969,7 @@ namespace BattleshipGame.Views
                 KetQuaBan kq = _banCoTa.TiepNhanPhatBan(banO, out cTau? tauBiBan);
                 _botAI.CapNhatKetQua(banO, kq, tauBiBan);
                 var btnO = _btnPlayerGrid[banO.Y, banO.X];
+                CapNhatThongKeTranDau();
 
                 if (kq == KetQuaBan.Hit || kq == KetQuaBan.Sunk)
                 {
@@ -1247,7 +1283,7 @@ namespace BattleshipGame.Views
 
             if (_daDungSkillRadar)
             {
-                TacticalMessageBox.ShowWarning(this, "Kỹ năng đặc biệt", "Kỹ năng Radar trinh sát 3x3 đã được sử dụng trong trận này!");
+                TacticalMessageBox.ShowWarning(this, "Kỹ năng tác chiến", "Kỹ năng Radar trinh sát 3x3 đã được sử dụng trong trận này!");
                 return;
             }
 
@@ -1282,7 +1318,7 @@ namespace BattleshipGame.Views
 
             if (_daDungSkillBomb)
             {
-                TacticalMessageBox.ShowWarning(this, "Kỹ năng đặc biệt", "Kỹ năng Pháo kích diện rộng (+) đã được sử dụng trong trận này!");
+                TacticalMessageBox.ShowWarning(this, "Kỹ năng tác chiến", "Kỹ năng Pháo kích diện rộng (+) đã được sử dụng trong trận này!");
                 return;
             }
 
@@ -1321,6 +1357,7 @@ namespace BattleshipGame.Views
                 btnSkillRadar.Enabled = false;
                 btnSkillRadar.BackColor = UITheme.PanelBackground;
                 btnSkillRadar.ForeColor = UITheme.MissGray;
+                btnSkillRadar.Text = "📡 Radar (Đã dùng)";
 
                 cAmThanh.PhatRadar();
 
@@ -1341,6 +1378,7 @@ namespace BattleshipGame.Views
 
                 _tongPhatBan++;
                 _turnSeconds = 30;
+                CapNhatThongKeTranDau();
 
                 lblTurnMessage.Text = $"Radar quét khu vực {((char)('A' + centerRow))}{centerCol + 1}: Phát hiện {soOTauPhatHien} ô tàu địch. Đổi lượt cho máy.";
                 lblTurnMessage.ForeColor = soOTauPhatHien > 0 ? UITheme.AccentNeon : UITheme.TextSecondary;
@@ -1394,6 +1432,7 @@ namespace BattleshipGame.Views
                 btnSkillCrossBomb.Enabled = false;
                 btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
                 btnSkillCrossBomb.ForeColor = UITheme.MissGray;
+                btnSkillCrossBomb.Text = "💥 Pháo kích (Đã dùng)";
 
                 cAmThanh.PhatAirstrike();
 
@@ -1444,9 +1483,7 @@ namespace BattleshipGame.Views
                     }
                 }
 
-                lblShotCounts.Text = $"Phát bắn: {_tongPhatBan} (Trúng: {_soPhatTrung} • Trượt: {_tongPhatBan - _soPhatTrung})";
-                double tiLe = _tongPhatBan > 0 ? (_soPhatTrung * 100.0 / _tongPhatBan) : 0;
-                lblAccuracy.Text = $"Độ chính xác: {tiLe:F1}%";
+                CapNhatThongKeTranDau();
 
                 lblTurnMessage.Text = $"Pháo kích hoàn tất! Trúng {soPhatTrungPhao} mục tiêu.";
                 lblTurnMessage.ForeColor = UITheme.DangerRed;

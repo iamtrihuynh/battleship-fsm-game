@@ -90,7 +90,7 @@ namespace BattleshipGame.Views
             // 
             this.lblCurrentPlayer.AutoSize = false;
             this.lblCurrentPlayer.Location = new Point(24, 16);
-            this.lblCurrentPlayer.Size = new Size(260, 24);
+            this.lblCurrentPlayer.Size = new Size(280, 26);
             this.lblCurrentPlayer.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
             this.lblCurrentPlayer.ForeColor = UITheme.AccentNeon;
             this.lblCurrentPlayer.TextAlign = ContentAlignment.MiddleLeft;
@@ -98,10 +98,10 @@ namespace BattleshipGame.Views
             this.Controls.Add(this.lblCurrentPlayer);
 
             // 
-            // btnChangeName (Nút đổi tên ngay bên dưới tên người chơi)
+            // btnChangeName (Nút đổi tên xích xuống dưới, khoảng cách rộng rãi)
             // 
-            this.btnChangeName.Location = new Point(24, 44);
-            this.btnChangeName.Size = new Size(110, 32);
+            this.btnChangeName.Location = new Point(24, 56);
+            this.btnChangeName.Size = new Size(116, 34);
             this.btnChangeName.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
             this.btnChangeName.Text = "✏️  Đổi tên";
             this.btnChangeName.CornerRadius = 6;

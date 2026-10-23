@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Reflection;
 using System.Windows.Forms;
 using BattleshipGame.DataAccess;
@@ -52,6 +53,7 @@ namespace BattleshipGame.Views
 
         private void frmThanhTich_Load(object sender, EventArgs e)
         {
+            BoTronGiaoDien();
             if (cboCheDo.Items.Count > 0)
                 cboCheDo.SelectedIndex = 0; 
 
@@ -166,14 +168,39 @@ namespace BattleshipGame.Views
             CapNhatBang();
         }
 
-        private void DoiMauNut(Button active)
+        private void DoiMauNut(TacticalButton active)
         {
-            Color normal = Color.FromArgb(51, 65, 85);
-            Color highlight = Color.FromArgb(14, 165, 233);
+            TacticalButton[] buttons = { btnSortDiem, btnSortThoiGian, btnSortLuotBan };
+            foreach (var b in buttons)
+            {
+                if (b == null) continue;
+                bool isActive = (b == active);
+                b.BaseFillColor = isActive ? Color.FromArgb(28, 44, 72) : Color.FromArgb(20, 28, 44);
+                b.BorderColor = isActive ? UITheme.PrimaryCyan : UITheme.BorderLight;
+                b.NormalTextColor = isActive ? UITheme.AccentNeon : UITheme.TextSecondary;
+                b.Invalidate();
+            }
+        }
 
-            btnSortDiem.BackColor = (btnSortDiem == active) ? highlight : normal;
-            btnSortThoiGian.BackColor = (btnSortThoiGian == active) ? highlight : normal;
-            btnSortLuotBan.BackColor = (btnSortLuotBan == active) ? highlight : normal;
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            BoTronGiaoDien();
+        }
+
+        private void BoTronGiaoDien()
+        {
+            try
+            {
+                if (Width > 0 && Height > 0)
+                {
+                    using (GraphicsPath path = UITheme.CreateRoundedPath(new Rectangle(0, 0, Width, Height), 14))
+                    {
+                        Region = new Region(path);
+                    }
+                }
+            }
+            catch { }
         }
 
         private void btnLamMoi_Click(object sender, EventArgs e)

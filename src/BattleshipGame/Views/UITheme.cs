@@ -14,8 +14,8 @@ namespace BattleshipGame.Views
         public static readonly Color HeaderBackground = Color.FromArgb(11, 19, 36);    // #0B1324 Extra Deep
 
         // Màu viền và đường kẻ
-        public static readonly Color BorderDefault = Color.FromArgb(51, 65, 85);       // #334155
-        public static readonly Color BorderLight = Color.FromArgb(71, 85, 105);        // #475569
+        public static readonly Color BorderDefault = Color.FromArgb(70, 88, 115);       // #465873 Rõ ràng, sắc nét
+        public static readonly Color BorderLight = Color.FromArgb(100, 128, 165);        // #6480A5 Tương phản cao, nổi bật
 
         // Màu điểm nhấn Neon & Quân sự
         public static readonly Color PrimaryCyan = Color.FromArgb(14, 165, 233);      // #0EA5E9 Steel Cyan

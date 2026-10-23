@@ -66,6 +66,13 @@ namespace BattleshipGame.Views
                 btnSoundToggle.Top = 16;
             }
 
+            // Neo cụm người chơi ở góc trái trên
+            if (lblCurrentPlayer != null && btnChangeName != null)
+            {
+                lblCurrentPlayer.Location = new Point(24, 16);
+                btnChangeName.Location = new Point(24, lblCurrentPlayer.Bottom + 14);
+            }
+
             // Canh giữa SonarScanner
             sonarScanner.Left = (ClientSize.Width - sonarScanner.Width) / 2;
             int availableHeight = ClientSize.Height - 650;

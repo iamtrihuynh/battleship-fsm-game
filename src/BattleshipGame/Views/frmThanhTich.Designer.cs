@@ -24,9 +24,9 @@ namespace BattleshipGame.Views
             this.lblSubTitle = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
             this.pnlControls = new System.Windows.Forms.Panel();
-            this.btnSortLuotBan = new System.Windows.Forms.Button();
-            this.btnSortThoiGian = new System.Windows.Forms.Button();
-            this.btnSortDiem = new System.Windows.Forms.Button();
+            this.btnSortLuotBan = new BattleshipGame.Views.TacticalButton();
+            this.btnSortThoiGian = new BattleshipGame.Views.TacticalButton();
+            this.btnSortDiem = new BattleshipGame.Views.TacticalButton();
             this.cboCheDo = new System.Windows.Forms.ComboBox();
             this.lblFilter = new System.Windows.Forms.Label();
             this.dgvThanhTich = new System.Windows.Forms.DataGridView();
@@ -40,8 +40,8 @@ namespace BattleshipGame.Views
             this.colKetQua = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.lblTongSo = new System.Windows.Forms.Label();
-            this.btnLamMoi = new System.Windows.Forms.Button();
-            this.btnDong = new System.Windows.Forms.Button();
+            this.btnLamMoi = new BattleshipGame.Views.TacticalButton();
+            this.btnDong = new BattleshipGame.Views.TacticalButton();
             this.pnlHeader.SuspendLayout();
             this.pnlControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvThanhTich)).BeginInit();
@@ -97,52 +97,56 @@ namespace BattleshipGame.Views
             this.pnlControls.Size = new System.Drawing.Size(920, 50);
             this.pnlControls.TabIndex = 1;
             // 
+            // 
             // btnSortLuotBan
             // 
-            this.btnSortLuotBan.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             this.btnSortLuotBan.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSortLuotBan.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.btnSortLuotBan.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSortLuotBan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSortLuotBan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this.btnSortLuotBan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnSortLuotBan.Location = new System.Drawing.Point(695, 9);
             this.btnSortLuotBan.Name = "btnSortLuotBan";
-            this.btnSortLuotBan.Size = new System.Drawing.Size(140, 32);
+            this.btnSortLuotBan.Size = new System.Drawing.Size(145, 34);
             this.btnSortLuotBan.TabIndex = 4;
             this.btnSortLuotBan.Text = "🎯 Lượt bắn ít nhất";
-            this.btnSortLuotBan.UseVisualStyleBackColor = false;
+            this.btnSortLuotBan.CornerRadius = 6;
+            this.btnSortLuotBan.BorderColor = UITheme.BorderLight;
+            this.btnSortLuotBan.BaseFillColor = System.Drawing.Color.FromArgb(20, 28, 44);
+            this.btnSortLuotBan.NormalTextColor = UITheme.TextSecondary;
+            this.btnSortLuotBan.HoverBorderColor = UITheme.AccentNeon;
+            this.btnSortLuotBan.HoverTextColor = UITheme.AccentNeon;
             this.btnSortLuotBan.Click += new System.EventHandler(this.btnSortLuotBan_Click);
             // 
             // btnSortThoiGian
             // 
-            this.btnSortThoiGian.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             this.btnSortThoiGian.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSortThoiGian.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.btnSortThoiGian.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSortThoiGian.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSortThoiGian.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this.btnSortThoiGian.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnSortThoiGian.Location = new System.Drawing.Point(535, 9);
             this.btnSortThoiGian.Name = "btnSortThoiGian";
-            this.btnSortThoiGian.Size = new System.Drawing.Size(150, 32);
+            this.btnSortThoiGian.Size = new System.Drawing.Size(155, 34);
             this.btnSortThoiGian.TabIndex = 3;
-            this.btnSortThoiGian.Text = "⏱️ Thời gian nhanh nhất";
-            this.btnSortThoiGian.UseVisualStyleBackColor = false;
+            this.btnSortThoiGian.Text = "⏱️ Thời gian nhanh";
+            this.btnSortThoiGian.CornerRadius = 6;
+            this.btnSortThoiGian.BorderColor = UITheme.BorderLight;
+            this.btnSortThoiGian.BaseFillColor = System.Drawing.Color.FromArgb(20, 28, 44);
+            this.btnSortThoiGian.NormalTextColor = UITheme.TextSecondary;
+            this.btnSortThoiGian.HoverBorderColor = UITheme.AccentNeon;
+            this.btnSortThoiGian.HoverTextColor = UITheme.AccentNeon;
             this.btnSortThoiGian.Click += new System.EventHandler(this.btnSortThoiGian_Click);
             // 
             // btnSortDiem
             // 
-            this.btnSortDiem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(14)))), ((int)(((byte)(165)))), ((int)(((byte)(233)))));
             this.btnSortDiem.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSortDiem.FlatAppearance.BorderSize = 0;
-            this.btnSortDiem.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSortDiem.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSortDiem.ForeColor = System.Drawing.Color.White;
-            this.btnSortDiem.Location = new System.Drawing.Point(395, 9);
+            this.btnSortDiem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnSortDiem.Location = new System.Drawing.Point(385, 9);
             this.btnSortDiem.Name = "btnSortDiem";
-            this.btnSortDiem.Size = new System.Drawing.Size(130, 32);
+            this.btnSortDiem.Size = new System.Drawing.Size(142, 34);
             this.btnSortDiem.TabIndex = 2;
             this.btnSortDiem.Text = "🏆 Điểm cao nhất";
-            this.btnSortDiem.UseVisualStyleBackColor = false;
+            this.btnSortDiem.CornerRadius = 6;
+            this.btnSortDiem.BorderColor = UITheme.PrimaryCyan;
+            this.btnSortDiem.BaseFillColor = System.Drawing.Color.FromArgb(28, 44, 72);
+            this.btnSortDiem.NormalTextColor = UITheme.AccentNeon;
+            this.btnSortDiem.HoverBorderColor = UITheme.AccentNeon;
+            this.btnSortDiem.HoverTextColor = UITheme.AccentNeon;
             this.btnSortDiem.Click += new System.EventHandler(this.btnSortDiem_Click);
             // 
             // cboCheDo
@@ -312,38 +316,41 @@ namespace BattleshipGame.Views
             this.lblTongSo.TabIndex = 2;
             this.lblTongSo.Text = "Tổng số bản ghi: 0";
             // 
+            // 
             // btnLamMoi
             // 
             this.btnLamMoi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLamMoi.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this.btnLamMoi.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnLamMoi.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.btnLamMoi.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLamMoi.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLamMoi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
-            this.btnLamMoi.Location = new System.Drawing.Point(670, 14);
+            this.btnLamMoi.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this.btnLamMoi.Location = new System.Drawing.Point(660, 12);
             this.btnLamMoi.Name = "btnLamMoi";
-            this.btnLamMoi.Size = new System.Drawing.Size(110, 32);
+            this.btnLamMoi.Size = new System.Drawing.Size(116, 36);
             this.btnLamMoi.TabIndex = 1;
             this.btnLamMoi.Text = "🔄 Làm mới";
-            this.btnLamMoi.UseVisualStyleBackColor = false;
+            this.btnLamMoi.CornerRadius = 6;
+            this.btnLamMoi.BorderColor = UITheme.PrimaryCyan;
+            this.btnLamMoi.BaseFillColor = System.Drawing.Color.FromArgb(20, 32, 52);
+            this.btnLamMoi.NormalTextColor = UITheme.PrimaryCyan;
+            this.btnLamMoi.HoverBorderColor = UITheme.AccentNeon;
+            this.btnLamMoi.HoverTextColor = UITheme.AccentNeon;
             this.btnLamMoi.Click += new System.EventHandler(this.btnLamMoi_Click);
             // 
             // btnDong
             // 
             this.btnDong.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDong.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
             this.btnDong.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnDong.FlatAppearance.BorderSize = 0;
-            this.btnDong.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDong.Font = new System.Drawing.Font("Segoe UI Semibold", 9.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDong.ForeColor = System.Drawing.Color.White;
-            this.btnDong.Location = new System.Drawing.Point(790, 14);
+            this.btnDong.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this.btnDong.Location = new System.Drawing.Point(788, 12);
             this.btnDong.Name = "btnDong";
-            this.btnDong.Size = new System.Drawing.Size(110, 32);
+            this.btnDong.Size = new System.Drawing.Size(110, 36);
             this.btnDong.TabIndex = 0;
-            this.btnDong.Text = "Đóng";
-            this.btnDong.UseVisualStyleBackColor = false;
+            this.btnDong.Text = "✕  Đóng";
+            this.btnDong.CornerRadius = 6;
+            this.btnDong.BorderColor = UITheme.DangerRed;
+            this.btnDong.BaseFillColor = System.Drawing.Color.FromArgb(40, 20, 24);
+            this.btnDong.NormalTextColor = UITheme.DangerRed;
+            this.btnDong.HoverBorderColor = UITheme.DangerRed;
+            this.btnDong.HoverTextColor = System.Drawing.Color.White;
             this.btnDong.Click += new System.EventHandler(this.btnDong_Click);
             // 
             // frmThanhTich
@@ -385,14 +392,14 @@ namespace BattleshipGame.Views
         private System.Windows.Forms.Panel pnlControls;
         private System.Windows.Forms.Label lblFilter;
         private System.Windows.Forms.ComboBox cboCheDo;
-        private System.Windows.Forms.Button btnSortDiem;
-        private System.Windows.Forms.Button btnSortThoiGian;
-        private System.Windows.Forms.Button btnSortLuotBan;
+        private BattleshipGame.Views.TacticalButton btnSortDiem;
+        private BattleshipGame.Views.TacticalButton btnSortThoiGian;
+        private BattleshipGame.Views.TacticalButton btnSortLuotBan;
         private System.Windows.Forms.DataGridView dgvThanhTich;
         private System.Windows.Forms.Panel pnlBottom;
         private System.Windows.Forms.Label lblTongSo;
-        private System.Windows.Forms.Button btnLamMoi;
-        private System.Windows.Forms.Button btnDong;
+        private BattleshipGame.Views.TacticalButton btnLamMoi;
+        private BattleshipGame.Views.TacticalButton btnDong;
         private System.Windows.Forms.DataGridViewTextBoxColumn colHang;
         private System.Windows.Forms.DataGridViewTextBoxColumn colNgay;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTen;

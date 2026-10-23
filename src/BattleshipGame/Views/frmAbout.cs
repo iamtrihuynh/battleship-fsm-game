@@ -426,7 +426,7 @@ namespace BattleshipGame.Views
             Rectangle rectDefense = new Rectangle(rectTarget.Right + 16, topY, cardW, cardH);
             VeCardDefenseStrategy(g, rectDefense);
 
-            // 4. KỸ NĂNG ĐẶC BIỆT DƯỚI CÙNG
+            // 4. KỸ NĂNG TÁC CHIẾN DƯỚI CÙNG
             int skillTop = rectParity.Bottom + 16;
             Rectangle rectSkillBox = new Rectangle(16, skillTop, rectDefense.Right - 16, 220);
 
@@ -439,7 +439,7 @@ namespace BattleshipGame.Views
             using (Font titleFont = new Font("Segoe UI", 12f, FontStyle.Bold))
             {
                 Rectangle tRect = new Rectangle(rectSkillBox.X + 16, rectSkillBox.Y + 12, rectSkillBox.Width - 32, 26);
-                TextRenderer.DrawText(g, "📡 Mẹo sử dụng kỹ năng tác chiến đặc biệt", titleFont, tRect, UITheme.WarningAmber, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+                TextRenderer.DrawText(g, "📡 Mẹo sử dụng kỹ năng tác chiến", titleFont, tRect, UITheme.WarningAmber, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
             }
 
             var skills = new (string Icon, string Name, string Desc)[]
