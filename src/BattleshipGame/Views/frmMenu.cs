@@ -39,6 +39,7 @@ namespace BattleshipGame.Views
                 BringToFront();
                 Activate();
                 CanChinhGiaoDien();
+                cAmThanh.DungSFX();
                 cAmThanh.PhatNhacNen("bgm_battle.wav");
             };
         }
@@ -314,6 +315,7 @@ namespace BattleshipGame.Views
                     f.ShowDialog(this);
                 }
                 Show();
+                cAmThanh.DungSFX();
                 cAmThanh.PhatNhacNen("bgm_battle.wav");
                 CapNhatNutAmThanh();
             }

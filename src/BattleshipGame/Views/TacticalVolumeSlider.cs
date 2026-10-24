@@ -24,12 +24,19 @@ namespace BattleshipGame.Views
         [DllImport("winmm.dll", EntryPoint = "mciSendStringW", CharSet = CharSet.Unicode)]
         private static extern int mciSendString(string cmd, string ret, int len, IntPtr hwnd);
 
+        [DllImport("winmm.dll")]
+        private static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
+
         public static void CapNhatAmThanhMci(int val, bool muted)
         {
             try
             {
                 int mciVol = muted ? 0 : Math.Clamp(val * 10, 0, 1000);
                 mciSendString($"setaudio bgm volume to {mciVol}", null, 0, IntPtr.Zero);
+
+                uint waveVol = muted ? 0 : (uint)(Math.Clamp(val, 0, 100) * 655.35);
+                uint stereoVol = (waveVol & 0xFFFF) | ((waveVol & 0xFFFF) << 16);
+                waveOutSetVolume(IntPtr.Zero, stereoVol);
             }
             catch { }
         }
@@ -67,6 +74,7 @@ namespace BattleshipGame.Views
             if (!BattleshipGame.Logic.cAmThanh.DaBatAmThanh)
             {
                 BattleshipGame.Logic.cAmThanh.DungNhacNen(donSachTrack: false);
+                BattleshipGame.Logic.cAmThanh.DungSFX();
             }
             else if (!string.IsNullOrEmpty(BattleshipGame.Logic.cAmThanh.CurrentBgm) && !BattleshipGame.Logic.cAmThanh.DangPhatNhacNen)
             {

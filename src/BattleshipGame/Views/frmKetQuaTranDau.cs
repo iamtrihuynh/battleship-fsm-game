@@ -72,7 +72,7 @@ namespace BattleshipGame.Views
                 true
             );
 
-            int formWidth = 480;
+            int formWidth = 500;
             int formHeight = _thang ? 486 : 386;
             Size = new Size(formWidth, formHeight);
             BackColor = UITheme.BackgroundDark;
@@ -98,7 +98,7 @@ namespace BattleshipGame.Views
             btnCloseX.Click += (s, e) => { UserAction = KetQuaTranAction.Dong; Close(); };
             Controls.Add(btnCloseX);
 
-            int contentWidth = 420;
+            int contentWidth = 440;
             int contentX = (Width - contentWidth) / 2; // Canh đều 30px hai bên
 
             // 1. Icon trung tâm
@@ -263,14 +263,14 @@ namespace BattleshipGame.Views
 
             if (_thang)
             {
-                int btnW = 132;
-                int btnGap = 12;
-                int startBtnX = contentX; // 30px
+                int btnW = 138;
+                int btnGap = 13;
+                int startBtnX = contentX;
 
                 _btnSaveRank = new TacticalButton
                 {
-                    Text = "💾 Lưu & Xem BXH",
-                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                    Text = "🏆 Bảng Xếp Hạng",
+                    Font = new Font("Segoe UI", 9f, FontStyle.Bold),
                     Location = new Point(startBtnX, btnY),
                     Size = new Size(btnW, 42),
                     CornerRadius = 6,
@@ -285,7 +285,7 @@ namespace BattleshipGame.Views
                 var btnPlayAgain = new TacticalButton
                 {
                     Text = "🔄 Chơi lại",
-                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 9f, FontStyle.Bold),
                     Location = new Point(startBtnX + btnW + btnGap, btnY),
                     Size = new Size(btnW, 42),
                     CornerRadius = 6,
@@ -305,7 +305,7 @@ namespace BattleshipGame.Views
                 var btnMenu = new TacticalButton
                 {
                     Text = "🚪 Về Menu",
-                    Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 9f, FontStyle.Bold),
                     Location = new Point(startBtnX + (btnW + btnGap) * 2, btnY),
                     Size = new Size(btnW, 42),
                     CornerRadius = 6,
@@ -326,9 +326,9 @@ namespace BattleshipGame.Views
             }
             else
             {
-                int btnW = 200;
+                int btnW = 210;
                 int btnGap = 20;
-                int startBtnX = contentX; // 30px
+                int startBtnX = contentX;
 
                 var btnPlayAgain = new TacticalButton
                 {
@@ -451,6 +451,12 @@ namespace BattleshipGame.Views
                 f.ShowDialog(this);
             }
             catch { }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            BattleshipGame.Logic.cAmThanh.DungSFX();
+            base.OnFormClosing(e);
         }
 
         protected override void OnPaint(PaintEventArgs e)

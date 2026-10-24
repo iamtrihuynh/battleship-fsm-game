@@ -59,6 +59,7 @@ namespace BattleshipGame.Views
         private readonly Button[,] _btnRadarGrid = new Button[10, 10];
 
         private Point _oDangHover = new Point(-1, -1);
+        private TacticalVolumeSlider? _sliderVolumeInMatch;
         private int _tongPhatBan = 0;
         private int _soPhatTrung = 0;
 
@@ -86,6 +87,13 @@ namespace BattleshipGame.Views
             _botAI = new cMayBanAI(_cheDoChoi.IndexOf("Dễ", StringComparison.OrdinalIgnoreCase) >= 0 ? DoKhoAI.De : DoKhoAI.Kho, 10);
             KhoiTaoThongTinChung();
 
+            _sliderVolumeInMatch = new TacticalVolumeSlider
+            {
+                Size = new Size(160, 34),
+                Top = 11
+            };
+            pnlTopBar.Controls.Add(_sliderVolumeInMatch);
+
             TacticalVolumeSlider.GlobalVolumeChanged += OnGlobalVolumeChanged;
 
             Shown += (s, e) =>
@@ -93,6 +101,10 @@ namespace BattleshipGame.Views
                 BringToFront();
                 Activate();
                 CanChinhGiaoDien();
+                if (cAmThanh.DaBatAmThanh && TacticalVolumeSlider.IsSoundActive)
+                {
+                    cAmThanh.PhatNhacNen("bgm_battle.wav");
+                }
             };
         }
 
@@ -804,7 +816,29 @@ namespace BattleshipGame.Views
             // Cập nhật thống kê khi bắt đầu trận chiến
             CapNhatThongKeTranDau();
 
-            // Nhạc nền trận chiến
+            // Reset các kỹ năng tác chiến về sẵn sàng
+            _daDungSkillRadar = false;
+            _daDungSkillBomb = false;
+            _kyNangHienTai = CheDoKyNang.KhongCo;
+            btnSkillRadar.Enabled = true;
+            btnSkillRadar.BaseFillColor = UITheme.PanelBackground;
+            btnSkillRadar.BorderColor = UITheme.BorderLight;
+            btnSkillRadar.NormalTextColor = UITheme.PrimaryCyan;
+            btnSkillRadar.Text = "📡 Radar trinh sát (3x3)";
+            btnSkillRadar.Invalidate();
+
+            btnSkillCrossBomb.Enabled = true;
+            btnSkillCrossBomb.BaseFillColor = UITheme.PanelBackground;
+            btnSkillCrossBomb.BorderColor = UITheme.BorderLight;
+            btnSkillCrossBomb.NormalTextColor = UITheme.AccentNeon;
+            btnSkillCrossBomb.Text = "💥 Pháo kích diện rộng (+)";
+            btnSkillCrossBomb.Invalidate();
+
+            // Nhạc nền trận chiến: Tự động điều chỉnh về mức nền êm ái (Tactical Ambient ~25%) để không át tiếng đạn pháo
+            if (TacticalVolumeSlider.GlobalVolume > 30)
+            {
+                TacticalVolumeSlider.SetGlobalState(25, false, this);
+            }
             cAmThanh.PhatNhacNen("bgm_battle.wav");
 
             // Khởi động đồng hồ trận đấu
@@ -1039,6 +1073,24 @@ namespace BattleshipGame.Views
             pnlPlacementControls.Enabled = true;
             pnlRadarBoard.Enabled = true;
 
+            // Reset trạng thái kỹ năng chiến thuật
+            _daDungSkillRadar = false;
+            _daDungSkillBomb = false;
+            _kyNangHienTai = CheDoKyNang.KhongCo;
+            btnSkillRadar.Enabled = true;
+            btnSkillRadar.BaseFillColor = UITheme.PanelBackground;
+            btnSkillRadar.BorderColor = UITheme.BorderLight;
+            btnSkillRadar.NormalTextColor = UITheme.PrimaryCyan;
+            btnSkillRadar.Text = "📡 Radar trinh sát (3x3)";
+            btnSkillRadar.Invalidate();
+
+            btnSkillCrossBomb.Enabled = true;
+            btnSkillCrossBomb.BaseFillColor = UITheme.PanelBackground;
+            btnSkillCrossBomb.BorderColor = UITheme.BorderLight;
+            btnSkillCrossBomb.NormalTextColor = UITheme.AccentNeon;
+            btnSkillCrossBomb.Text = "💥 Pháo kích diện rộng (+)";
+            btnSkillCrossBomb.Invalidate();
+
             _banCoTa.XoaTatCaTau();
             _banCoDoiThu.XoaTatCaTau();
             _botAI.KhoiTao();
@@ -1059,7 +1111,7 @@ namespace BattleshipGame.Views
             btnResetBoard_Click(this, EventArgs.Empty);
 
             cAmThanh.DungNhacNen();
-            cAmThanh.PhatNhacNen("bgm_placement.wav");
+            cAmThanh.PhatNhacNen("bgm_battle.wav");
         }
 
         private void XuLyKetThucTran(bool nguoiChoiThang)
@@ -1137,8 +1189,12 @@ namespace BattleshipGame.Views
         private void CapNhatNutAmThanh()
         {
             bool bat = cAmThanh.DaBatAmThanh && TacticalVolumeSlider.IsSoundActive;
-            btnToggleSound.Text = bat ? "Âm thanh: Bật" : "Âm thanh: Tắt";
+            btnToggleSound.Text = bat ? "🔊 Âm thanh" : "🔇 Tắt tiếng";
             btnToggleSound.ForeColor = bat ? UITheme.AccentNeon : UITheme.MissGray;
+            btnToggleSound.NormalTextColor = bat ? UITheme.AccentNeon : UITheme.MissGray;
+            btnToggleSound.BorderColor = bat ? UITheme.AccentNeon : UITheme.BorderDefault;
+            btnToggleSound.BaseFillColor = Color.FromArgb(15, 23, 42);
+            btnToggleSound.Invalidate();
         }
 
         private void OnGlobalVolumeChanged(object? sender, EventArgs e)
@@ -1170,29 +1226,6 @@ namespace BattleshipGame.Views
 
         private void btnBackToMenu_Click(object? sender, EventArgs e)
         {
-            if (!_giaiDoanXepTau && !_tranDauKetThuc)
-            {
-                bool wasTurnRunning = tmrTurnCountdown.Enabled;
-                bool wasMatchRunning = tmrMatch.Enabled;
-                tmrTurnCountdown.Stop();
-                tmrMatch.Stop();
-
-                var res = TacticalMessageBox.ShowConfirm(
-                    this,
-                    "TẠM DỪNG / THOÁT TRẬN ĐẤU",
-                    "Trận đấu đang diễn ra. Bạn có chắc chắn muốn thoát về Menu chính không?"
-                );
-                if (res != DialogResult.Yes)
-                {
-                    if (wasTurnRunning && !_tranDauKetThuc) tmrTurnCountdown.Start();
-                    if (wasMatchRunning && !_tranDauKetThuc) tmrMatch.Start();
-                    return;
-                }
-            }
-
-            cAmThanh.DungNhacNen();
-            tmrMatch.Stop();
-            tmrTurnCountdown.Stop();
             Close();
         }
 
@@ -1209,24 +1242,34 @@ namespace BattleshipGame.Views
             if (_kyNangHienTai == CheDoKyNang.RadarTrinhSat)
             {
                 _kyNangHienTai = CheDoKyNang.KhongCo;
-                btnSkillRadar.BackColor = UITheme.PanelBackground;
-                btnSkillRadar.ForeColor = UITheme.PrimaryCyan;
-                lblTurnMessage.Text = "Đã hủy kỹ năng Radar.";
+                btnSkillRadar.BaseFillColor = UITheme.PanelBackground;
+                btnSkillRadar.BorderColor = UITheme.BorderLight;
+                btnSkillRadar.NormalTextColor = UITheme.PrimaryCyan;
+                btnSkillRadar.Text = "📡 Radar trinh sát (3x3)";
+                btnSkillRadar.Invalidate();
+
+                lblTurnMessage.Text = "Đã hủy kỹ năng. Đến lượt bạn khai hỏa.";
                 lblTurnMessage.ForeColor = UITheme.TextSecondary;
             }
             else
             {
                 _kyNangHienTai = CheDoKyNang.RadarTrinhSat;
-                btnSkillRadar.BackColor = Color.FromArgb(20, 80, 120);
-                btnSkillRadar.ForeColor = Color.White;
+                btnSkillRadar.BaseFillColor = Color.FromArgb(20, 55, 80);
+                btnSkillRadar.BorderColor = UITheme.PrimaryCyan;
+                btnSkillRadar.NormalTextColor = Color.FromArgb(224, 242, 254);
+                btnSkillRadar.Text = "📡 [BẬT] Radar (3x3)";
+                btnSkillRadar.Invalidate();
 
                 if (!_daDungSkillBomb)
                 {
-                    btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
-                    btnSkillCrossBomb.ForeColor = UITheme.AccentNeon;
+                    btnSkillCrossBomb.BaseFillColor = UITheme.PanelBackground;
+                    btnSkillCrossBomb.BorderColor = UITheme.BorderLight;
+                    btnSkillCrossBomb.NormalTextColor = UITheme.AccentNeon;
+                    btnSkillCrossBomb.Text = "💥 Pháo kích diện rộng (+)";
+                    btnSkillCrossBomb.Invalidate();
                 }
 
-                lblTurnMessage.Text = "Chế độ Radar: Chọn 1 ô trên radar để quét vùng 3x3 quanh ô đó.";
+                lblTurnMessage.Text = "📡 Chế độ Radar 3x3: Nhấn 1 ô trên bàn cờ đối thủ để quét.";
                 lblTurnMessage.ForeColor = UITheme.AccentNeon;
             }
         }
@@ -1244,24 +1287,34 @@ namespace BattleshipGame.Views
             if (_kyNangHienTai == CheDoKyNang.PhaoKichDienRong)
             {
                 _kyNangHienTai = CheDoKyNang.KhongCo;
-                btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
-                btnSkillCrossBomb.ForeColor = UITheme.AccentNeon;
-                lblTurnMessage.Text = "Đã hủy kỹ năng Pháo kích.";
+                btnSkillCrossBomb.BaseFillColor = UITheme.PanelBackground;
+                btnSkillCrossBomb.BorderColor = UITheme.BorderLight;
+                btnSkillCrossBomb.NormalTextColor = UITheme.AccentNeon;
+                btnSkillCrossBomb.Text = "💥 Pháo kích diện rộng (+)";
+                btnSkillCrossBomb.Invalidate();
+
+                lblTurnMessage.Text = "Đã hủy kỹ năng. Đến lượt bạn khai hỏa.";
                 lblTurnMessage.ForeColor = UITheme.TextSecondary;
             }
             else
             {
                 _kyNangHienTai = CheDoKyNang.PhaoKichDienRong;
-                btnSkillCrossBomb.BackColor = Color.FromArgb(120, 30, 30);
-                btnSkillCrossBomb.ForeColor = Color.White;
+                btnSkillCrossBomb.BaseFillColor = Color.FromArgb(85, 28, 28);
+                btnSkillCrossBomb.BorderColor = UITheme.DangerRed;
+                btnSkillCrossBomb.NormalTextColor = Color.FromArgb(254, 226, 226);
+                btnSkillCrossBomb.Text = "💥 [BẬT] Pháo kích (+)";
+                btnSkillCrossBomb.Invalidate();
 
                 if (!_daDungSkillRadar)
                 {
-                    btnSkillRadar.BackColor = UITheme.PanelBackground;
-                    btnSkillRadar.ForeColor = UITheme.PrimaryCyan;
+                    btnSkillRadar.BaseFillColor = UITheme.PanelBackground;
+                    btnSkillRadar.BorderColor = UITheme.BorderLight;
+                    btnSkillRadar.NormalTextColor = UITheme.PrimaryCyan;
+                    btnSkillRadar.Text = "📡 Radar trinh sát (3x3)";
+                    btnSkillRadar.Invalidate();
                 }
 
-                lblTurnMessage.Text = "Chế độ Pháo kích: Chọn 1 ô tâm để nã pháo 5 ô chữ thập (+).";
+                lblTurnMessage.Text = "💥 Chế độ Pháo kích (+): Nhấn 1 ô tâm để bắn 5 ô chữ thập.";
                 lblTurnMessage.ForeColor = UITheme.DangerRed;
             }
         }
@@ -1274,9 +1327,11 @@ namespace BattleshipGame.Views
                 _daDungSkillRadar = true;
                 _kyNangHienTai = CheDoKyNang.KhongCo;
                 btnSkillRadar.Enabled = false;
-                btnSkillRadar.BackColor = UITheme.PanelBackground;
-                btnSkillRadar.ForeColor = UITheme.MissGray;
+                btnSkillRadar.BaseFillColor = UITheme.PanelBackground;
+                btnSkillRadar.BorderColor = UITheme.BorderDefault;
+                btnSkillRadar.NormalTextColor = UITheme.MissGray;
                 btnSkillRadar.Text = "📡 Radar (Đã dùng)";
+                btnSkillRadar.Invalidate();
 
                 cAmThanh.PhatRadar();
 
@@ -1349,9 +1404,11 @@ namespace BattleshipGame.Views
                 _kyNangHienTai = CheDoKyNang.KhongCo;
                 _turnSeconds = 30;
                 btnSkillCrossBomb.Enabled = false;
-                btnSkillCrossBomb.BackColor = UITheme.PanelBackground;
-                btnSkillCrossBomb.ForeColor = UITheme.MissGray;
+                btnSkillCrossBomb.BaseFillColor = UITheme.PanelBackground;
+                btnSkillCrossBomb.BorderColor = UITheme.BorderDefault;
+                btnSkillCrossBomb.NormalTextColor = UITheme.MissGray;
                 btnSkillCrossBomb.Text = "💥 Pháo kích (Đã dùng)";
+                btnSkillCrossBomb.Invalidate();
 
                 cAmThanh.PhatAirstrike();
 
@@ -1513,8 +1570,22 @@ namespace BattleshipGame.Views
         {
             if (pnlCenterDashboard == null || pnlLeftBoardContainer == null || pnlRightBoardContainer == null) return;
 
-            // Neo nút âm thanh ở thanh trên cùng bên phải
-            btnToggleSound.Left = pnlTopBar.Width - btnToggleSound.Width - 20;
+            // Neo cụm điều khiển âm lượng ở góc phải thanh trên cùng, căn giữa theo chiều dọc
+            btnToggleSound.Height = 34;
+            btnToggleSound.Width = 110;
+            btnToggleSound.Top = 11;
+
+            if (_sliderVolumeInMatch != null)
+            {
+                _sliderVolumeInMatch.Height = 34;
+                _sliderVolumeInMatch.Top = 11;
+                _sliderVolumeInMatch.Left = pnlTopBar.Width - _sliderVolumeInMatch.Width - 16;
+                btnToggleSound.Left = _sliderVolumeInMatch.Left - btnToggleSound.Width - 10;
+            }
+            else
+            {
+                btnToggleSound.Left = pnlTopBar.Width - btnToggleSound.Width - 20;
+            }
 
             // Canh giữa 3 khu vực khi mở to / toàn màn hình
             int totalWidth = pnlLeftBoardContainer.Width + 14 + pnlCenterDashboard.Width + 14 + pnlRightBoardContainer.Width;
@@ -1529,14 +1600,21 @@ namespace BattleshipGame.Views
         {
             if (!_giaiDoanXepTau && !_tranDauKetThuc && e.CloseReason == CloseReason.UserClosing)
             {
+                bool wasTurnRunning = tmrTurnCountdown?.Enabled ?? false;
+                bool wasMatchRunning = tmrMatch?.Enabled ?? false;
+                tmrTurnCountdown?.Stop();
+                tmrMatch?.Stop();
+
                 var res = TacticalMessageBox.ShowConfirm(
                     this,
-                    "Rời trận đấu",
-                    "Trận đấu đang diễn ra. Bạn có chắc chắn muốn rời ván đấu?"
+                    "TẠM DỪNG / THOÁT TRẬN ĐẤU",
+                    "Trận đấu đang diễn ra. Bạn có chắc chắn muốn thoát về Menu chính không?"
                 );
                 if (res != DialogResult.Yes)
                 {
                     e.Cancel = true;
+                    if (wasTurnRunning && !_tranDauKetThuc) tmrTurnCountdown?.Start();
+                    if (wasMatchRunning && !_tranDauKetThuc) tmrMatch?.Start();
                     return;
                 }
             }
@@ -1546,6 +1624,7 @@ namespace BattleshipGame.Views
                 TacticalVolumeSlider.GlobalVolumeChanged -= OnGlobalVolumeChanged;
                 tmrMatch?.Stop();
                 tmrTurnCountdown?.Stop();
+                cAmThanh.DungSFX();
                 cAmThanh.DungNhacNen();
             }
             catch { }
