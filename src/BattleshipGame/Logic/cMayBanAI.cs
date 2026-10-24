@@ -87,24 +87,28 @@ namespace BattleshipGame.Logic
                 return new Point(-1, -1);
             }
 
-            // Pha Hunt
-            if (DoKho == DoKhoAI.Kho)
+            // Che do De (Easy): Ban ngau nhien hoan toan cac o chua ban theo dung dac ta do an
+            if (DoKho == DoKhoAI.De)
             {
-                // Ban so le theo ban co vua de tim tau nhanh hon 50%
-                var oSoLe = _danhSachChuaBan.Where(p => (p.X + p.Y) % 2 == 0).ToList();
-                if (oSoLe.Count > 0)
-                {
-                    return oSoLe[_rand.Next(oSoLe.Count)];
-                }
+                return _danhSachChuaBan[_rand.Next(_danhSachChuaBan.Count)];
             }
 
-            // Ban ngau nhien trong cac o con lai
+            // Che do Kho (Hard) - Pha Hunt: Ban so le theo ban co vua (Parity) de tim tau nhanh hon 50%
+            var oSoLe = _danhSachChuaBan.Where(p => (p.X + p.Y) % 2 == 0).ToList();
+            if (oSoLe.Count > 0)
+            {
+                return oSoLe[_rand.Next(oSoLe.Count)];
+            }
+
             return _danhSachChuaBan[_rand.Next(_danhSachChuaBan.Count)];
         }
 
         public void CapNhatKetQua(Point p, KetQuaBan kq, cTau tauBiBan = null)
         {
             _danhSachChuaBan.Remove(p);
+
+            // Che do De (Easy): Khong kich hoat Target Mode, luon duy tri ngau nhien thuan tuy
+            if (DoKho == DoKhoAI.De) return;
 
             if (kq == KetQuaBan.Hit)
             {

@@ -723,6 +723,21 @@ namespace BattleshipGame.Tests
                        listKho.Count == 2 &&
                        missingRecords.All(r => r.KetQua == "Thắng" && !r.CheDo.Contains("PvP") && !r.CheDo.Contains("Custom")),
                     "TC-86: Bảng xếp hạng phân loại chuẩn xác Dễ/Khó và file seed chỉ lưu chiến thắng hợp lệ");
+
+                // Test 87: cAmThanh.DungSFX và DungTatCa an toàn, không ném ngoại lệ
+                cAmThanh.PhatShot();
+                cAmThanh.DungSFX();
+                cAmThanh.PhatNhacNen("bgm_battle.wav");
+                cAmThanh.DungTatCa();
+                Assert(!cAmThanh.DangPhatNhacNen, "TC-87: cAmThanh.DungSFX() và DungTatCa() dừng triệt để BGM và SFX an toàn");
+
+                // Test 88: cAmThanh.PhatNhacNen với resume check an toàn
+                cAmThanh.DaBatAmThanh = true;
+                cAmThanh.PhatNhacNen("bgm_battle.wav");
+                string trackHienTai = cAmThanh.CurrentBgm;
+                cAmThanh.PhatNhacNen("bgm_battle.wav"); // Goi lai khi dang o sanh/vao tran
+                Assert(cAmThanh.DangPhatNhacNen && trackHienTai == "bgm_battle.wav",
+                    "TC-88: cAmThanh.PhatNhacNen xử lý phát lại an toàn và bảo toàn trạng thái nhạc nền");
             }
             finally
             {
