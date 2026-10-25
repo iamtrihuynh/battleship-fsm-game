@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace BattleshipGame.Logic
 {
-    // quan ly nhac nen, am thanh
     public static class cAmThanh
     {
         [DllImport("winmm.dll", EntryPoint = "mciSendStringW", CharSet = CharSet.Unicode)]
@@ -34,7 +33,6 @@ namespace BattleshipGame.Logic
 
         static cAmThanh()
         {
-            // Timer kiem tra dinh ky moi 1.5s: neu BGM dang bat ma MCI chuyen sang stopped thi phat tiep
             _bgmLoopTimer = new System.Threading.Timer(KiemTraVaLapNhacNen, null, 1500, 1500);
         }
 
@@ -102,17 +100,20 @@ namespace BattleshipGame.Logic
                 return;
             }
 
-            // Neu track hien tai trung khop, kiem tra thuc te MCI co dang phat khong
+            // kiem tra mci dang phat
             if (DangPhatNhacNen && string.Equals(_currentBgm, ten, StringComparison.OrdinalIgnoreCase))
             {
-                StringBuilder modeBuf = new StringBuilder(64);
-                mciSendString("status bgm mode", modeBuf, 64, IntPtr.Zero);
-                string mode = modeBuf.ToString().Trim().ToLowerInvariant();
-                if (mode == "playing") return;
+                try
+                {
+                    StringBuilder modeBuf = new StringBuilder(64);
+                    mciSendString("status bgm mode", modeBuf, 64, IntPtr.Zero);
+                    string mode = modeBuf.ToString().Trim().ToLowerInvariant();
+                    if (mode == "playing") return;
 
-                // Neu bi stopped hoac chua chay, kich hoat phat lai
-                int retryErr = mciSendString("play bgm repeat", null, 0, IntPtr.Zero);
-                if (retryErr != 0) mciSendString("play bgm from 0", null, 0, IntPtr.Zero);
+                    int retryErr = mciSendString("play bgm repeat", null, 0, IntPtr.Zero);
+                    if (retryErr != 0) mciSendString("play bgm from 0", null, 0, IntPtr.Zero);
+                }
+                catch { }
                 return;
             }
 
@@ -138,14 +139,13 @@ namespace BattleshipGame.Logic
                             err = mciSendString(string.Format("open \"{0}\" alias bgm", path), null, 0, IntPtr.Zero);
                         }
 
-                        if (err == 0 || err == 266) // 266: MCIERR_DEVICE_NOT_INSTALLED
+                        if (err == 0 || err == 266) 
                         {
                             if (DangPhatNhacNen && err == 0)
                             {
                                 int playErr = mciSendString("play bgm repeat", null, 0, IntPtr.Zero);
                                 if (playErr != 0)
                                 {
-                                    // Neu driver khong ho tro parameter repeat (nhu waveaudio), phat tu 0
                                     mciSendString("play bgm from 0", null, 0, IntPtr.Zero);
                                 }
                                 mciSendString("setaudio bgm volume to 800", null, 0, IntPtr.Zero);
@@ -204,7 +204,6 @@ namespace BattleshipGame.Logic
             });
         }
 
-        // Dung tat ca SFX dang phat qua SoundPlayer
         public static void DungSFX()
         {
             try
@@ -220,14 +219,12 @@ namespace BattleshipGame.Logic
             catch { }
         }
 
-        // Dung ca nhac nen va toan bo hieu ung am thanh
         public static void DungTatCa()
         {
             DungNhacNen();
             DungSFX();
         }
 
-        // Lay player tu cache hoac tao moi neu chua co
         private static SoundPlayer? LayPlayer(string? file)
         {
             if (string.IsNullOrWhiteSpace(file)) return null;
@@ -265,7 +262,6 @@ namespace BattleshipGame.Logic
 
         public static bool DaDungFallbackSystemSound { get; set; } = false;
 
-        // Phat hieu ung am thanh
         public static void PhatSFX(string? file)
         {
             if (!DaBatAmThanh) return;
@@ -325,7 +321,6 @@ namespace BattleshipGame.Logic
             return DaBatAmThanh;
         }
 
-        // Giai phong khi tat game
         public static void GiaiPhong()
         {
             try

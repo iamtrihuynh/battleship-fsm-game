@@ -6,11 +6,6 @@ using BattleshipGame.Logic;
 
 namespace BattleshipGame.Views
 {
-    /// <summary>
-    /// Form Menu chính (frmMenu) do Thành viên 2 (Frontend & UI/UX Lead) phụ trách.
-    /// Nhiệm vụ Ngày 1: Thiết kế giao diện Menu chính với các nút:
-    /// Chơi với Máy (PvE), Hai người chơi (PvP), Bảng thành tích, Hướng dẫn, Thoát.
-    /// </summary>
     public partial class frmMenu : Form
     {
 
@@ -25,7 +20,6 @@ namespace BattleshipGame.Views
             CapNhatNutAmThanh();
             CapNhatHienThiTenNguoiChoi();
 
-            // Đăng ký nhận sự kiện thay đổi âm lượng toàn cục
             TacticalVolumeSlider.GlobalVolumeChanged += (s, e) =>
             {
                 if (!IsDisposed && IsHandleCreated)
@@ -53,7 +47,6 @@ namespace BattleshipGame.Views
         {
             if (pnlButtonContainer == null) return;
 
-            // Cụm điều khiển âm lượng neo ở góc phải trên
             if (sliderVolume != null)
             {
                 sliderVolume.Left = ClientSize.Width - sliderVolume.Width - 20;
@@ -67,37 +60,30 @@ namespace BattleshipGame.Views
                 btnSoundToggle.Top = 16;
             }
 
-            // Neo cụm người chơi ở góc trái trên
             if (lblCurrentPlayer != null && btnChangeName != null)
             {
                 lblCurrentPlayer.Location = new Point(24, 16);
                 btnChangeName.Location = new Point(24, lblCurrentPlayer.Bottom + 14);
             }
 
-            // Canh giữa SonarScanner
             sonarScanner.Left = (ClientSize.Width - sonarScanner.Width) / 2;
             int availableHeight = ClientSize.Height - 650;
             sonarScanner.Top = Math.Max(15, 20 + availableHeight / 6);
 
-            // Canh giữa Title
             lblGameTitle.Width = ClientSize.Width - 40;
             lblGameTitle.Left = 20;
             lblGameTitle.Top = sonarScanner.Bottom + 10;
 
-            // Canh giữa Subtitle
             lblGameSubtitle.Width = ClientSize.Width - 40;
             lblGameSubtitle.Left = 20;
             lblGameSubtitle.Top = lblGameTitle.Bottom + 5;
 
-            // Canh giữa cụm nút chức năng
             pnlButtonContainer.Left = (ClientSize.Width - pnlButtonContainer.Width) / 2;
             pnlButtonContainer.Top = lblGameSubtitle.Bottom + Math.Max(15, 20 + availableHeight / 6);
 
-            // Canh giữa panel chọn độ khó modal
             pnlDifficultySelection.Left = (ClientSize.Width - pnlDifficultySelection.Width) / 2;
             pnlDifficultySelection.Top = (ClientSize.Height - pnlDifficultySelection.Height) / 2;
 
-            // Footer neo ở đáy và canh giữa
             lblFooter.Width = ClientSize.Width - 40;
             lblFooter.Left = 20;
             lblFooter.Top = ClientSize.Height - 35;
@@ -229,7 +215,6 @@ namespace BattleshipGame.Views
 
         private void btnPvE_Click(object sender, EventArgs e)
         {
-            // Hiển thị panel chọn độ khó AI
             pnlDifficultySelection.Visible = true;
             pnlDifficultySelection.BringToFront();
         }

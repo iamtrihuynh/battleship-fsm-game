@@ -53,7 +53,7 @@ namespace BattleshipGame.Logic
 
         public Point ChonToaDoBan()
         {
-            // Pha Target: Ban cac o trong hang doi
+            // ban cac o trong hang doi
             while (_hangDoiTarget.Count > 0)
             {
                 Point p = _hangDoiTarget.Dequeue();
@@ -63,8 +63,6 @@ namespace BattleshipGame.Logic
                 }
             }
 
-            // Neu hang doi target het nhung van con cac o da ban trung chua chim (vi du lech truc hoac het dau mut theo huong cu),
-            // tim cac o chua ban tiep giap voi cac o trung de tiep tuc Target, tranh bi rot ve Hunt ngau nhien
             if (_cacOTrungHienTai.Count > 0)
             {
                 foreach (var hit in _cacOTrungHienTai)
@@ -87,13 +85,13 @@ namespace BattleshipGame.Logic
                 return new Point(-1, -1);
             }
 
-            // Che do De (Easy): Ban ngau nhien hoan toan cac o chua ban theo dung dac ta do an
+            // de: ban ngau nhien
             if (DoKho == DoKhoAI.De)
             {
                 return _danhSachChuaBan[_rand.Next(_danhSachChuaBan.Count)];
             }
 
-            // Che do Kho (Hard) - Pha Hunt: Ban so le theo ban co vua (Parity) de tim tau nhanh hon 50%
+            // kho: ban so le
             var oSoLe = _danhSachChuaBan.Where(p => (p.X + p.Y) % 2 == 0).ToList();
             if (oSoLe.Count > 0)
             {
@@ -107,7 +105,7 @@ namespace BattleshipGame.Logic
         {
             _danhSachChuaBan.Remove(p);
 
-            // Che do De (Easy): Khong kich hoat Target Mode, luon duy tri ngau nhien thuan tuy
+            // de: chi ngau nhien
             if (DoKho == DoKhoAI.De) return;
 
             if (kq == KetQuaBan.Hit)
@@ -119,12 +117,12 @@ namespace BattleshipGame.Logic
 
                 if (_cacOTrungHienTai.Count == 1)
                 {
-                    // Trung phat dau: them 4 o xung quanh
+                    // them 4 o xung quanh
                     ThemCacOLanCan(p);
                 }
                 else
                 {
-                    // Trung tu 2 phat: xac dinh duoc truc tau (ngang/doc)
+                    // xac dinh truc tau
                     KhoaTrucVaThemODauMut();
                 }
             }
@@ -132,7 +130,6 @@ namespace BattleshipGame.Logic
             {
                 if (tauBiBan != null && tauBiBan.DanhSachToaDo != null && tauBiBan.DanhSachToaDo.Count > 0)
                 {
-                    // Loai bo cac toa do cua con tau da chim khoi danh sach o dang theo doi
                     _cacOTrungHienTai.RemoveAll(pt => tauBiBan.DanhSachToaDo.Contains(pt));
                 }
                 else
@@ -142,7 +139,6 @@ namespace BattleshipGame.Logic
 
                 _hangDoiTarget.Clear();
 
-                // Neu van con o bi trung cua tau khac gan do, tiep tuc Target o do
                 if (_cacOTrungHienTai.Count > 0)
                 {
                     ThemCacOLanCan(_cacOTrungHienTai[0]);
@@ -153,10 +149,10 @@ namespace BattleshipGame.Logic
         private void ThemCacOLanCan(Point p)
         {
             Point[] huong = {
-                new Point(p.X, p.Y - 1), // Tren
-                new Point(p.X, p.Y + 1), // Duoi
-                new Point(p.X - 1, p.Y), // Trai
-                new Point(p.X + 1, p.Y)  // Phai
+                new Point(p.X, p.Y - 1),
+                new Point(p.X, p.Y + 1), 
+                new Point(p.X - 1, p.Y), 
+                new Point(p.X + 1, p.Y)  
             };
 
             foreach (var o in huong)
@@ -172,21 +168,18 @@ namespace BattleshipGame.Logic
         {
             if (_cacOTrungHienTai.Count < 2) return;
 
-            // Tìm nhóm ô thẳng hàng ngang hoặc dọc có >= 2 phát bắn
             var nhomY = _cacOTrungHienTai.GroupBy(pt => pt.Y).FirstOrDefault(g => g.Count() >= 2);
             var nhomX = _cacOTrungHienTai.GroupBy(pt => pt.X).FirstOrDefault(g => g.Count() >= 2);
 
             bool isNgang = nhomY != null;
             bool isDoc = nhomX != null;
 
-            // Nếu chưa có nhóm nào >= 2 ô thẳng hàng, mở rộng các ô lân cận của ô mới nhất
             if (!isNgang && !isDoc)
             {
                 ThemCacOLanCan(_cacOTrungHienTai.Last());
                 return;
             }
 
-            // Nếu xuất hiện cả 2 trục (2 tàu chạm nhau), ưu tiên trục chứa phát bắn mới nhất
             Point latest = _cacOTrungHienTai.Last();
             if (isNgang && isDoc)
             {
@@ -201,7 +194,6 @@ namespace BattleshipGame.Logic
                 int minX = cacOTrenY.Min(pt => pt.X);
                 int maxX = cacOTrenY.Max(pt => pt.X);
 
-                // Lọc giữ lại các ô cùng trục Y trong hàng đợi
                 var dsCu = _hangDoiTarget.Where(o => o.Y == y).ToList();
                 _hangDoiTarget.Clear();
                 foreach (var o in dsCu) _hangDoiTarget.Enqueue(o);
@@ -216,7 +208,6 @@ namespace BattleshipGame.Logic
                 int minY = cacOTrenX.Min(pt => pt.Y);
                 int maxY = cacOTrenX.Max(pt => pt.Y);
 
-                // Lọc giữ lại các ô cùng trục X trong hàng đợi
                 var dsCu = _hangDoiTarget.Where(o => o.X == x).ToList();
                 _hangDoiTarget.Clear();
                 foreach (var o in dsCu) _hangDoiTarget.Enqueue(o);

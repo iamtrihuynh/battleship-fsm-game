@@ -15,7 +15,6 @@ namespace BattleshipGame.DataAccess
         SoLuotItNhat
     }
 
-    // doc ghi thanhtichs.txt
     public class cThanhTichDAO
     {
         private static readonly object _lock = new object();
@@ -83,7 +82,7 @@ namespace BattleshipGame.DataAccess
             set => _filePath = value;
         }
 
-        // Tao san vai dong mau neu chua co file
+        // tao file mau neu chua co
         private static void TaoFileMau(string path)
         {
             try
@@ -110,13 +109,11 @@ namespace BattleshipGame.DataAccess
             }
         }
 
-        // Doc danh sach thanh tich tu file
         public static List<ThanhTichItem> DocThanhTich()
         {
             return DocDanhSach();
         }
 
-        // Doc danh sach tu file
         public static List<ThanhTichItem> DocDanhSach()
         {
             List<ThanhTichItem> list = new List<ThanhTichItem>();
@@ -167,13 +164,11 @@ namespace BattleshipGame.DataAccess
             return SapXep(list, TieuChiSapXep.DiemCaoNhat);
         }
 
-        // Ghi them 1 tran moi truyen truc tiep thong so
         public static bool LuuThanhTich(string ten, int diem, int luot, int giay, string cheDo, string ketQua)
         {
             return LuuThanhTich(new ThanhTichItem(DateTime.Now, ten, diem, luot, giay, cheDo, ketQua));
         }
 
-        // Ghi them 1 tran moi vao cuoi file
         public static bool LuuThanhTich(ThanhTichItem item)
         {
             if (item == null) return false;
@@ -258,7 +253,6 @@ namespace BattleshipGame.DataAccess
             return false;
         }
 
-        // Sap xep danh sach
         public static List<ThanhTichItem> SapXep(List<ThanhTichItem> list, TieuChiSapXep tieuChi)
         {
             if (list == null) return new List<ThanhTichItem>();
@@ -294,7 +288,6 @@ namespace BattleshipGame.DataAccess
             }
         }
 
-        // Loc theo che do choi (Ho tro "Tất cả", "Dễ", "Khó", "PvE - Dễ", "PvE - Khó", "PvE", "PvP")
         public static List<ThanhTichItem> LocTheoCheDo(List<ThanhTichItem> list, string cheDo)
         {
             if (list == null) return new List<ThanhTichItem>();
@@ -318,12 +311,6 @@ namespace BattleshipGame.DataAccess
                 .ToList();
         }
 
-        /// <summary>
-        /// [NGÀY 4 - TV3] Hàm tính điểm tự động theo công thức Game Balance chuẩn:
-        /// Điểm = 1000 (Thắng) + (Số tàu còn sống * 200) - (Số phát bắn * 15) - (Thời gian giây * 2).
-        /// Kẹp biên an toàn trong khoảng [0, int.MaxValue] chống tràn số.
-        /// Thua trận mặc định 0 điểm.
-        /// </summary>
         public static int TinhDiem(bool thang, int soTauConSong, int soPhatBan, int thoiGianGiay)
         {
             if (!thang) return 0;

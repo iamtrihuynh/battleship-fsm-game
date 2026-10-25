@@ -8,17 +8,6 @@ using System.Windows.Forms;
 
 namespace BattleshipGame.Views
 {
-    /// <summary>
-    /// [NGÀY 4 - THÀNH VIÊN 2: TRẦN TRỌNG HƯNG - FRONTEND & UI/UX LEAD]
-    /// Thanh điều khiển âm lượng phong cách Hải quân hiện đại (Tactical Naval Dark Theme):
-    /// - Cho phép kéo thả (drag & drop) thanh trượt âm lượng mượt mà từ 0% đến 100%.
-    /// - Nhấp vào icon loa, nhãn phần trăm hoặc nút âm thanh để Bật/Tắt tức thì trong 1 lần nhấn.
-    /// - Kéo về 0%: Tự động chuyển sang trạng thái TẮT.
-    /// - Kéo lớn hơn 0%: Tự động chuyển sang trạng thái BẬT.
-    /// - Tự động ghi nhớ mức âm lượng trước đó khi Bật lại từ trạng thái Tắt.
-    /// - Quản lý trạng thái âm lượng toàn cục (Global Volume) đồng bộ tuyệt đối giữa Menu và Trận đấu.
-    /// - Điều chỉnh trực tiếp âm lượng nhạc nền Windows Multimedia (mciSendString) không can thiệp logic backend.
-    /// </summary>
     public class TacticalVolumeSlider : Control
     {
         [DllImport("winmm.dll", EntryPoint = "mciSendStringW", CharSet = CharSet.Unicode)]
@@ -198,12 +187,11 @@ namespace BattleshipGame.Views
             Size = new Size(230, 36);
             Cursor = Cursors.Default;
 
-            // Đồng bộ trạng thái khởi tạo
             _value = GlobalVolume;
             _isMuted = GlobalMuted;
             _savedVolume = _globalSavedVolume > 0 ? _globalSavedVolume : 80;
 
-            // Lắng nghe sự kiện đồng bộ từ các form khác (bỏ qua nếu chính instance này kích hoạt)
+            // dong bo am luong giua cac form
             GlobalVolumeChanged += (origin, e) =>
             {
                 if (ReferenceEquals(origin, this)) return;
@@ -234,22 +222,15 @@ namespace BattleshipGame.Views
             }
         }
 
-        /// <summary>
-        /// Chuyển đổi tức thì giữa trạng thái Bật và Tắt âm lượng chỉ với 1 lần nhấp duy nhất.
-        /// - Nếu đang TẮT: Bật lại và phục hồi mức âm lượng trước đó.
-        /// - Nếu đang BẬT: Lưu mức âm lượng hiện tại và tắt về 0.
-        /// </summary>
         public void ToggleMute()
         {
             if (_isMuted || _value == 0)
             {
-                // Đang TẮT -> BẬT
                 _isMuted = false;
                 _value = _savedVolume > 0 ? _savedVolume : 80;
             }
             else
             {
-                // Đang BẬT -> TẮT
                 _savedVolume = _value;
                 _value = 0;
                 _isMuted = true;
@@ -303,14 +284,12 @@ namespace BattleshipGame.Views
 
             if (e.Button == MouseButtons.Left)
             {
-                // Nhấp vào icon loa hoặc nhãn phần trăm để chuyển Bật / Tắt tức thì
                 if (SpeakerRect.Contains(e.Location) || PercentRect.Contains(e.Location))
                 {
                     ToggleMute();
                     return;
                 }
 
-                // Nhấp vào vùng thanh trượt hoặc con trỏ để điều chỉnh âm lượng
                 if (e.X >= TrackLeft - 6 && e.X <= TrackRight + 6)
                 {
                     _isDragging = true;
@@ -411,10 +390,8 @@ namespace BattleshipGame.Views
             Graphics g = e.Graphics;
             UITheme.SetHighQuality(g);
 
-            // 1. NÚT LOA & ICON ÂM LƯỢNG (BÊN TRÁI)
             VeNutLoa(g);
 
-            // 2. THANH RÃNH TRƯỢT (TRACK BACKGROUND)
             Rectangle trackBounds = new Rectangle(TrackLeft, TrackY, TrackWidth, TrackHeight);
             using (GraphicsPath trackPath = UITheme.CreateRoundedPath(trackBounds, TrackHeight / 2))
             {
@@ -428,7 +405,6 @@ namespace BattleshipGame.Views
                 }
             }
 
-            // 3. THANH ĐẦY HOẠT ĐỘNG (ACTIVE FILL TRACK VỚI GRADIENT NEON)
             float currentThumbX = ThumbX;
             int fillWidth = (int)(currentThumbX - TrackLeft);
             if (fillWidth > 2 && !_isMuted && _value > 0)
@@ -447,10 +423,7 @@ namespace BattleshipGame.Views
                 }
             }
 
-            // 4. CON TRỎ KÉO (THUMB / KNOB PHÁT SÁNG NEON)
             VeThumbPhatSang(g, currentThumbX);
-
-            // 5. CHỮ PHẦN TRĂM ÂM LƯỢNG (BÊN PHẢI)
             VeChuPhanTram(g);
         }
 
@@ -467,27 +440,26 @@ namespace BattleshipGame.Views
                 }
             }
 
-            // Chọn icon theo mức âm lượng
             string icon;
             Color iconColor;
             if (_isMuted || _value == 0)
             {
-                icon = "\U0001F507"; // 🔇 Mute
+                icon = "\U0001F507";
                 iconColor = UITheme.DangerRed;
             }
             else if (_value < 35)
             {
-                icon = "\U0001F508"; // 🔈 Low
+                icon = "\U0001F508";
                 iconColor = UITheme.PrimaryCyan;
             }
             else if (_value < 70)
             {
-                icon = "\U0001F509"; // 🔉 Medium
+                icon = "\U0001F509";
                 iconColor = UITheme.PrimaryCyan;
             }
             else
             {
-                icon = "\U0001F50A"; // 🔊 High
+                icon = "\U0001F50A";
                 iconColor = UITheme.AccentNeon;
             }
 
@@ -509,7 +481,6 @@ namespace BattleshipGame.Views
             float cy = Height / 2f;
             float radius = _isDragging ? 9f : (_isHovered ? 8f : 7f);
 
-            // Quầng sáng mờ Neon (Aura Glow)
             if (_isHovered || _isDragging)
             {
                 float glowR = radius + 5f;
@@ -526,7 +497,6 @@ namespace BattleshipGame.Views
                 }
             }
 
-            // Thân thumb hình tròn
             RectangleF thumbRect = new RectangleF(cx - radius, cy - radius, radius * 2, radius * 2);
             Color thumbFill = (_isMuted || _value == 0) ? Color.FromArgb(100, 116, 139) : (_isDragging ? Color.White : ThumbColor);
 
@@ -535,13 +505,11 @@ namespace BattleshipGame.Views
                 g.FillEllipse(tb, thumbRect);
             }
 
-            // Viền ngoài của thumb
             using (Pen tp = new Pen(Color.FromArgb(15, 23, 42), 1.5f))
             {
                 g.DrawEllipse(tp, thumbRect);
             }
 
-            // Điểm tâm nhỏ bên trong
             if (!_isMuted && _value > 0 && radius >= 7f)
             {
                 float centerR = 2.5f;

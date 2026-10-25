@@ -25,7 +25,6 @@ namespace BattleshipGame.Views
             this.KeyDown += FrmThanhTich_KeyDown;
         }
 
-        // bat double buffer cho muot
         private static void BatDoubleBuffer(DataGridView dgv)
         {
             try
@@ -74,7 +73,6 @@ namespace BattleshipGame.Views
             CapNhatBang();
         }
 
-        // Do du lieu len DataGridView
         private void CapNhatBang()
         {
             if (!_daLoad || _listGoc == null) return;

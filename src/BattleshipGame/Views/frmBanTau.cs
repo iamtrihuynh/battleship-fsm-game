@@ -10,9 +10,6 @@ using BattleshipGame.Models;
 
 namespace BattleshipGame.Views
 {
-    /// <summary>
-    /// Form Trận Đấu chính (frmBanTau) do Thành viên 2 (Frontend & UI/UX Lead) phụ trách.
-    /// </summary>
     public partial class frmBanTau : Form
     {
         private class ThongTinTauUI
@@ -25,7 +22,7 @@ namespace BattleshipGame.Views
 
         private readonly string _cheDoChoi;
         private string _tenNguoiChoi = "Người chơi";
-        private bool _huongNgang = true; // true: Ngang (Horizontal), false: Dọc (Vertical)
+        private bool _huongNgang = true;
         private int _matchSeconds = 0;
         private int _turnSeconds = 30;
         private bool _giaiDoanXepTau = true;
@@ -42,19 +39,15 @@ namespace BattleshipGame.Views
         private bool _daDungSkillRadar = false;
         private bool _daDungSkillBomb = false;
 
-        // Ban co logic
         private readonly cBanCo _banCoTa = new cBanCo(10);
         private readonly cBanCo _banCoDoiThu = new cBanCo(10);
         private readonly cMayBanAI _botAI;
         private readonly HashSet<Point> _cacOBotDaBan = new HashSet<Point>();
         private readonly Random _randBot = new Random();
 
-        // Ma trận trạng thái giao diện (0: Nước, 1: Tàu đã đặt)
         private readonly int[,] _maTranDoiNha = new int[10, 10];
-        // Ma trận radar (0: Chưa bắn, 2: Trúng, 3: Trượt)
         private readonly int[,] _maTranRadar = new int[10, 10];
 
-        // Mảng 2 chiều chứa 100 Button giao diện cho mỗi bàn cờ
         private readonly Button[,] _btnPlayerGrid = new Button[10, 10];
         private readonly Button[,] _btnRadarGrid = new Button[10, 10];
 
@@ -63,7 +56,6 @@ namespace BattleshipGame.Views
         private int _tongPhatBan = 0;
         private int _soPhatTrung = 0;
 
-        // Danh sách 5 chiến hạm quy chuẩn theo tài liệu đề tài
         private readonly List<ThongTinTauUI> _danhSachTauUI = new List<ThongTinTauUI>
         {
             new ThongTinTauUI { TenTau = "Tàu sân bay (5 ô)", DoDai = 5 },
@@ -108,9 +100,6 @@ namespace BattleshipGame.Views
             };
         }
 
-        /// <summary>
-        /// Sự kiện Form_Load: Gọi hàm sinh động 10x10=100 Button cho 2 bàn cờ theo đúng yêu cầu Ngày 2.
-        /// </summary>
         private void frmBanTau_Load(object? sender, EventArgs e)
         {
             SinhBanCoDong();
@@ -118,9 +107,6 @@ namespace BattleshipGame.Views
             CapNhatThongKeTranDau();
         }
 
-        /// <summary>
-        /// Hàm sinh động 10x10 = 100 Button cho Bàn cờ Đội nhà & Bàn cờ Tác chiến kèm hệ tọa độ A-J, 1-10.
-        /// </summary>
         private void SinhBanCoDong()
         {
             foreach (Control ctl in pnlPlayerBoard.Controls) ctl.Dispose();
@@ -133,9 +119,6 @@ namespace BattleshipGame.Views
             int cellSize = 36;
             string[] hangNhan = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
 
-            // -------------------------------------------------------------
-            // 1. SINH ĐỘNG BÀN CỜ ĐỘI NHÀ (10x10 = 100 BUTTON)
-            // -------------------------------------------------------------
             for (int c = 0; c < 10; c++)
             {
                 Label lblCol = new Label
@@ -177,12 +160,11 @@ namespace BattleshipGame.Views
                         Cursor = Cursors.Hand,
                         Margin = Padding.Empty,
                         Padding = Padding.Empty,
-                        Tag = new Point(c, r) // X: Cột (0..9), Y: Hàng (0..9)
+                        Tag = new Point(c, r)
                     };
                     btn.FlatAppearance.BorderSize = 1;
                     btn.FlatAppearance.BorderColor = UITheme.BorderDefault;
 
-                    // Gắn sự kiện MouseEnter, MouseLeave để hiển thị bóng mờ (Preview) khi xếp tàu
                     btn.MouseEnter += btnPlayerCell_MouseEnter;
                     btn.MouseLeave += btnPlayerCell_MouseLeave;
                     btn.Click += btnPlayerCell_Click;
@@ -192,9 +174,6 @@ namespace BattleshipGame.Views
                 }
             }
 
-            // -------------------------------------------------------------
-            // 2. SINH ĐỘNG BÀN CỜ TÁC CHIẾN / RADAR (10x10 = 100 BUTTON)
-            // -------------------------------------------------------------
             for (int c = 0; c < 10; c++)
             {
                 Label lblCol = new Label
@@ -251,11 +230,6 @@ namespace BattleshipGame.Views
             }
         }
 
-        #region XỬ LÝ ĐỒ HỌA PHÁT BẮN & MÀN CHE SƯƠNG MÙ (NGÀY 3 - THÀNH VIÊN 2)
-        /// <summary>
-        /// [NGÀY 3 - TV2] Xử lý đồ họa cho Ô TRƯỢT:
-        /// Đổi sang màu xanh sóng nước (#1E3A58), viền sóng (#38BDF8), hiển thị ký tự "•".
-        /// </summary>
         public void XuLyDoHoa_OTruot(Button btn)
         {
             if (btn == null) return;
@@ -268,10 +242,6 @@ namespace BattleshipGame.Views
             btn.Cursor = Cursors.Default;
         }
 
-        /// <summary>
-        /// [NGÀY 3 - TV2] Xử lý đồ họa cho Ô TRÚNG:
-        /// Đổi sang màu đỏ rực (#EF4444), hiển thị ký tự "X" màu vàng lửa (#FEF08A).
-        /// </summary>
         public void XuLyDoHoa_OTrung(Button btn)
         {
             if (btn == null) return;
@@ -284,10 +254,6 @@ namespace BattleshipGame.Views
             btn.Cursor = Cursors.Default;
         }
 
-        /// <summary>
-        /// [NGÀY 3 - TV2] Xử lý đồ họa khi TÀU CHÌM:
-        /// Đổi TOÀN BỘ các ô của con tàu đó sang màu xám tro (#374151), viền đậm 2px màu đỏ sẫm (#991B1B).
-        /// </summary>
         public void XuLyDoHoa_TauChim(IEnumerable<Button> danhSachOBiChim)
         {
             if (danhSachOBiChim == null) return;
@@ -296,7 +262,7 @@ namespace BattleshipGame.Views
                 if (btn == null) continue;
                 btn.BackColor = UITheme.SunkAshBackground;
                 btn.FlatAppearance.BorderColor = UITheme.SunkThickBorder;
-                btn.FlatAppearance.BorderSize = UITheme.SunkBorderThickness; // Viền đậm 2px
+                btn.FlatAppearance.BorderSize = UITheme.SunkBorderThickness;
                 btn.ForeColor = UITheme.SunkAshText;
                 btn.Font = new Font("Segoe UI", 12f, FontStyle.Bold);
                 btn.Text = "X";
@@ -304,9 +270,6 @@ namespace BattleshipGame.Views
             }
         }
 
-        /// <summary>
-        /// Quá tải nhận danh sách tọa độ (X, Y) trên Bàn cờ Radar
-        /// </summary>
         public void XuLyDoHoa_TauChim(IEnumerable<Point> danhSachToaDo)
         {
             if (danhSachToaDo == null) return;
@@ -344,9 +307,7 @@ namespace BattleshipGame.Views
             btn.Text = "⚓";
             btn.Cursor = Cursors.Default;
         }
-        #endregion
 
-        #region XỬ LÝ BÓNG MỜ (PREVIEW SHADOW) KHI XẾP TÀU
         private void btnPlayerCell_MouseEnter(object? sender, EventArgs e)
         {
             if (sender is Button btn && btn.Tag is Point pt)
@@ -362,11 +323,6 @@ namespace BattleshipGame.Views
             _oDangHover = new Point(-1, -1);
         }
 
-        /// <summary>
-        /// Hiển thị bóng mờ (Preview) khi xếp tàu:
-        /// - Vị trí Hợp lệ: Tô màu Xanh lá (#10B981) kèm biểu tượng ⚓.
-        /// - Vị trí Không hợp lệ (tràn mép bàn cờ, đè lên tàu đã xếp): Tô màu Đỏ (#EF4444) kèm biểu tượng ✕.
-        /// </summary>
         private void HienThiPreviewShadow(int col, int row)
         {
             if (!_giaiDoanXepTau) return;
@@ -375,7 +331,6 @@ namespace BattleshipGame.Views
             var tauDangChon = _danhSachTauUI[cboSelectShip.SelectedIndex];
             int doDai = tauDangChon.DoDai;
 
-            // Làm mới các ô trên bàn cờ về màu gốc trước khi vẽ bóng mờ mới
             LamMoiMauBanCoDoiNha();
 
             bool hopLe = true;
@@ -390,26 +345,24 @@ namespace BattleshipGame.Views
 
                 if (c < 0 || c >= 10 || r < 0 || r >= 10)
                 {
-                    hopLe = false; // Tràn mép bàn cờ
+                    hopLe = false;
                 }
                 else
                 {
                     toaDoTrongLuoi.Add(new Point(c, r));
-                    // Kiểm tra va chạm với tàu khác đã đặt (bỏ qua nếu chính tàu này đang được xếp lại)
                     if (_maTranDoiNha[r, c] == 1 && !tauDangChon.CacViTri.Contains(new Point(c, r)))
                     {
-                        hopLe = false; // Đè lên tàu đã xếp
+                        hopLe = false;
                     }
                 }
             }
 
             if (hopLe)
             {
-                // Hợp lệ: Xanh lá
                 foreach (var p in toaDoTrongLuoi)
                 {
                     var btn = _btnPlayerGrid[p.Y, p.X];
-                    btn.BackColor = Color.FromArgb(16, 185, 129); // Success Green
+                    btn.BackColor = Color.FromArgb(16, 185, 129);
                     btn.FlatAppearance.BorderColor = Color.FromArgb(52, 211, 153);
                     btn.ForeColor = Color.White;
                     btn.Text = "⚓";
@@ -419,11 +372,10 @@ namespace BattleshipGame.Views
             }
             else
             {
-                // Không hợp lệ: Đỏ
                 foreach (var p in toaDoTrongLuoi)
                 {
                     var btn = _btnPlayerGrid[p.Y, p.X];
-                    btn.BackColor = Color.FromArgb(239, 68, 68); // Danger Red
+                    btn.BackColor = Color.FromArgb(239, 68, 68);
                     btn.FlatAppearance.BorderColor = Color.FromArgb(248, 113, 113);
                     btn.ForeColor = Color.White;
                     btn.Text = "✕";
@@ -433,9 +385,6 @@ namespace BattleshipGame.Views
             }
         }
 
-        /// <summary>
-        /// Khôi phục màu sắc các ô trên bàn cờ Đội nhà theo trạng thái thực tế trong ma trận.
-        /// </summary>
         private void LamMoiMauBanCoDoiNha()
         {
             for (int r = 0; r < 10; r++)
@@ -447,7 +396,7 @@ namespace BattleshipGame.Views
 
                     if (_maTranDoiNha[r, c] == 1)
                     {
-                        btn.BackColor = UITheme.ShipCell; // Màu cyan tàu chiến
+                        btn.BackColor = UITheme.ShipCell;
                         btn.FlatAppearance.BorderColor = UITheme.PrimaryCyan;
                         btn.ForeColor = Color.White;
                         btn.Text = "🚢";
@@ -462,13 +411,7 @@ namespace BattleshipGame.Views
                 }
             }
         }
-        #endregion
 
-        #region PHÍM TẮT XOAY HƯỚNG TÀU (SPACE / R)
-        /// <summary>
-        /// Lập trình phím tắt Space hoặc R để đổi chiều Dọc <-> Ngang khi rê chuột.
-        /// Khi đổi chiều, bóng mờ (Preview) tại vị trí con trỏ lập tức được cập nhật theo hướng mới.
-        /// </summary>
         private void frmBanTau_KeyDown(object? sender, KeyEventArgs e)
         {
             if (!_giaiDoanXepTau) return;
@@ -476,7 +419,6 @@ namespace BattleshipGame.Views
             if (e.KeyCode == Keys.R || e.KeyCode == Keys.Space)
             {
                 DoiHuongTau();
-                // Cập nhật ngay lập tức bóng mờ nếu đang rê chuột trên bàn cờ
                 if (_oDangHover.X >= 0 && _oDangHover.Y >= 0)
                 {
                     HienThiPreviewShadow(_oDangHover.X, _oDangHover.Y);
@@ -502,9 +444,7 @@ namespace BattleshipGame.Views
             btnRotateShip.Text = $"🔄 Xoay hướng (R): {(_huongNgang ? "Ngang" : "Dọc")}";
             btnRotateShip.ForeColor = _huongNgang ? UITheme.PrimaryCyan : UITheme.AccentNeon;
         }
-        #endregion
 
-        #region THAO TÁC ĐẶT TÀU & ĐIỀU KHIỂN KHO TÀU
         private void btnPlayerCell_Click(object? sender, EventArgs e)
         {
             if (!_giaiDoanXepTau) return;
@@ -519,7 +459,6 @@ namespace BattleshipGame.Views
             var tauDangChon = _danhSachTauUI[cboSelectShip.SelectedIndex];
             int doDai = tauDangChon.DoDai;
 
-            // Kiểm tra tính hợp lệ của vị trí đặt
             bool hopLe = true;
             List<Point> viTriMoi = new List<Point>();
             for (int i = 0; i < doDai; i++)
@@ -547,7 +486,6 @@ namespace BattleshipGame.Views
                 return;
             }
 
-            // Nếu tàu này từng đặt ở vị trí cũ, xóa vị trí cũ trên ma trận
             if (tauDangChon.DaDat)
             {
                 foreach (var oldP in tauDangChon.CacViTri)
@@ -557,7 +495,6 @@ namespace BattleshipGame.Views
                 tauDangChon.CacViTri.Clear();
             }
 
-            // Ghi nhận vị trí mới
             foreach (var p in viTriMoi)
             {
                 _maTranDoiNha[p.Y, p.X] = 1;
@@ -565,7 +502,6 @@ namespace BattleshipGame.Views
             }
             tauDangChon.DaDat = true;
 
-            // Đồng bộ trực tiếp với model logic cBanCo
             int shipIdx = cboSelectShip.SelectedIndex;
             cBanCo banCoNha = _banCoTa;
             if (shipIdx >= 0 && shipIdx < banCoNha.DanhSachTau.Count)
@@ -577,14 +513,12 @@ namespace BattleshipGame.Views
             LamMoiMauBanCoDoiNha();
             CapNhatGiaoDienKhoTau();
 
-            // Tự động chuyển sang tàu tiếp theo chưa được xếp
             int nextUnplaced = _danhSachTauUI.FindIndex(t => !t.DaDat);
             if (nextUnplaced >= 0)
             {
                 cboSelectShip.SelectedIndex = nextUnplaced;
             }
 
-            // Kiểm tra số lượng tàu đã hoàn tất
             int soTauDaDat = _danhSachTauUI.Count(t => t.DaDat);
             CapNhatThongKeTranDau();
 
@@ -610,9 +544,6 @@ namespace BattleshipGame.Views
             }
         }
 
-        /// <summary>
-        /// Cập nhật hiển thị trạng thái hạm đội và số liệu bắn trên bảng thống kê tác chiến.
-        /// </summary>
         private void CapNhatThongKeTranDau()
         {
             if (lblPlayerFleetStatus == null || lblEnemyFleetStatus == null || lblShotCounts == null || lblAccuracy == null) return;
@@ -723,9 +654,6 @@ namespace BattleshipGame.Views
             lblTurnMessage.ForeColor = UITheme.TextSecondary;
         }
 
-        /// <summary>
-        /// Nút Xếp tự động: Sinh tự động 5 tàu hợp lệ trên bàn cờ.
-        /// </summary>
         private void btnAutoPlace_Click(object? sender, EventArgs e)
         {
             if (!_giaiDoanXepTau) return;
@@ -736,7 +664,6 @@ namespace BattleshipGame.Views
         {
             if (!_giaiDoanXepTau) return;
 
-            // Xoa ban co truoc khi xep
             btnResetBoard_Click(this, EventArgs.Empty);
 
             cBanCo banCoNha = _banCoTa;
@@ -789,7 +716,6 @@ namespace BattleshipGame.Views
 
             cBanCo banCoNha = _banCoTa;
 
-            // Đồng bộ an toàn lần cuối giữa UI và model lõi
             for (int i = 0; i < _danhSachTauUI.Count && i < banCoNha.DanhSachTau.Count; i++)
             {
                 var uiShip = _danhSachTauUI[i];
@@ -808,15 +734,12 @@ namespace BattleshipGame.Views
             pnlCombatControls.Visible = true;
             pnlCombatControls.Enabled = true;
 
-            // Sinh ngẫu nhiên hạm đội đối thủ (Bot)
             _banCoDoiThu.TuDongSinhBanCoNgauNhien();
             _botAI.KhoiTao();
             _cacOBotDaBan.Clear();
 
-            // Cập nhật thống kê khi bắt đầu trận chiến
             CapNhatThongKeTranDau();
 
-            // Reset các kỹ năng tác chiến về sẵn sàng
             _daDungSkillRadar = false;
             _daDungSkillBomb = false;
             _kyNangHienTai = CheDoKyNang.KhongCo;
@@ -834,14 +757,12 @@ namespace BattleshipGame.Views
             btnSkillCrossBomb.Text = "💥 Pháo kích diện rộng (+)";
             btnSkillCrossBomb.Invalidate();
 
-            // Nhạc nền trận chiến: Tự động điều chỉnh về mức nền êm ái (Tactical Ambient ~25%) để không át tiếng đạn pháo
             if (TacticalVolumeSlider.GlobalVolume > 30)
             {
                 TacticalVolumeSlider.SetGlobalState(25, false, this);
             }
             cAmThanh.PhatNhacNen("bgm_battle.wav");
 
-            // Khởi động đồng hồ trận đấu
             _turnSeconds = 30;
             tmrMatch.Start();
             tmrTurnCountdown.Start();
@@ -851,9 +772,7 @@ namespace BattleshipGame.Views
             lblTurnMessage.Text = "Nhấn ô trên radar đối thủ để khai hỏa!";
             lblTurnMessage.ForeColor = UITheme.AccentNeon;
         }
-        #endregion
 
-        #region TƯƠNG TÁC BÀN CỜ RADAR ĐỐI PHƯƠNG
         private void btnRadarCell_MouseEnter(object? sender, EventArgs e)
         {
             if (sender is Button btn && btn.Tag is Point pt)
@@ -916,18 +835,16 @@ namespace BattleshipGame.Views
             try
             {
                 _tongPhatBan++;
-                _turnSeconds = 30; // reset countdown lượt
+                _turnSeconds = 30;
 
-                // Phát tiếng đại bác
                 cAmThanh.PhatShot();
 
-                // Tiếp nhận phát bắn từ bàn cờ đối thủ
                 KetQuaBan kq = _banCoDoiThu.TiepNhanPhatBan(new Point(col, row), out cTau tauBiBan);
 
                 if (kq == KetQuaBan.Hit)
                 {
                     _soPhatTrung++;
-                    _maTranRadar[row, col] = 2; // Trúng
+                    _maTranRadar[row, col] = 2;
                     XuLyDoHoa_OTrung(btn);
 
                     cAmThanh.PhatHit();
@@ -941,7 +858,6 @@ namespace BattleshipGame.Views
                     _maTranRadar[row, col] = 2;
                     XuLyDoHoa_OTrung(btn);
 
-                    // Cập nhật toàn bộ ô của con tàu đã chìm
                     if (tauBiBan != null)
                     {
                         var buttonsTau = new List<Button>();
@@ -960,16 +876,15 @@ namespace BattleshipGame.Views
                     lblTurnMessage.Text = $"Bắn chìm {tenTau}! Bạn được bắn tiếp!";
                     lblTurnMessage.ForeColor = UITheme.HitFireBackground;
 
-                    // Kiểm tra chiến thắng
                     if (_banCoDoiThu.TatCaTauDaChim)
                     {
                         XuLyKetThucTran(true);
                         return;
                     }
                 }
-                else // Miss
+                else
                 {
-                    _maTranRadar[row, col] = 3; // Trượt
+                    _maTranRadar[row, col] = 3;
                     XuLyDoHoa_OTruot(btn);
 
                     cAmThanh.PhatMiss();
@@ -979,7 +894,6 @@ namespace BattleshipGame.Views
                     MayBanTra();
                 }
 
-                // Cập nhật thống kê
                 CapNhatThongKeTranDau();
             }
             catch (Exception ex)
@@ -1048,9 +962,6 @@ namespace BattleshipGame.Views
             }
         }
 
-        /// <summary>
-        /// Khởi động lại trận đấu (Chơi lại ván mới) sau khi kết thúc ván đấu
-        /// </summary>
         public void KhoiDongLaiTranDau()
         {
             tmrMatch.Stop();
@@ -1073,7 +984,6 @@ namespace BattleshipGame.Views
             pnlPlacementControls.Enabled = true;
             pnlRadarBoard.Enabled = true;
 
-            // Reset trạng thái kỹ năng chiến thuật
             _daDungSkillRadar = false;
             _daDungSkillBomb = false;
             _kyNangHienTai = CheDoKyNang.KhongCo;
@@ -1145,7 +1055,6 @@ namespace BattleshipGame.Views
 
             CapNhatThongKeTranDau();
 
-            // Hiển thị giao diện kết quả trận đấu đồ họa cao cấp
             var action = frmKetQuaTranDau.HienThi(
                 this,
                 nguoiChoiThang,
@@ -1174,9 +1083,7 @@ namespace BattleshipGame.Views
                 Close();
             }
         }
-        #endregion
 
-        #region BỘ ĐIỀU KHIỂN & ĐỒNG HỒ
         private void KhoiTaoThongTinChung()
         {
             lblMatchModeInfo.Text = $"Chế độ: Đấu với máy ({_cheDoChoi}) • Đô đốc: {_tenNguoiChoi} • Bàn cờ 10x10";
@@ -1570,7 +1477,6 @@ namespace BattleshipGame.Views
         {
             if (pnlCenterDashboard == null || pnlLeftBoardContainer == null || pnlRightBoardContainer == null) return;
 
-            // Neo cụm điều khiển âm lượng ở góc phải thanh trên cùng, căn giữa theo chiều dọc
             btnToggleSound.Height = 34;
             btnToggleSound.Width = 110;
             btnToggleSound.Top = 11;
@@ -1587,7 +1493,6 @@ namespace BattleshipGame.Views
                 btnToggleSound.Left = pnlTopBar.Width - btnToggleSound.Width - 20;
             }
 
-            // Canh giữa 3 khu vực khi mở to / toàn màn hình
             int totalWidth = pnlLeftBoardContainer.Width + 14 + pnlCenterDashboard.Width + 14 + pnlRightBoardContainer.Width;
             int startX = Math.Max(16, (ClientSize.Width - totalWidth) / 2);
 
@@ -1630,6 +1535,5 @@ namespace BattleshipGame.Views
             catch { }
             base.OnFormClosing(e);
         }
-        #endregion
     }
 }

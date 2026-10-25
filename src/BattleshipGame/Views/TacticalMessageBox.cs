@@ -7,16 +7,6 @@ using System.Windows.Forms;
 
 namespace BattleshipGame.Views
 {
-    /// <summary>
-    /// [NGÀY 6 - THÀNH VIÊN 2: TRẦN TRỌNG HƯNG - FRONTEND & UI/UX LEAD]
-    /// Hộp thoại thông báo tùy biến phong cách Hải quân hiện đại (Tactical Naval Dark Theme).
-    /// Thay thế hoàn toàn MessageBox.Show cổ điển, mang lại trải nghiệm thị giác quân sự đồng bộ:
-    /// - Hộp thoại Chiến Thắng Hải Quân (Victory): Cúp vàng 🏆, viền Neon/Gold rực rỡ.
-    /// - Hộp thoại Thất Bại / Tổn Thất (Defeat): Xương sọ 💀, viền đỏ thẫm báo động.
-    /// - Hộp thoại Đầu Hàng / Rút Quân (Surrender): Cờ trắng 🏳️, cảnh báo Đô đốc cân nhắc chiến thuật.
-    /// - Hộp thoại Cảnh Báo Tác Chiến (Warning): Radar ⚠️, nhắc nhở quy tắc khai hỏa.
-    /// - Hộp thoại Xác Nhận Thoát (Confirm Exit): Biểu tượng mỏ neo ⚓ và sở chỉ huy.
-    /// </summary>
     public enum TacticalDialogType
     {
         Info,
@@ -71,11 +61,10 @@ namespace BattleshipGame.Views
             int msgHeight = Math.Max(36, measured.Height + 10);
 
             int formWidth = 480;
-            int formHeight = 42 + 48 + msgHeight + 20 + 60; // Header(42) + Title(48) + Message + Gap(20) + Buttons(60)
+            int formHeight = 42 + 48 + msgHeight + 20 + 60;
             Size = new Size(formWidth, formHeight);
             BackColor = UITheme.BackgroundDark;
 
-            // Màu chủ đạo theo loại hộp thoại
             Color accentColor = _dialogType switch
             {
                 TacticalDialogType.Victory => UITheme.GoldAccent,
@@ -109,7 +98,6 @@ namespace BattleshipGame.Views
                 _ => "Thông báo"
             };
 
-            // 1. Header Bar
             Panel pnlHeader = new Panel
             {
                 Location = new Point(0, 0),
@@ -150,7 +138,6 @@ namespace BattleshipGame.Views
             pnlHeader.Controls.Add(_btnCloseX);
             Controls.Add(pnlHeader);
 
-            // 2. Icon lớn
             _lblIcon = new Label
             {
                 Text = iconText,
@@ -162,7 +149,6 @@ namespace BattleshipGame.Views
             };
             Controls.Add(_lblIcon);
 
-            // 3. Tiêu đề
             _lblTitle = new Label
             {
                 Text = _customTitle,
@@ -174,7 +160,6 @@ namespace BattleshipGame.Views
             };
             Controls.Add(_lblTitle);
 
-            // 4. Nội dung tin nhắn
             _lblMessage = new Label
             {
                 Text = _customMessage,
@@ -186,7 +171,6 @@ namespace BattleshipGame.Views
             };
             Controls.Add(_lblMessage);
 
-            // 5. Cụm nút bấm
             Panel pnlButtons = new Panel
             {
                 Location = new Point(0, Height - 58),
@@ -284,7 +268,6 @@ namespace BattleshipGame.Views
 
             Controls.Add(pnlButtons);
 
-            // Hỗ trợ phím tắt
             KeyPreview = true;
             KeyDown += (s, e) =>
             {
@@ -302,7 +285,6 @@ namespace BattleshipGame.Views
             Graphics g = e.Graphics;
             UITheme.SetHighQuality(g);
 
-            // Vẽ viền bo góc sắc nét màu theo chủ đề
             Color borderColor = _dialogType switch
             {
                 TacticalDialogType.Victory => UITheme.GoldAccent,
@@ -318,7 +300,6 @@ namespace BattleshipGame.Views
                 g.DrawRectangle(pen, rect);
             }
 
-            // Đường phân cách dưới Header và trên cụm nút
             using (Pen linePen = new Pen(UITheme.BorderDefault, 1f))
             {
                 g.DrawLine(linePen, 0, 40, Width, 40);
@@ -326,10 +307,6 @@ namespace BattleshipGame.Views
             }
         }
 
-        #region PHƯƠNG THỨC TIỆN ÍCH TĨNH (STATIC HELPER METHODS)
-        /// <summary>
-        /// Hiển thị hộp thoại phong cách hải chiến tổng quát
-        /// </summary>
         public static DialogResult Show(
             IWin32Window? owner,
             string title,
@@ -341,33 +318,21 @@ namespace BattleshipGame.Views
             return owner != null ? dlg.ShowDialog(owner) : dlg.ShowDialog();
         }
 
-        /// <summary>
-        /// Hộp thoại cảnh báo
-        /// </summary>
         public static void ShowWarning(IWin32Window? owner, string title, string message)
         {
             Show(owner, title, message, TacticalDialogType.Warning, MessageBoxButtons.OK);
         }
 
-        /// <summary>
-        /// Hộp thoại thông tin
-        /// </summary>
         public static void ShowInfo(IWin32Window? owner, string title, string message)
         {
             Show(owner, title, message, TacticalDialogType.Info, MessageBoxButtons.OK);
         }
 
-        /// <summary>
-        /// Hộp thoại xác nhận
-        /// </summary>
         public static DialogResult ShowConfirm(IWin32Window? owner, string title, string message)
         {
             return Show(owner, title, message, TacticalDialogType.Confirm, MessageBoxButtons.YesNo);
         }
 
-        /// <summary>
-        /// Hộp thoại xác nhận đầu hàng
-        /// </summary>
         public static DialogResult ShowSurrenderConfirm(IWin32Window? owner)
         {
             return Show(
@@ -379,9 +344,6 @@ namespace BattleshipGame.Views
             );
         }
 
-        /// <summary>
-        /// Hộp thoại xác nhận thoát
-        /// </summary>
         public static DialogResult ShowExitConfirm(IWin32Window? owner)
         {
             return Show(
@@ -393,9 +355,6 @@ namespace BattleshipGame.Views
             );
         }
 
-        /// <summary>
-        /// Hộp thoại Chiến Thắng (Victory)
-        /// </summary>
         public static DialogResult ShowVictory(IWin32Window? owner, string title, string message, MessageBoxButtons buttons = MessageBoxButtons.OK)
         {
             return Show(
@@ -407,9 +366,6 @@ namespace BattleshipGame.Views
             );
         }
 
-        /// <summary>
-        /// Hộp thoại Thất Bại (Defeat)
-        /// </summary>
         public static void ShowDefeat(IWin32Window? owner, string message)
         {
             Show(
@@ -431,6 +387,5 @@ namespace BattleshipGame.Views
                 MessageBoxButtons.OK
             );
         }
-        #endregion
     }
 }

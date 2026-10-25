@@ -23,12 +23,12 @@ namespace BattleshipGame.Logic
 
         public CheDoChoi CheDo { get; set; }
         public TrangThaiVanDau TrangThai { get; private set; }
-        public int LuotNguoiChoi { get; private set; } // 1: Nguoi 1, 2: Nguoi 2 / May
+        public int LuotNguoiChoi { get; private set; } 
 
         public int SoPhatBanNguoi1 { get; private set; }
         public int SoPhatBanNguoi2 { get; private set; }
         public int ThoiGianGiay { get; set; }
-        public int NguoiThang { get; private set; } // 0: Chua ai, 1: Nguoi 1, 2: Nguoi 2 / May
+        public int NguoiThang { get; private set; } 
 
         public cQuanLyVanDau(CheDoChoi cheDo)
         {

@@ -8,13 +8,11 @@ namespace BattleshipGame.Views
     {
         private System.ComponentModel.IContainer components = null;
 
-        // Header controls
         private Panel pnlTopBar;
         private Label lblMatchModeInfo;
         private TacticalButton btnBackToMenu;
         private TacticalButton btnToggleSound;
 
-        // Khu vực chính 3 cột
         private Panel pnlLeftBoardContainer;
         private Label lblLeftBoardTitle;
         private Panel pnlPlayerBoard;
@@ -27,7 +25,6 @@ namespace BattleshipGame.Views
         private Label lblTurnTimer;
         private ProgressBar prgTurnTime;
 
-        // Bảng thống kê
         private Panel pnlStats;
         private Label lblStatsTitle;
         private Label lblPlayerFleetStatus;
@@ -35,7 +32,6 @@ namespace BattleshipGame.Views
         private Label lblAccuracy;
         private Label lblShotCounts;
 
-        // Kho tàu & điều khiển xếp tàu
         private Panel pnlPlacementControls;
         private Label lblPlacementTitle;
         private ComboBox cboSelectShip;
@@ -44,7 +40,6 @@ namespace BattleshipGame.Views
         private TacticalButton btnResetBoard;
         private TacticalButton btnStartBattle;
 
-        // Kỹ năng đặc biệt & Điều khiển trận đấu
         private Panel pnlCombatControls;
         private Label lblCombatSkillsTitle;
         private TacticalButton btnSkillRadar;
@@ -52,12 +47,10 @@ namespace BattleshipGame.Views
         private TacticalButton btnPauseGame;
         private TacticalButton btnSurrender;
 
-        // Bàn cờ bên phải
         private Panel pnlRightBoardContainer;
         private Label lblRightBoardTitle;
         private Panel pnlRadarBoard;
 
-        // Timers
         private System.Windows.Forms.Timer tmrMatch;
         private System.Windows.Forms.Timer tmrTurnCountdown;
 
@@ -123,9 +116,6 @@ namespace BattleshipGame.Views
 
             this.SuspendLayout();
 
-            // 
-            // frmBanTau
-            // 
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = UITheme.BackgroundDark;
@@ -140,18 +130,12 @@ namespace BattleshipGame.Views
             this.Resize += new EventHandler(this.frmBanTau_Resize);
             this.Load += new EventHandler(this.frmBanTau_Load);
 
-            // 
-            // pnlTopBar
-            // 
             this.pnlTopBar.BackColor = UITheme.HeaderBackground;
             this.pnlTopBar.Dock = DockStyle.Top;
             this.pnlTopBar.Height = 56;
             this.pnlTopBar.BorderStyle = BorderStyle.FixedSingle;
             this.Controls.Add(this.pnlTopBar);
 
-            // 
-            // btnBackToMenu
-            // 
             this.btnBackToMenu.Location = new Point(14, 9);
             this.btnBackToMenu.Size = new Size(120, 38);
             this.btnBackToMenu.Text = "⬅ Menu";
@@ -160,9 +144,6 @@ namespace BattleshipGame.Views
             this.btnBackToMenu.Click += new EventHandler(this.btnBackToMenu_Click);
             this.pnlTopBar.Controls.Add(this.btnBackToMenu);
 
-            // 
-            // lblMatchModeInfo (Thông tin trận đấu, chữ xanh lá viết đậm)
-            // 
             this.lblMatchModeInfo.AutoSize = false;
             this.lblMatchModeInfo.Location = new Point(148, 14);
             this.lblMatchModeInfo.Size = new Size(820, 26);
@@ -172,9 +153,6 @@ namespace BattleshipGame.Views
             this.lblMatchModeInfo.Text = "Chế độ: Đấu với máy (AI)";
             this.pnlTopBar.Controls.Add(this.lblMatchModeInfo);
 
-            // 
-            // btnToggleSound
-            // 
             this.btnToggleSound.Location = new Point(1150, 9);
             this.btnToggleSound.Size = new Size(150, 38);
             this.btnToggleSound.Text = "🔊 Âm thanh";
@@ -183,9 +161,6 @@ namespace BattleshipGame.Views
             this.btnToggleSound.Click += new EventHandler(this.btnToggleSound_Click);
             this.pnlTopBar.Controls.Add(this.btnToggleSound);
 
-            // 
-            // pnlLeftBoardContainer (Bàn cờ Đội nhà)
-            // 
             this.pnlLeftBoardContainer.BackColor = UITheme.PanelBackground;
             this.pnlLeftBoardContainer.BorderStyle = BorderStyle.FixedSingle;
             this.pnlLeftBoardContainer.Location = new Point(16, 70);
@@ -207,9 +182,6 @@ namespace BattleshipGame.Views
             this.pnlPlayerBoard.BorderStyle = BorderStyle.FixedSingle;
             this.pnlLeftBoardContainer.Controls.Add(this.pnlPlayerBoard);
 
-            // 
-            // pnlRightBoardContainer (Bàn cờ Radar Đối phương)
-            // 
             this.pnlRightBoardContainer.BackColor = UITheme.PanelBackground;
             this.pnlRightBoardContainer.BorderStyle = BorderStyle.FixedSingle;
             this.pnlRightBoardContainer.Location = new Point(880, 70);
@@ -231,16 +203,12 @@ namespace BattleshipGame.Views
             this.pnlRadarBoard.BorderStyle = BorderStyle.FixedSingle;
             this.pnlRightBoardContainer.Controls.Add(this.pnlRadarBoard);
 
-            // 
-            // pnlCenterDashboard (Trung tâm điều khiển ở giữa)
-            // 
             this.pnlCenterDashboard.BackColor = UITheme.PanelBackground;
             this.pnlCenterDashboard.BorderStyle = BorderStyle.FixedSingle;
             this.pnlCenterDashboard.Location = new Point(454, 70);
             this.pnlCenterDashboard.Size = new Size(412, 550);
             this.Controls.Add(this.pnlCenterDashboard);
 
-            // Chỉ báo lượt
             this.lblTurnIndicator.AutoSize = false;
             this.lblTurnIndicator.Location = new Point(10, 8);
             this.lblTurnIndicator.Size = new Size(392, 26);
@@ -259,7 +227,6 @@ namespace BattleshipGame.Views
             this.lblTurnMessage.Text = "Chọn tàu và click vị trí trên bàn cờ để đặt";
             this.pnlCenterDashboard.Controls.Add(this.lblTurnMessage);
 
-            // Bộ đồng hồ
             this.pnlTimers.BackColor = UITheme.HeaderBackground;
             this.pnlTimers.BorderStyle = BorderStyle.FixedSingle;
             this.pnlTimers.Location = new Point(14, 64);
@@ -289,7 +256,6 @@ namespace BattleshipGame.Views
             this.prgTurnTime.Value = 30;
             this.pnlTimers.Controls.Add(this.prgTurnTime);
 
-            // Thống kê trận đấu
             this.pnlStats.BackColor = UITheme.HeaderBackground;
             this.pnlStats.BorderStyle = BorderStyle.FixedSingle;
             this.pnlStats.Location = new Point(14, 128);
@@ -336,7 +302,6 @@ namespace BattleshipGame.Views
             this.lblAccuracy.Text = "⚡ Độ chính xác: 0.0%";
             this.pnlStats.Controls.Add(this.lblAccuracy);
 
-            // Panel Bố trí hạm đội (Kho tàu)
             this.pnlPlacementControls.BackColor = UITheme.PanelBackground;
             this.pnlPlacementControls.Location = new Point(14, 254);
             this.pnlPlacementControls.Size = new Size(384, 284);
@@ -391,7 +356,6 @@ namespace BattleshipGame.Views
             this.btnStartBattle.Click += new EventHandler(this.btnStartBattle_Click);
             this.pnlPlacementControls.Controls.Add(this.btnStartBattle);
 
-            // Panel Chiến đấu (Kỹ năng & Tạm dừng)
             this.pnlCombatControls.BackColor = UITheme.PanelBackground;
             this.pnlCombatControls.Location = new Point(14, 254);
             this.pnlCombatControls.Size = new Size(384, 284);
@@ -435,9 +399,6 @@ namespace BattleshipGame.Views
             this.btnSurrender.Click += new EventHandler(this.btnSurrender_Click);
             this.pnlCombatControls.Controls.Add(this.btnSurrender);
 
-            // 
-            // Timers configuration
-            // 
             this.tmrMatch.Interval = 1000;
             this.tmrMatch.Tick += new EventHandler(this.tmrMatch_Tick);
 

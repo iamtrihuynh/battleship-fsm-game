@@ -6,9 +6,6 @@ using System.Windows.Forms;
 
 namespace BattleshipGame.Views
 {
-    /// <summary>
-    /// Nút bấm phong cách quân sự Hải Quân hiện đại với hiệu ứng phát sáng Neon khi hover
-    /// </summary>
     public class TacticalButton : Button
     {
         private bool _isHovered = false;
@@ -92,7 +89,6 @@ namespace BattleshipGame.Views
 
             if (Width <= 4 || Height <= 4) return;
 
-            // Xóa sạch nền theo màu control cha để 4 góc bo tròn không bị lem cạnh vuông
             if (Parent != null)
             {
                 using (SolidBrush parentBrush = new SolidBrush(Parent.BackColor))
@@ -122,13 +118,11 @@ namespace BattleshipGame.Views
 
             using (GraphicsPath path = UITheme.CreateRoundedPath(borderRect, CornerRadius))
             {
-                // 1. Tô màu nền nút
                 using (SolidBrush brush = new SolidBrush(fillColor))
                 {
                     g.FillPath(brush, path);
                 }
 
-                // 2. Phủ ánh kim mờ phía trên (sheen highlight) tạo chiều sâu 3D tinh tế
                 if (Enabled && borderRect.Height > 10)
                 {
                     using (LinearGradientBrush sheen = new LinearGradientBrush(
@@ -141,7 +135,6 @@ namespace BattleshipGame.Views
                     }
                 }
 
-                // 3. Vẽ viền sắc nét, hoàn toàn không bị xén mép
                 using (Pen pen = new Pen(borderColor, strokeWidth))
                 {
                     pen.LineJoin = LineJoin.Round;
@@ -151,7 +144,6 @@ namespace BattleshipGame.Views
                 }
             }
 
-            // 4. Vẽ văn bản (Text) căn giữa
             Rectangle textRect = new Rectangle(0, 0, Width, Height);
             if (_isPressed)
             {

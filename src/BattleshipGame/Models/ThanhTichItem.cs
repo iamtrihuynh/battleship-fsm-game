@@ -3,7 +3,6 @@ using System.Globalization;
 
 namespace BattleshipGame.Models
 {
-    // luu thanh tich
     public class ThanhTichItem
     {
         private string _ten = "VoDanh";
@@ -56,7 +55,6 @@ namespace BattleshipGame.Models
             KetQua = ketQua;
         }
 
-        // Parse dong tu file txt
         public ThanhTichItem(string line)
         {
             if (string.IsNullOrWhiteSpace(line))
@@ -84,7 +82,6 @@ namespace BattleshipGame.Models
             KetQua = arr[6];
         }
 
-        // Xoa ky tu | va xuong dong tranh loi file, dong thoi gioi han do dai tranh tran UI
         private static string ChuanHoa(string s, string def, int maxLen = 40)
         {
             if (string.IsNullOrWhiteSpace(s)) return def;
@@ -94,7 +91,6 @@ namespace BattleshipGame.Models
             return string.IsNullOrWhiteSpace(res) ? def : res;
         }
 
-        // Dinh dang phut:giay len bang
         public string ThoiGianHienThi
         {
             get

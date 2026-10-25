@@ -47,9 +47,6 @@ namespace BattleshipGame.Views
             ((System.ComponentModel.ISupportInitialize)(this.dgvThanhTich)).BeginInit();
             this.pnlBottom.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // pnlHeader
-            // 
             this.pnlHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.pnlHeader.Controls.Add(this.lblSubTitle);
             this.pnlHeader.Controls.Add(this.lblTitle);
@@ -58,9 +55,6 @@ namespace BattleshipGame.Views
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Size = new System.Drawing.Size(920, 80);
             this.pnlHeader.TabIndex = 0;
-            // 
-            // lblSubTitle
-            // 
             this.lblSubTitle.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblSubTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblSubTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
@@ -70,9 +64,6 @@ namespace BattleshipGame.Views
             this.lblSubTitle.TabIndex = 1;
             this.lblSubTitle.Text = "Lịch sử thi đấu tác chiến";
             this.lblSubTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblTitle
-            // 
             this.lblTitle.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(218)))));
@@ -82,9 +73,6 @@ namespace BattleshipGame.Views
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Bảng xếp hạng";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // pnlControls
-            // 
             this.pnlControls.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this.pnlControls.Controls.Add(this.btnSortLuotBan);
             this.pnlControls.Controls.Add(this.btnSortThoiGian);
@@ -96,10 +84,6 @@ namespace BattleshipGame.Views
             this.pnlControls.Name = "pnlControls";
             this.pnlControls.Size = new System.Drawing.Size(920, 50);
             this.pnlControls.TabIndex = 1;
-            // 
-            // 
-            // btnSortLuotBan
-            // 
             this.btnSortLuotBan.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnSortLuotBan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnSortLuotBan.Location = new System.Drawing.Point(695, 9);
@@ -114,9 +98,6 @@ namespace BattleshipGame.Views
             this.btnSortLuotBan.HoverBorderColor = UITheme.AccentNeon;
             this.btnSortLuotBan.HoverTextColor = UITheme.AccentNeon;
             this.btnSortLuotBan.Click += new System.EventHandler(this.btnSortLuotBan_Click);
-            // 
-            // btnSortThoiGian
-            // 
             this.btnSortThoiGian.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnSortThoiGian.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnSortThoiGian.Location = new System.Drawing.Point(535, 9);
@@ -131,9 +112,6 @@ namespace BattleshipGame.Views
             this.btnSortThoiGian.HoverBorderColor = UITheme.AccentNeon;
             this.btnSortThoiGian.HoverTextColor = UITheme.AccentNeon;
             this.btnSortThoiGian.Click += new System.EventHandler(this.btnSortThoiGian_Click);
-            // 
-            // btnSortDiem
-            // 
             this.btnSortDiem.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnSortDiem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnSortDiem.Location = new System.Drawing.Point(385, 9);
@@ -148,9 +126,6 @@ namespace BattleshipGame.Views
             this.btnSortDiem.HoverBorderColor = UITheme.AccentNeon;
             this.btnSortDiem.HoverTextColor = UITheme.AccentNeon;
             this.btnSortDiem.Click += new System.EventHandler(this.btnSortDiem_Click);
-            // 
-            // cboCheDo
-            // 
             this.cboCheDo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.cboCheDo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboCheDo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -166,9 +141,6 @@ namespace BattleshipGame.Views
             this.cboCheDo.Size = new System.Drawing.Size(180, 25);
             this.cboCheDo.TabIndex = 1;
             this.cboCheDo.SelectedIndexChanged += new System.EventHandler(this.cboCheDo_SelectedIndexChanged);
-            // 
-            // lblFilter
-            // 
             this.lblFilter.AutoSize = true;
             this.lblFilter.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblFilter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
@@ -177,9 +149,6 @@ namespace BattleshipGame.Views
             this.lblFilter.Size = new System.Drawing.Size(107, 17);
             this.lblFilter.TabIndex = 0;
             this.lblFilter.Text = "Lọc theo chế độ:";
-            // 
-            // dgvThanhTich
-            // 
             this.dgvThanhTich.AllowUserToAddRows = false;
             this.dgvThanhTich.AllowUserToDeleteRows = false;
             this.dgvThanhTich.AllowUserToResizeRows = false;
@@ -228,73 +197,46 @@ namespace BattleshipGame.Views
             this.dgvThanhTich.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvThanhTich.Size = new System.Drawing.Size(920, 390);
             this.dgvThanhTich.TabIndex = 2;
-            // 
-            // colHang
-            // 
             this.colHang.HeaderText = "Hạng";
             this.colHang.Name = "colHang";
             this.colHang.ReadOnly = true;
             this.colHang.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colHang.Width = 60;
-            // 
-            // colNgay
-            // 
             this.colNgay.HeaderText = "Thời gian";
             this.colNgay.Name = "colNgay";
             this.colNgay.ReadOnly = true;
             this.colNgay.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colNgay.Width = 150;
-            // 
-            // colTen
-            // 
             this.colTen.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colTen.HeaderText = "Thuyền trưởng";
             this.colTen.Name = "colTen";
             this.colTen.ReadOnly = true;
             this.colTen.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colDiem
-            // 
             this.colDiem.HeaderText = "Điểm số";
             this.colDiem.Name = "colDiem";
             this.colDiem.ReadOnly = true;
             this.colDiem.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colDiem.Width = 90;
-            // 
-            // colLuot
-            // 
             this.colLuot.HeaderText = "Số phát";
             this.colLuot.Name = "colLuot";
             this.colLuot.ReadOnly = true;
             this.colLuot.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colLuot.Width = 90;
-            // 
-            // colThoiGian
-            // 
             this.colThoiGian.HeaderText = "Thời lượng";
             this.colThoiGian.Name = "colThoiGian";
             this.colThoiGian.ReadOnly = true;
             this.colThoiGian.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colThoiGian.Width = 95;
-            // 
-            // colCheDo
-            // 
             this.colCheDo.HeaderText = "Chế độ";
             this.colCheDo.Name = "colCheDo";
             this.colCheDo.ReadOnly = true;
             this.colCheDo.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colCheDo.Width = 130;
-            // 
-            // colKetQua
-            // 
             this.colKetQua.HeaderText = "Kết quả";
             this.colKetQua.Name = "colKetQua";
             this.colKetQua.ReadOnly = true;
             this.colKetQua.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colKetQua.Width = 85;
-            // 
-            // pnlBottom
-            // 
             this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.pnlBottom.Controls.Add(this.lblTongSo);
             this.pnlBottom.Controls.Add(this.btnLamMoi);
@@ -304,9 +246,6 @@ namespace BattleshipGame.Views
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Size = new System.Drawing.Size(920, 60);
             this.pnlBottom.TabIndex = 3;
-            // 
-            // lblTongSo
-            // 
             this.lblTongSo.AutoSize = true;
             this.lblTongSo.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTongSo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
@@ -315,10 +254,6 @@ namespace BattleshipGame.Views
             this.lblTongSo.Size = new System.Drawing.Size(126, 17);
             this.lblTongSo.TabIndex = 2;
             this.lblTongSo.Text = "Tổng số bản ghi: 0";
-            // 
-            // 
-            // btnLamMoi
-            // 
             this.btnLamMoi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLamMoi.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnLamMoi.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
@@ -334,9 +269,6 @@ namespace BattleshipGame.Views
             this.btnLamMoi.HoverBorderColor = UITheme.AccentNeon;
             this.btnLamMoi.HoverTextColor = UITheme.AccentNeon;
             this.btnLamMoi.Click += new System.EventHandler(this.btnLamMoi_Click);
-            // 
-            // btnDong
-            // 
             this.btnDong.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDong.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnDong.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
@@ -352,9 +284,6 @@ namespace BattleshipGame.Views
             this.btnDong.HoverBorderColor = UITheme.DangerRed;
             this.btnDong.HoverTextColor = System.Drawing.Color.White;
             this.btnDong.Click += new System.EventHandler(this.btnDong_Click);
-            // 
-            // frmThanhTich
-            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));

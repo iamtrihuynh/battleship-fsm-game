@@ -4,9 +4,6 @@ using System.Drawing;
 
 namespace BattleshipGame.Models
 {
-    /// <summary>
-    /// Dai dien cho mot con tau chien trong ham doi
-    /// </summary>
     public class cTau
     {
         public string TenTau { get; set; }
@@ -17,24 +14,12 @@ namespace BattleshipGame.Models
 
         private readonly HashSet<Point> _toaDoDaBiBan = new HashSet<Point>();
 
-        /// <summary>
-        /// So o cua con tau nay da bi ban trung
-        /// </summary>
         public int SoOBiBan => _toaDoDaBiBan.Count;
 
-        /// <summary>
-        /// So o con lai chua bi ban
-        /// </summary>
         public int SoOConLai => Math.Max(0, KichThuoc - SoOBiBan);
 
-        /// <summary>
-        /// Kiem tra con tau da bi ban chim hoan toan chua
-        /// </summary>
         public bool DaChim => SoOBiBan >= KichThuoc && KichThuoc > 0;
 
-        /// <summary>
-        /// Kiem tra tau da duoc xep len ban co chua
-        /// </summary>
         public bool DaDatXong => DanhSachToaDo.Count == KichThuoc;
 
         public cTau(string ten, int kichThuoc, LoaiTau loai = LoaiTau.TauTuanTra)
@@ -53,17 +38,11 @@ namespace BattleshipGame.Models
             Huong = HuongTau.Ngang;
         }
 
-        /// <summary>
-        /// Kiem tra toa do p co nam tren than con tau hay khong
-        /// </summary>
         public bool ChuaToaDo(Point p)
         {
             return DanhSachToaDo.Contains(p);
         }
 
-        /// <summary>
-        /// Tiep nhan mot phat ban vao toa do p. Tra ve true neu trung o moi cua tau nay.
-        /// </summary>
         public bool KiemTraBiBan(Point p)
         {
             if (ChuaToaDo(p))
@@ -77,9 +56,6 @@ namespace BattleshipGame.Models
             return false;
         }
 
-        /// <summary>
-        /// Gan danh sach toa do chiem giu khi dat tau len ban co
-        /// </summary>
         public void GanToaDo(IEnumerable<Point> toaDo, HuongTau huong)
         {
             DanhSachToaDo.Clear();
@@ -88,9 +64,6 @@ namespace BattleshipGame.Models
             Huong = huong;
         }
 
-        /// <summary>
-        /// Thu hoi tau ve kho, xoa toa do va trang thai trung dan
-        /// </summary>
         public void Reset()
         {
             DanhSachToaDo.Clear();

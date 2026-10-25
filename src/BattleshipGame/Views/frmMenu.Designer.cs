@@ -21,13 +21,11 @@ namespace BattleshipGame.Views
         private TacticalButton btnAbout;
         private TacticalButton btnExit;
 
-        // Góc trên bên trái: Tên người chơi và nút đổi tên
         private Label lblCurrentPlayer;
         private TacticalButton btnChangeName;
 
         private Label lblFooter;
 
-        // Panel chọn độ khó
         private Panel pnlDifficultySelection;
         private Label lblDifficultyTitle;
         private TacticalButton btnStartPvEEasy;
@@ -71,9 +69,6 @@ namespace BattleshipGame.Views
 
             this.SuspendLayout();
 
-            // 
-            // frmMenu
-            // 
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = UITheme.BackgroundDark;
@@ -85,9 +80,6 @@ namespace BattleshipGame.Views
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Resize += new EventHandler(this.frmMenu_Resize);
 
-            // 
-            // lblCurrentPlayer (Tên người chơi hiện tại ở góc trên bên trái)
-            // 
             this.lblCurrentPlayer.AutoSize = false;
             this.lblCurrentPlayer.Location = new Point(24, 16);
             this.lblCurrentPlayer.Size = new Size(280, 26);
@@ -97,9 +89,6 @@ namespace BattleshipGame.Views
             this.lblCurrentPlayer.Text = "👤 Người chơi";
             this.Controls.Add(this.lblCurrentPlayer);
 
-            // 
-            // btnChangeName (Nút đổi tên xích xuống dưới, khoảng cách rộng rãi)
-            // 
             this.btnChangeName.Location = new Point(24, 56);
             this.btnChangeName.Size = new Size(116, 34);
             this.btnChangeName.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
@@ -111,9 +100,6 @@ namespace BattleshipGame.Views
             this.btnChangeName.Click += new EventHandler(this.btnChangeName_Click);
             this.Controls.Add(this.btnChangeName);
 
-            // 
-            // btnSoundToggle
-            // 
             this.btnSoundToggle.Location = new Point(660, 14);
             this.btnSoundToggle.Size = new Size(200, 34);
             this.btnSoundToggle.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
@@ -122,24 +108,15 @@ namespace BattleshipGame.Views
             this.btnSoundToggle.Click += new EventHandler(this.btnSoundToggle_Click);
             this.Controls.Add(this.btnSoundToggle);
 
-            // 
-            // sliderVolume
-            // 
             this.sliderVolume.Location = new Point(660, 52);
             this.sliderVolume.Size = new Size(200, 32);
             this.sliderVolume.ValueChanged += new EventHandler(this.sliderVolume_ValueChanged);
             this.Controls.Add(this.sliderVolume);
 
-            // 
-            // sonarScanner
-            // 
             this.sonarScanner.Location = new Point(370, 20);
             this.sonarScanner.Size = new Size(140, 140);
             this.Controls.Add(this.sonarScanner);
 
-            // 
-            // lblGameTitle
-            // 
             this.lblGameTitle.AutoSize = false;
             this.lblGameTitle.Location = new Point(40, 160);
             this.lblGameTitle.Size = new Size(800, 48);
@@ -149,9 +126,6 @@ namespace BattleshipGame.Views
             this.lblGameTitle.Text = "Bắn Tàu";
             this.Controls.Add(this.lblGameTitle);
 
-            // 
-            // lblGameSubtitle
-            // 
             this.lblGameSubtitle.AutoSize = false;
             this.lblGameSubtitle.Location = new Point(40, 210);
             this.lblGameSubtitle.Size = new Size(800, 24);
@@ -161,17 +135,11 @@ namespace BattleshipGame.Views
             this.lblGameSubtitle.Text = "Chiến thuật hải chiến cùng trí tuệ nhân tạo (AI)";
             this.Controls.Add(this.lblGameSubtitle);
 
-            // 
-            // pnlButtonContainer
-            // 
             this.pnlButtonContainer.BackColor = UITheme.BackgroundDark;
             this.pnlButtonContainer.Location = new Point(280, 245);
             this.pnlButtonContainer.Size = new Size(340, 280);
             this.Controls.Add(this.pnlButtonContainer);
 
-            // 
-            // btnPvE
-            // 
             this.btnPvE.Location = new Point(10, 10);
             this.btnPvE.Size = new Size(320, 50);
             this.btnPvE.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
@@ -180,9 +148,6 @@ namespace BattleshipGame.Views
             this.btnPvE.Click += new EventHandler(this.btnPvE_Click);
             this.pnlButtonContainer.Controls.Add(this.btnPvE);
 
-            // 
-            // btnLeaderboard
-            // 
             this.btnLeaderboard.Location = new Point(10, 76);
             this.btnLeaderboard.Size = new Size(320, 50);
             this.btnLeaderboard.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
@@ -191,9 +156,6 @@ namespace BattleshipGame.Views
             this.btnLeaderboard.Click += new EventHandler(this.btnLeaderboard_Click);
             this.pnlButtonContainer.Controls.Add(this.btnLeaderboard);
 
-            // 
-            // btnAbout
-            // 
             this.btnAbout.Location = new Point(10, 142);
             this.btnAbout.Size = new Size(320, 50);
             this.btnAbout.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
@@ -202,9 +164,6 @@ namespace BattleshipGame.Views
             this.btnAbout.Click += new EventHandler(this.btnAbout_Click);
             this.pnlButtonContainer.Controls.Add(this.btnAbout);
 
-            // 
-            // btnExit
-            // 
             this.btnExit.Location = new Point(10, 208);
             this.btnExit.Size = new Size(320, 50);
             this.btnExit.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
@@ -215,9 +174,6 @@ namespace BattleshipGame.Views
             this.btnExit.Click += new EventHandler(this.btnExit_Click);
             this.pnlButtonContainer.Controls.Add(this.btnExit);
 
-            // 
-            // lblFooter
-            // 
             this.lblFooter.AutoSize = false;
             this.lblFooter.Location = new Point(40, 630);
             this.lblFooter.Size = new Size(800, 24);
@@ -227,9 +183,6 @@ namespace BattleshipGame.Views
             this.lblFooter.Text = "Nhóm WINDOWN";
             this.Controls.Add(this.lblFooter);
 
-            // 
-            // pnlDifficultySelection (Hộp thoại chọn độ khó)
-            // 
             this.pnlDifficultySelection.BackColor = UITheme.PanelBackground;
             this.pnlDifficultySelection.BorderStyle = BorderStyle.FixedSingle;
             this.pnlDifficultySelection.Location = new Point(280, 210);
@@ -246,7 +199,6 @@ namespace BattleshipGame.Views
             this.lblDifficultyTitle.Text = "Chọn cấp độ";
             this.pnlDifficultySelection.Controls.Add(this.lblDifficultyTitle);
 
-            // btnStartPvEEasy
             this.btnStartPvEEasy.Location = new Point(30, 60);
             this.btnStartPvEEasy.Size = new Size(280, 46);
             this.btnStartPvEEasy.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
@@ -257,7 +209,6 @@ namespace BattleshipGame.Views
             this.btnStartPvEEasy.Click += new EventHandler(this.btnStartPvEEasy_Click);
             this.pnlDifficultySelection.Controls.Add(this.btnStartPvEEasy);
 
-            // btnStartPvEHard
             this.btnStartPvEHard.Location = new Point(30, 118);
             this.btnStartPvEHard.Size = new Size(280, 46);
             this.btnStartPvEHard.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
@@ -268,7 +219,6 @@ namespace BattleshipGame.Views
             this.btnStartPvEHard.Click += new EventHandler(this.btnStartPvEHard_Click);
             this.pnlDifficultySelection.Controls.Add(this.btnStartPvEHard);
 
-            // btnCloseDifficulty
             this.btnCloseDifficulty.Location = new Point(90, 180);
             this.btnCloseDifficulty.Size = new Size(160, 40);
             this.btnCloseDifficulty.Font = new Font("Segoe UI", 10f, FontStyle.Regular);

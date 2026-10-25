@@ -14,10 +14,6 @@ namespace BattleshipGame.Views
         VeMenu
     }
 
-    /// <summary>
-    /// Hộp thoại hiển thị kết quả trận đấu (Chiến thắng / Thất bại) phong cách Hải quân hiện đại.
-    /// Thiết kế đồng nhất màu sắc, tinh giản, bảng thông số dạng hàng gọn gàng, cân đối tuyệt đối.
-    /// </summary>
     public class frmKetQuaTranDau : Form
     {
         private readonly bool _thang;
@@ -78,10 +74,8 @@ namespace BattleshipGame.Views
             BackColor = UITheme.BackgroundDark;
             ForeColor = UITheme.TextPrimary;
 
-            // Bo tròn 4 góc toàn bộ cửa sổ
             Region = new Region(UITheme.CreateRoundedPath(new Rectangle(0, 0, Width, Height), 14));
 
-            // Nút đóng '✕' góc trên phải
             var btnCloseX = new TacticalButton
             {
                 Text = "✕",
@@ -99,9 +93,8 @@ namespace BattleshipGame.Views
             Controls.Add(btnCloseX);
 
             int contentWidth = 440;
-            int contentX = (Width - contentWidth) / 2; // Canh đều 30px hai bên
+            int contentX = (Width - contentWidth) / 2;
 
-            // 1. Icon trung tâm
             var lblIcon = new Label
             {
                 Text = _thang ? "🏆" : "💀",
@@ -112,7 +105,6 @@ namespace BattleshipGame.Views
             };
             Controls.Add(lblIcon);
 
-            // 2. Tiêu đề chính căn giữa
             var lblMainTitle = new Label
             {
                 Text = _thang ? "CHIẾN THẮNG" : "THẤT BẠI",
@@ -124,7 +116,6 @@ namespace BattleshipGame.Views
             };
             Controls.Add(lblMainTitle);
 
-            // 3. Phụ đề căn giữa
             var lblSubtitle = new Label
             {
                 Text = _thang
@@ -138,7 +129,6 @@ namespace BattleshipGame.Views
             };
             Controls.Add(lblSubtitle);
 
-            // 4. Bảng thông số tác chiến dạng danh sách hàng ngang đồng nhất
             int tableY = 114;
             int tableH = 175;
 
@@ -153,12 +143,10 @@ namespace BattleshipGame.Views
                 var g = pe.Graphics;
                 UITheme.SetHighQuality(g);
 
-                // Viền mỏng thanh lịch bao quanh bảng
                 using var p = new Pen(UITheme.BorderDefault, 1f);
                 using var path = UITheme.CreateRoundedPath(new RectangleF(0.5f, 0.5f, pnlTable.Width - 1f, pnlTable.Height - 1f), 8);
                 g.DrawPath(p, path);
 
-                // Đường phân cách mỏng giữa 5 hàng
                 using var linePen = new Pen(Color.FromArgb(48, 64, 88), 1f);
                 for (int i = 1; i <= 4; i++)
                 {
@@ -173,34 +161,23 @@ namespace BattleshipGame.Views
 
             if (_thang)
             {
-                // Hàng 0: Điểm số tác chiến
                 ThemHangThongSo(pnlTable, 0, "⭐ Điểm số", $"{_diemSo:N0} điểm", UITheme.GoldAccent, true);
-                // Hàng 1: Khai hỏa
                 ThemHangThongSo(pnlTable, 1, "🎯 Khai hỏa", $"{_tongPhatBan} phát ({_soPhatTrung} trúng - {soTruot} trượt)", UITheme.TextPrimary, false);
-                // Hàng 2: Độ chính xác
                 ThemHangThongSo(pnlTable, 2, "⚡ Độ chính xác", $"{tiLeChinhXac:F1}%", UITheme.AccentNeon, true);
-                // Hàng 3: Thời gian
                 ThemHangThongSo(pnlTable, 3, "⏱️ Thời gian", thoiGianStr, UITheme.TextPrimary, false);
-                // Hàng 4: Tàu ta sống sót
                 ThemHangThongSo(pnlTable, 4, "🛡️ Tàu còn lại", $"{_soTauTaCon} / 5 tàu sống sót", UITheme.SuccessGreen, true);
             }
             else
             {
-                // Hàng 0: Chế độ chơi
                 ThemHangThongSo(pnlTable, 0, "🎖️ Chế độ chơi", _cheDoChoi, UITheme.TextPrimary, false);
-                // Hàng 1: Khai hỏa
                 ThemHangThongSo(pnlTable, 1, "🎯 Khai hỏa", $"{_tongPhatBan} phát ({_soPhatTrung} trúng - {soTruot} trượt)", UITheme.TextPrimary, false);
-                // Hàng 2: Độ chính xác
                 ThemHangThongSo(pnlTable, 2, "⚡ Độ chính xác", $"{tiLeChinhXac:F1}%", UITheme.AccentNeon, true);
-                // Hàng 3: Thời gian
                 ThemHangThongSo(pnlTable, 3, "⏱️ Thời gian", thoiGianStr, UITheme.TextPrimary, false);
-                // Hàng 4: Tàu ta sống sót
                 ThemHangThongSo(pnlTable, 4, "🛡️ Tàu còn lại", "0 / 5 tàu (Đã đắm)", UITheme.DangerRed, true);
             }
 
             Controls.Add(pnlTable);
 
-            // 5. Khung nhập tên ghi danh BXH (CHỈ KHI CHIẾN THẮNG)
             if (_thang)
             {
                 int inputY = tableY + tableH + 12;
@@ -258,7 +235,6 @@ namespace BattleshipGame.Views
                 Controls.Add(_lblSaveStatus);
             }
 
-            // 6. Cụm nút bấm điều hướng (Bottom Buttons) căn đều tăm tắp
             int btnY = Height - 56;
 
             if (_thang)
@@ -465,16 +441,12 @@ namespace BattleshipGame.Views
             Graphics g = e.Graphics;
             UITheme.SetHighQuality(g);
 
-            // Viền bo tròn phát sáng toàn bộ form
             Color borderColor = _thang ? UITheme.GoldAccent : UITheme.DangerRed;
             using var borderPen = new Pen(borderColor, 1.8f);
             using var path = UITheme.CreateRoundedPath(new RectangleF(0.9f, 0.9f, Width - 1.8f, Height - 1.8f), 14);
             g.DrawPath(borderPen, path);
         }
 
-        /// <summary>
-        /// Phương thức tĩnh hiển thị hộp thoại kết quả và trả về hành động của người chơi
-        /// </summary>
         public static KetQuaTranAction HienThi(
             IWin32Window owner,
             bool thang,

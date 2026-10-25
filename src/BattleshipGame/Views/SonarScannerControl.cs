@@ -5,9 +5,6 @@ using System.Windows.Forms;
 
 namespace BattleshipGame.Views
 {
-    /// <summary>
-    /// Hiệu ứng đồ họa Radar Hải quân quét ngầm (Sonar Scanner) tạo không khí quân sự hiện đại
-    /// </summary>
     public class SonarScannerControl : Control
     {
         private readonly System.Windows.Forms.Timer _sweepTimer;
@@ -59,7 +56,6 @@ namespace BattleshipGame.Views
             Rectangle centerRect = new Rectangle((Width - size) / 2, (Height - size) / 2, size, size);
             Point center = new Point(centerRect.X + size / 2, centerRect.Y + size / 2);
 
-            // 1. Vẽ các vòng tròn đồng tâm radar
             using (Pen ringPen = new Pen(Color.FromArgb(40, UITheme.AccentNeon), 1f))
             {
                 g.DrawEllipse(ringPen, centerRect);
@@ -67,14 +63,12 @@ namespace BattleshipGame.Views
                 g.DrawEllipse(ringPen, new Rectangle(center.X - size / 6, center.Y - size / 6, size / 3, size / 3));
             }
 
-            // 2. Vẽ trục chữ thập radar
             using (Pen axisPen = new Pen(Color.FromArgb(50, UITheme.AccentNeon), 1f))
             {
                 g.DrawLine(axisPen, center.X, centerRect.Top, center.X, centerRect.Bottom);
                 g.DrawLine(axisPen, centerRect.Left, center.Y, centerRect.Right, center.Y);
             }
 
-            // 3. Vẽ tia quét radar (Sweep Cone)
             using (GraphicsPath sweepPath = new GraphicsPath())
             {
                 sweepPath.AddPie(centerRect, _currentAngle - 40, 40);
@@ -86,7 +80,6 @@ namespace BattleshipGame.Views
                 }
             }
 
-            // 4. Đường quét chính
             float rad = (float)(_currentAngle * Math.PI / 180.0);
             float endX = center.X + (size / 2f) * (float)Math.Cos(rad);
             float endY = center.Y + (size / 2f) * (float)Math.Sin(rad);
@@ -96,7 +89,6 @@ namespace BattleshipGame.Views
                 g.DrawLine(leadPen, center.X, center.Y, endX, endY);
             }
 
-            // Tâm radar
             using (SolidBrush dotBrush = new SolidBrush(UITheme.AccentNeon))
             {
                 g.FillEllipse(dotBrush, center.X - 3, center.Y - 3, 6, 6);
