@@ -38,6 +38,7 @@ namespace BattleshipGame.Views
         private CheDoKyNang _kyNangHienTai = CheDoKyNang.KhongCo;
         private bool _daDungSkillRadar = false;
         private bool _daDungSkillBomb = false;
+        private bool _cheDoHienViTriTauDich = false;
 
         private readonly cBanCo _banCoTa = new cBanCo(10);
         private readonly cBanCo _banCoDoiThu = new cBanCo(10);
@@ -105,6 +106,7 @@ namespace BattleshipGame.Views
             SinhBanCoDong();
             CapNhatGiaoDienKhoTau();
             CapNhatThongKeTranDau();
+            CapNhatTrangThaiNutVaoTran();
         }
 
         private void SinhBanCoDong()
@@ -414,18 +416,87 @@ namespace BattleshipGame.Views
 
         private void frmBanTau_KeyDown(object? sender, KeyEventArgs e)
         {
-            if (!_giaiDoanXepTau) return;
-
-            if (e.KeyCode == Keys.R || e.KeyCode == Keys.Space)
+            if (_giaiDoanXepTau)
             {
-                DoiHuongTau();
-                if (_oDangHover.X >= 0 && _oDangHover.Y >= 0)
+                if (e.KeyCode == Keys.R || e.KeyCode == Keys.Space)
                 {
-                    HienThiPreviewShadow(_oDangHover.X, _oDangHover.Y);
+                    DoiHuongTau();
+                    if (_oDangHover.X >= 0 && _oDangHover.Y >= 0)
+                    {
+                        HienThiPreviewShadow(_oDangHover.X, _oDangHover.Y);
+                    }
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
                 }
-                e.Handled = true;
-                e.SuppressKeyPress = true;
+                return;
             }
+
+            // Phim tat ho tro Tester / Quay Video Demo
+            if (e.KeyCode == Keys.F8)
+            {
+                _cheDoHienViTriTauDich = !_cheDoHienViTriTauDich;
+                CapNhatSoiTauDich();
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.F12)
+            {
+                KichHoatThangNhanhDemo();
+                e.Handled = true;
+            }
+        }
+
+        private void CapNhatSoiTauDich()
+        {
+            for (int r = 0; r < 10; r++)
+            {
+                for (int c = 0; c < 10; c++)
+                {
+                    if (_maTranRadar[r, c] == 0)
+                    {
+                        var btn = _btnRadarGrid[r, c];
+                        bool coTau = _banCoDoiThu.MaTranO[c, r].CoTau;
+                        if (_cheDoHienViTriTauDich && coTau)
+                        {
+                            btn.BackColor = Color.FromArgb(20, 50, 65);
+                            btn.FlatAppearance.BorderColor = Color.FromArgb(0, 200, 180);
+                            btn.Text = "⚓";
+                            btn.Font = new Font("Segoe UI", 9f);
+                            btn.ForeColor = Color.FromArgb(100, 240, 220);
+                        }
+                        else
+                        {
+                            XuLyDoHoa_ONuoc(btn);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void KichHoatThangNhanhDemo()
+        {
+            if (_tranDauKetThuc || _giaiDoanXepTau) return;
+
+            foreach (var tau in _banCoDoiThu.DanhSachTau)
+            {
+                foreach (Point p in tau.DanhSachToaDo)
+                {
+                    if (_maTranRadar[p.Y, p.X] == 0)
+                    {
+                        _tongPhatBan++;
+                        _soPhatTrung++;
+                        _maTranRadar[p.Y, p.X] = 2;
+                        _banCoDoiThu.TiepNhanPhatBan(p, out _);
+                        XuLyDoHoa_OTrung(_btnRadarGrid[p.Y, p.X]);
+                    }
+                }
+            }
+
+            foreach (var tau in _banCoDoiThu.DanhSachTau)
+            {
+                XuLyDoHoa_TauChim(tau.DanhSachToaDo);
+            }
+
+            XuLyKetThucTran(true);
         }
 
         private void btnRotateShip_Click(object? sender, EventArgs e)
@@ -522,11 +593,10 @@ namespace BattleshipGame.Views
             int soTauDaDat = _danhSachTauUI.Count(t => t.DaDat);
             CapNhatThongKeTranDau();
 
+            CapNhatTrangThaiNutVaoTran();
+
             if (soTauDaDat == 5)
             {
-                btnStartBattle.Enabled = true;
-                btnStartBattle.BackColor = UITheme.AccentNeon;
-                btnStartBattle.ForeColor = UITheme.HeaderBackground;
                 lblTurnIndicator.Text = "Hạm đội sẵn sàng";
                 lblTurnIndicator.ForeColor = UITheme.AccentNeon;
                 lblTurnMessage.Text = "Đã xếp đủ 5 tàu. Nhấn 'Vào trận' để bắt đầu!";
@@ -627,9 +697,7 @@ namespace BattleshipGame.Views
             CapNhatGiaoDienKhoTau();
             cboSelectShip.SelectedIndex = 0;
 
-            btnStartBattle.Enabled = false;
-            btnStartBattle.BackColor = UITheme.PanelBackground;
-            btnStartBattle.ForeColor = UITheme.MissGray;
+            CapNhatTrangThaiNutVaoTran();
 
             _daDungSkillRadar = false;
             _daDungSkillBomb = false;
@@ -690,9 +758,7 @@ namespace BattleshipGame.Views
                 LamMoiMauBanCoDoiNha();
                 CapNhatGiaoDienKhoTau();
 
-                btnStartBattle.Enabled = true;
-                btnStartBattle.BackColor = UITheme.AccentNeon;
-                btnStartBattle.ForeColor = UITheme.HeaderBackground;
+                CapNhatTrangThaiNutVaoTran();
 
                 CapNhatThongKeTranDau();
                 lblTurnIndicator.Text = "Hạm đội sẵn sàng";
@@ -756,6 +822,8 @@ namespace BattleshipGame.Views
             btnSkillCrossBomb.NormalTextColor = UITheme.AccentNeon;
             btnSkillCrossBomb.Text = "💥 Pháo kích diện rộng (+)";
             btnSkillCrossBomb.Invalidate();
+
+            btnPauseGame.Text = "⏸ Tạm dừng";
 
             if (TacticalVolumeSlider.GlobalVolume > 30)
             {
@@ -962,6 +1030,35 @@ namespace BattleshipGame.Views
             }
         }
 
+        private void CapNhatTrangThaiNutVaoTran()
+        {
+            int soTauDaDat = _danhSachTauUI.Count(t => t.DaDat);
+            bool duTau = (soTauDaDat == 5);
+
+            btnStartBattle.Enabled = duTau;
+            if (duTau)
+            {
+                btnStartBattle.Text = "⚔️ Vào trận (Sẵn sàng)";
+                btnStartBattle.ForeColor = UITheme.AccentNeon;
+                btnStartBattle.BorderColor = UITheme.AccentNeon;
+                btnStartBattle.HoverBorderColor = UITheme.AccentNeon;
+                btnStartBattle.HoverTextColor = UITheme.AccentNeon;
+                btnStartBattle.BaseFillColor = Color.FromArgb(20, 50, 60);
+            }
+            else
+            {
+                btnStartBattle.Text = soTauDaDat == 0
+                    ? "⚔️ Vào trận"
+                    : $"⚔️ Vào trận ({soTauDaDat}/5 tàu)";
+                btnStartBattle.ForeColor = UITheme.BorderDefault;
+                btnStartBattle.BorderColor = UITheme.BorderDefault;
+                btnStartBattle.HoverBorderColor = UITheme.BorderDefault;
+                btnStartBattle.HoverTextColor = UITheme.BorderDefault;
+                btnStartBattle.BaseFillColor = UITheme.PanelBackground;
+            }
+            btnStartBattle.Invalidate();
+        }
+
         public void KhoiDongLaiTranDau()
         {
             tmrMatch.Stop();
@@ -1000,6 +1097,8 @@ namespace BattleshipGame.Views
             btnSkillCrossBomb.NormalTextColor = UITheme.AccentNeon;
             btnSkillCrossBomb.Text = "💥 Pháo kích diện rộng (+)";
             btnSkillCrossBomb.Invalidate();
+
+            btnPauseGame.Text = "⏸ Tạm dừng";
 
             _banCoTa.XoaTatCaTau();
             _banCoDoiThu.XoaTatCaTau();
@@ -1402,6 +1501,27 @@ namespace BattleshipGame.Views
                 ? "▶ Trận đấu tiếp tục!"
                 : "⏸ Trận đấu đang tạm dừng. Hãy bấm 'Tiếp tục' để chơi tiếp.";
             lblTurnMessage.ForeColor = tiepTuc ? UITheme.AccentNeon : UITheme.WarningYellow;
+        }
+
+        private void btnRestartGame_Click(object? sender, EventArgs e)
+        {
+            if (_giaiDoanXepTau || _tranDauKetThuc) return;
+
+            bool wasTurnTimerRunning = tmrTurnCountdown.Enabled;
+            bool wasMatchTimerRunning = tmrMatch.Enabled;
+            tmrTurnCountdown.Stop();
+            tmrMatch.Stop();
+
+            var res = TacticalMessageBox.ShowConfirm(this, "Chơi lại ván mới", "Bạn có chắc chắn muốn hủy trận đấu hiện tại để khởi động lại ván mới không?");
+            if (res == DialogResult.Yes)
+            {
+                KhoiDongLaiTranDau();
+            }
+            else
+            {
+                if (wasTurnTimerRunning && !_tranDauKetThuc) tmrTurnCountdown.Start();
+                if (wasMatchTimerRunning && !_tranDauKetThuc) tmrMatch.Start();
+            }
         }
 
         private void btnSurrender_Click(object? sender, EventArgs e)

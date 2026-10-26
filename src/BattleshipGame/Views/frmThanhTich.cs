@@ -62,7 +62,19 @@ namespace BattleshipGame.Views
 
         public void TaiDuLieuTuFile()
         {
+            string duongDan = cThanhTichDAO.DuongDanFile;
+            bool fileDaTonTaiTruoc = System.IO.File.Exists(duongDan);
+
             _listGoc = cThanhTichDAO.DocDanhSach();
+
+            if (!fileDaTonTaiTruoc)
+            {
+                TacticalMessageBox.ShowWarning(
+                    this,
+                    "Bẫy lỗi dữ liệu (try...catch)",
+                    "Phát hiện thiếu file thanhtichs.txt! Hệ thống đã kích hoạt cơ chế bẫy lỗi và tự động tái tạo dữ liệu mẫu an toàn, không bị crash."
+                );
+            }
 
             if (!string.IsNullOrEmpty(cThanhTichDAO.LoiGanNhat))
             {

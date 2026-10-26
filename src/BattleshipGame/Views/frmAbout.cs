@@ -79,6 +79,7 @@ namespace BattleshipGame.Views
 
         #region ĐIỀU HƯỚNG DANH MỤC (TAB NAVIGATION)
         private void btnTabRules_Click(object sender, EventArgs e) => ChonMucHienThi(0);
+        private void btnClose_Click(object sender, EventArgs e) => this.Close();
         private void btnTabShips_Click(object sender, EventArgs e) => ChonMucHienThi(1);
         private void btnTabTactics_Click(object sender, EventArgs e) => ChonMucHienThi(2);
         private void btnTabTeam_Click(object sender, EventArgs e) => ChonMucHienThi(3);
@@ -803,6 +804,9 @@ namespace BattleshipGame.Views
 
                         Rectangle mssvRect = new Rectangle(16, 68, 380, 24);
                         TextRenderer.DrawText(g, $"MSSV: {mssv}", mssvFont, mssvRect, UITheme.GoldAccent, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+
+                        Rectangle classRect = new Rectangle(16, 96, 380, 22);
+                        TextRenderer.DrawText(g, "Lớp: 2611COMP101901  •  Nhóm 10: WINDOWN", roleFont, classRect, UITheme.PrimaryCyan, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
                     }
 
                     int taskStartX = 410;

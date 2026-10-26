@@ -45,6 +45,7 @@ namespace BattleshipGame.Views
         private TacticalButton btnSkillRadar;
         private TacticalButton btnSkillCrossBomb;
         private TacticalButton btnPauseGame;
+        private TacticalButton btnRestartGame;
         private TacticalButton btnSurrender;
 
         private Panel pnlRightBoardContainer;
@@ -105,6 +106,7 @@ namespace BattleshipGame.Views
             this.btnSkillRadar = new TacticalButton();
             this.btnSkillCrossBomb = new TacticalButton();
             this.btnPauseGame = new TacticalButton();
+            this.btnRestartGame = new TacticalButton();
             this.btnSurrender = new TacticalButton();
 
             this.pnlRightBoardContainer = new Panel();
@@ -349,10 +351,12 @@ namespace BattleshipGame.Views
             this.btnStartBattle.Location = new Point(10, 184);
             this.btnStartBattle.Size = new Size(364, 52);
             this.btnStartBattle.Font = new Font("Segoe UI", 12f, FontStyle.Bold);
-            this.btnStartBattle.Text = "⚔️ Vào trận";
-            this.btnStartBattle.BorderColor = UITheme.AccentNeon;
-            this.btnStartBattle.HoverBorderColor = UITheme.AccentNeon;
-            this.btnStartBattle.HoverTextColor = UITheme.AccentNeon;
+            this.btnStartBattle.Text = "⚔️ Vào trận (Chưa xếp tàu)";
+            this.btnStartBattle.Enabled = false;
+            this.btnStartBattle.BorderColor = UITheme.BorderDefault;
+            this.btnStartBattle.ForeColor = UITheme.BorderDefault;
+            this.btnStartBattle.HoverBorderColor = UITheme.BorderDefault;
+            this.btnStartBattle.HoverTextColor = UITheme.BorderDefault;
             this.btnStartBattle.Click += new EventHandler(this.btnStartBattle_Click);
             this.pnlPlacementControls.Controls.Add(this.btnStartBattle);
 
@@ -384,15 +388,24 @@ namespace BattleshipGame.Views
             this.btnSkillCrossBomb.Click += new EventHandler(this.btnSkillCrossBomb_Click);
             this.pnlCombatControls.Controls.Add(this.btnSkillCrossBomb);
 
-            this.btnPauseGame.Location = new Point(10, 154);
-            this.btnPauseGame.Size = new Size(174, 48);
+            this.btnPauseGame.Location = new Point(10, 140);
+            this.btnPauseGame.Size = new Size(174, 46);
             this.btnPauseGame.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.btnPauseGame.Text = "⏸ Tạm dừng";
             this.btnPauseGame.Click += new EventHandler(this.btnPauseGame_Click);
             this.pnlCombatControls.Controls.Add(this.btnPauseGame);
 
-            this.btnSurrender.Location = new Point(200, 154);
-            this.btnSurrender.Size = new Size(174, 48);
+            this.btnRestartGame.Location = new Point(200, 140);
+            this.btnRestartGame.Size = new Size(174, 46);
+            this.btnRestartGame.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
+            this.btnRestartGame.Text = "🔄 Chơi lại";
+            this.btnRestartGame.BorderColor = UITheme.PrimaryCyan;
+            this.btnRestartGame.HoverBorderColor = UITheme.AccentNeon;
+            this.btnRestartGame.Click += new EventHandler(this.btnRestartGame_Click);
+            this.pnlCombatControls.Controls.Add(this.btnRestartGame);
+
+            this.btnSurrender.Location = new Point(10, 196);
+            this.btnSurrender.Size = new Size(364, 46);
             this.btnSurrender.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
             this.btnSurrender.Text = "🏳 Đầu hàng";
             this.btnSurrender.BorderColor = UITheme.DangerRed;

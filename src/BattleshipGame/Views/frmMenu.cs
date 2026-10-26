@@ -34,6 +34,16 @@ namespace BattleshipGame.Views
                 Activate();
                 CanChinhGiaoDien();
                 cAmThanh.DungSFX();
+
+                if (!System.IO.Directory.Exists(cAmThanh.ThuMucAudio))
+                {
+                    TacticalMessageBox.ShowWarning(
+                        this,
+                        "Bẫy lỗi tài nguyên (try...catch)",
+                        "Không tìm thấy thư mục âm thanh Assets/Audio! Hệ thống tự động kích hoạt bẫy lỗi và chuyển sang âm thanh dự phòng của hệ điều hành."
+                    );
+                }
+
                 cAmThanh.PhatNhacNen("bgm_battle.wav");
             };
         }

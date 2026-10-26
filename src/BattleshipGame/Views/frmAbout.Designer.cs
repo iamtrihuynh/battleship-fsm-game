@@ -104,7 +104,7 @@ namespace BattleshipGame.Views
             this.btnClose.HoverFillColor = Color.FromArgb(220, 38, 38);
             this.btnClose.HoverTextColor = Color.White;
             this.btnClose.CornerRadius = 6;
-            this.btnClose.Click += (s, e) => this.Close();
+            this.btnClose.Click += new EventHandler(this.btnClose_Click);
 
             this.pnlTabBar.BackColor = Color.FromArgb(16, 26, 46);
             this.pnlTabBar.Dock = DockStyle.Fill;
