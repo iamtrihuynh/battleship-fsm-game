@@ -843,14 +843,12 @@ namespace BattleshipGame.Views
                         using (Pen pen = new Pen(accentColor, 1.4f)) g.DrawPath(pen, path);
                     }
 
-                    // Vach ngan phan chia giua cot thong tin va cot nhiem vu
                     int taskStartX = 420;
                     using (Pen divPen = new Pen(Color.FromArgb(40, 255, 255, 255), 1f))
                     {
                         g.DrawLine(divPen, taskStartX - 24, 18, taskStartX - 24, ctl.Height - 18);
                     }
 
-                    // Cot trai: Thong tin ca nhan (Font chu to hon, gian cach thoang dang)
                     using (Font roleFont = new Font("Segoe UI", 10.5f, FontStyle.Bold))
                     using (Font nameFont = new Font("Segoe UI", 15.5f, FontStyle.Bold))
                     using (Font mssvFont = new Font("Consolas", 12.5f, FontStyle.Bold))
@@ -869,7 +867,6 @@ namespace BattleshipGame.Views
                         TextRenderer.DrawText(g, "Lớp: 2611COMP101901  •  Nhóm 10: WINDOWN", classFont, classRect, UITheme.PrimaryCyan, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
                     }
 
-                    // Cot phai: Nhiem vu WBS (Tieu de dam + Noi dung gian cach thoai mai)
                     using (Font headerFont = new Font("Segoe UI", 11f, FontStyle.Bold))
                     using (Font taskFont = new Font("Segoe UI", 10.25f, FontStyle.Regular))
                     {

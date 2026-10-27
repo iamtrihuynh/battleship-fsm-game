@@ -66,7 +66,6 @@ namespace BattleshipGame.DataAccess
             set => _filePath = value;
         }
 
-        // tao file mau neu chua co
         private static void TaoFileMau(string path)
         {
             try

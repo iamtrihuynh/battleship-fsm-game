@@ -191,7 +191,6 @@ namespace BattleshipGame.Views
             _isMuted = GlobalMuted;
             _savedVolume = _globalSavedVolume > 0 ? _globalSavedVolume : 80;
 
-            // dong bo am luong giua cac form
             GlobalVolumeChanged += (origin, e) =>
             {
                 if (ReferenceEquals(origin, this)) return;

@@ -124,7 +124,6 @@ namespace BattleshipGame.Logic
                 return;
             }
 
-            // kiem tra mci dang phat
             if (DangPhatNhacNen && string.Equals(_currentBgm, ten, StringComparison.OrdinalIgnoreCase))
             {
                 try

@@ -13,7 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Lien ket truc tiep tai nguyen tu thu muc goc cua Repository sang thu muc thuc thi bin -->
     <None Include="..\..\bg\**">
       <Link>bg\%(RecursiveDir)%(FileName)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

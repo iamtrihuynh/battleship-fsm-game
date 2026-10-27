@@ -431,7 +431,6 @@ namespace BattleshipGame.Views
                 return;
             }
 
-            // Phim tat ho tro Tester / Quay Video Demo
             if (e.KeyCode == Keys.F8)
             {
                 _cheDoHienViTriTauDich = !_cheDoHienViTriTauDich;

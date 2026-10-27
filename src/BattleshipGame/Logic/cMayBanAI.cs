@@ -53,7 +53,6 @@ namespace BattleshipGame.Logic
 
         public Point ChonToaDoBan()
         {
-            // ban cac o trong hang doi
             while (_hangDoiTarget.Count > 0)
             {
                 Point p = _hangDoiTarget.Dequeue();
@@ -85,13 +84,11 @@ namespace BattleshipGame.Logic
                 return new Point(-1, -1);
             }
 
-            // de: ban ngau nhien
             if (DoKho == DoKhoAI.De)
             {
                 return _danhSachChuaBan[_rand.Next(_danhSachChuaBan.Count)];
             }
 
-            // kho: ban so le
             var oSoLe = _danhSachChuaBan.Where(p => (p.X + p.Y) % 2 == 0).ToList();
             if (oSoLe.Count > 0)
             {
@@ -105,7 +102,6 @@ namespace BattleshipGame.Logic
         {
             _danhSachChuaBan.Remove(p);
 
-            // de: chi ngau nhien
             if (DoKho == DoKhoAI.De) return;
 
             if (kq == KetQuaBan.Hit)
@@ -117,12 +113,10 @@ namespace BattleshipGame.Logic
 
                 if (_cacOTrungHienTai.Count == 1)
                 {
-                    // them 4 o xung quanh
                     ThemCacOLanCan(p);
                 }
                 else
                 {
-                    // xac dinh truc tau
                     KhoaTrucVaThemODauMut();
                 }
             }
