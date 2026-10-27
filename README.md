@@ -1,8 +1,8 @@
-# 🚢 Battleship Tactical War - Game Bắn Tàu Hải Chiến Hiện Đại
+# 🚢 Battleship - Game Bắn Tàu Hải Chiến (WinForms)
 
-Một sản phẩm game máy tính (Desktop App) lấy đề tài hải chiến kinh điển **Battleship**, được xây dựng bằng ngôn ngữ **C#** trên nền tảng **.NET 8.0** và công nghệ **Windows Forms**. 
+Dự án game **Bắn Tàu (Battleship)** được xây dựng bằng ngôn ngữ **C#** trên nền tảng **.NET 8.0 Windows Forms**, phục vụ học phần **Lập trình trên Windows** (`2611COMP101901`).
 
-Dự án áp dụng kiến trúc 3 lớp (**3-Tier Architecture**) tiêu chuẩn công nghiệp kết hợp mô hình máy trạng thái hữu hạn (**FSM - Finite State Machine**) cho Bot AI thông minh, mang lại trải nghiệm thị giác quân sự hiện đại (Tactical Dark Theme) và hệ thống âm thanh đại bác, nhạc nền hoành tráng.
+Trò chơi áp dụng kiến trúc 3 lớp tiêu chuẩn kết hợp thuật toán máy trạng thái (FSM) cho Bot tự động, mang đến trải nghiệm đồ họa hải quân hiện đại và âm thanh chiến đấu sống động.
 
 ---
 
@@ -11,138 +11,113 @@ Dự án áp dụng kiến trúc 3 lớp (**3-Tier Architecture**) tiêu chuẩn
 - **Học phần:** Lập trình trên Windows (`2611COMP101901`)
 - **Tên nhóm:** **Nhóm 10 — WINDOWN**
 - **Khung giờ báo cáo:** 21:30 – 21:40 | Tối Thứ Năm, ngày 29/10/2026
-- **Thành viên nhóm & Phân công công việc (WBS):**
-  1. 👑 **Huỳnh Minh Trí** (`51.01.104.105`) - *Trưởng nhóm / Backend & AI Lead*: Thiết kế kiến trúc Models (`cO.cs`, `cTau.cs`, `cBanCo.cs`), thuật toán FSM Bot AI (Hunt Mode Parity & Target Mode bám đuổi), điều phối ván đấu `cQuanLyVanDau.cs`.
-  2. 🎨 **Trần Trọng Hưng** (`51.01.104.132`) - *Frontend & UI/UX Lead*: Thiết kế toàn bộ giao diện WinForms chuẩn phong cách Hải quân, xử lý 2 bàn cờ 10x10, hiệu ứng bóng mờ (Preview Shadow), đồ họa phát bắn (`•`, `X`), Custom Controls GDI+ (`SonarScannerControl`, `TacticalButton`).
-  3. 🔊 **Trần Vũ Hòa Phát** (`51.01.104.072`) - *System I/O, Audio & QA/Tester*: Tích hợp hệ thống âm thanh đa luồng (`bg/`), quản lý đọc/ghi file `thanhtichs.txt` qua `cThanhTichDAO.cs`, bọc bẫy lỗi `try...catch` toàn diện, soạn kịch bản kiểm thử và video demo.
+- **Phân công nhiệm vụ các thành viên (WBS):**
+  1. 👑 **Huỳnh Minh Trí** (`51.01.104.105`) - *Trưởng nhóm / Backend & Game Logic*: Thiết kế kiến trúc mô hình dữ liệu (Models) và bàn cờ 10x10; lập trình thuật toán Bot bắn tự động FSM (Hunt & Target Mode); xử lý kiểm tra va chạm xếp tàu và điều phối luồng ván đấu.
+  2. 🎨 **Trần Trọng Hưng** (`51.01.104.132`) - *Frontend & UI/UX Lead*: Thiết kế toàn bộ giao diện WinForms phong cách hải quân; lập trình đồ họa bàn cờ, hiệu ứng đặt tàu và phát bắn; xây dựng màn hình Hướng dẫn và tối ưu trải nghiệm người dùng.
+  3. 🔊 **Trần Vũ Hòa Phát** (`51.01.104.072`) - *System I/O, Audio & QA/Tester*: Tích hợp hệ thống âm thanh (nhạc nền và hiệu ứng chiến đấu); đọc/ghi dữ liệu bảng xếp hạng `thanhtichs.txt` qua `System.IO`; xây dựng cơ chế bẫy lỗi `try...catch` và thực hiện video demo.
 
 🎥 **VIDEO DEMO SẢN PHẨM (3 – 5 PHÚT):**
-> **[▶️ Xem Video Demo Thuyết Minh & Kiểm Thử Bẫy Lỗi (Google Drive / YouTube)](https://github.com/iamtrihuynh/battleship-fsm-game)** *(Cập nhật link video tại đây)*
+> **[▶️ Xem Video Demo Thuyết Minh & Kiểm Thử Bẫy Lỗi (Google Drive / YouTube)](https://github.com/iamtrihuynh/battleship-fsm-game)** *(Cập nhật link video nộp bài tại đây)*
 
 ---
 
-## 🎯 Tính Năng Nổi Bật (Key Features)
+## 🎯 Các Chức Năng Chính Của Trò Chơi
 
-### 1. Chế độ chơi đa dạng
-- **Chơi với Máy (PvE - Dễ)**: AI bắn ngẫu nhiên thuần túy, thích hợp cho người mới làm quen hoặc chơi giải trí nhẹ nhàng.
-- **Chơi với Máy (PvE - Khó)**: 
-  - **Hunt Mode (Săn tìm)**: Áp dụng thuật toán bắn so le theo bàn cờ vua (*Parity Hunting*) giúp bao phủ bàn cờ và tìm ra tàu địch nhanh hơn 50%.
-  - **Target Mode (Triệt hạ)**: Khi bắn trúng phát đầu, AI tự động thêm các ô lân cận vào hàng đợi. Khi trúng phát thứ hai, AI lập tức khóa trục (ngang/dọc) và ưu tiên bắn 2 đầu mút để bắn chìm hoàn toàn con tàu.
-- **Hai Người Chơi (PvP Hotseat)**: Cho phép 2 người chơi thi đấu đối kháng trực tiếp trên cùng một máy tính, tích hợp màn che sương mù bàn cờ và đồng hồ đếm ngược 30 giây mỗi lượt bắn.
+### 1. Chế Độ Chơi Với Máy (PvE)
+Người chơi đối đầu với hệ thống máy tự động trên 2 bàn cờ 10x10 riêng biệt:
+- **Chế độ Dễ (Easy)**: Máy bắn ngẫu nhiên vào các ô chưa bắn trên bàn cờ.
+- **Chế độ Khó (Hard - Thuật toán FSM)**:
+  - **Giai đoạn Săn tìm (Hunt Mode)**: Máy bắn so le theo ô chẵn/lẻ (giống bàn cờ vua) giúp tìm tàu nhanh hơn 50%.
+  - **Giai đoạn Triệt hạ (Target Mode)**: Khi bắn trúng tàu, máy tự động chuyển trạng thái để bắn các ô xung quanh; khi trúng từ 2 phát trở lên, máy khóa trục (ngang hoặc dọc) để bắn chìm hoàn toàn con tàu.
 
-### 2. Giao diện Đồ họa Quân sự Hiện đại (Tactical Naval UI/UX)
-- Thiết kế theo phong cách tác chiến hải quân hiện đại với tông màu tối (*Tactical Naval Dark Slate*), viền Neon phát sáng tương phản cao.
-- **Màn hình chính (Menu)**: Tích hợp hiệu ứng Radar Scanner quét liên tục, logo hải quân (`img/logo.png`), hiển thị danh tính Đô đốc và thanh điều khiển âm lượng thời gian thực.
-- **Giai đoạn Xếp tàu thông minh**:
-  - Hỗ trợ xem trước vị trí đặt tàu qua bóng mờ (*Preview Shadow*): hiển thị màu Xanh lá khi hợp lệ và Đỏ báo động khi đè lên tàu khác hoặc tràn mép bàn cờ.
-  - Phím tắt tiện lợi: Nhấn phím `Space` hoặc `R` để xoay đổi chiều Dọc ↔ Ngang tức thì ngay tại con trỏ chuột.
-  - Tính năng **Xếp tự động (Auto-place)**: Tự động sắp xếp ngẫu nhiên 5 tàu vào vị trí hợp lệ chỉ với 1 click.
-- **Giai đoạn Tác chiến thời gian thực**:
-  - Ô nước biển chưa bắn được bảo vệ bởi màn che sương mù (*Fog of War*).
-  - Phân định rõ ràng: Phát bắn Trúng hiển thị ký tự **`X`** rực đỏ, phát bắn Trượt hiển thị vòng sóng nước **`•`**, tàu chìm chuyển toàn bộ sang màu xám tro viền đỏ sẫm.
-- Hộp thoại kết quả và thông báo độc quyền (`TacticalMessageBox`, `frmKetQuaTranDau`) thay thế toàn bộ MessageBox mặc định của Windows.
+### 2. Bố Trí Hạm Đội (Ship Placement)
+Hạm đội gồm 5 tàu chiến: Tàu tuần tra (2 ô), Tàu khu trục (3 ô), Tàu ngầm (3 ô), Thiết giáp hạm (4 ô), Tàu sân bay (5 ô).
+- **Xem trước vị trí (Preview Shadow)**: Hiện màu xanh khi vị trí hợp lệ, hiện màu đỏ khi đè lên tàu khác hoặc vượt ra ngoài bàn cờ.
+- **Xoay tàu nhanh**: Nhấn phím `Space` hoặc `R` để đổi hướng Dọc ↔ Ngang ngay tại con trỏ chuột.
+- **Xếp tự động (Auto-place)**: 1 click để máy tự động xếp ngẫu nhiên 5 tàu vào vị trí hợp lệ.
 
-### 3. Hệ thống Âm thanh Quân sự Đa kênh (`bg/`)
-- Đặt tại thư mục chuẩn **`bg/`** (và hỗ trợ `Assets/Audio/`), nạp trực tiếp qua thư viện Windows Media Control Interface (`winmm.dll`) và `SoundPlayer`.
-- Đầy đủ âm thanh sự kiện: `true.wav` (phát bắn trúng), `false.wav` (phát bắn trượt), `bgm_battle.wav` (nhạc nền), `shot.wav`, `sunk.wav`, `victory.wav`, `defeat.wav`.
-- Thanh trượt âm lượng đa tầng (`TacticalVolumeSlider`), có thể kéo chỉnh âm lượng từ 0% đến 100% hoặc click nút âm thanh để bật/tắt nhanh.
+### 3. Điều Khiển Trận Đấu & Đồng Hồ (Game Control)
+- **Đầy đủ nút điều khiển**: Bắt đầu (`Start`), Tạm dừng (`Pause`), Tiếp tục (`Resume`), Chơi lại (`Restart`), Thoát game.
+- **2 Đồng hồ độc lập**:
+  - Đồng hồ đếm tổng thời gian ván đấu (`⏱ Trận: mm:ss`).
+  - Đồng hồ đếm ngược từng lượt bắn (`⏳ Lượt: 30s` kèm thanh thời gian), tự động chuyển lượt khi người chơi hết giờ suy nghĩ.
+- **Giao diện mượt mà**: Sử dụng `Timer` và xử lý bất đồng bộ, không dùng lệnh `Thread.Sleep` gây đơ giao diện.
 
-### 4. Bảng Xếp Hạng & Lưu Trữ Thành Tích (`thanhtichs.txt`)
-- Quản lý và lưu trữ dữ liệu lịch sử đấu tự động vào file phẳng (`thanhtichs.txt`) qua `System.IO`.
-- Tích hợp cơ chế tự phục hồi: Tự động tái tạo thư mục và sinh dữ liệu seed mẫu khi khởi động lần đầu, có fallback lưu vào `AppData` an toàn khi thư mục bị hạn chế quyền ghi.
-- Tính năng lọc linh hoạt theo chế độ chơi (*Tất cả*, *Dễ*, *Khó*, *PvP*) và sắp xếp đa tiêu chí trên `DataGridView`.
+### 4. Hệ Thống Âm Thanh (`bg/`)
+- Đặt tại thư mục `bg/`, nạp qua thư viện `winmm.dll` (nhạc nền) và `SoundPlayer` (hiệu ứng).
+- Đầy đủ âm thanh theo yêu cầu: `true.wav` (bắn trúng), `false.wav` (bắn trượt), `bgm_battle.wav` (nhạc nền), `shot.wav` (phát bắn), `sunk.wav` (tàu chìm), `victory.wav` (thắng), `defeat.wav` (thua).
+- Nút Bật/Tắt âm thanh nhanh và thanh trượt điều chỉnh âm lượng từ 0% đến 100%.
+
+### 5. Bảng Xếp Hạng & Lưu Trữ (`thanhtichs.txt`)
+- Đọc và ghi dữ liệu lịch sử đấu ra file `thanhtichs.txt` bằng `System.IO`.
+- **Nhập tên người chơi**: Khi thắng trận, xuất hiện popup để người chơi nhập tên chính thức lưu vào bảng thành tích.
+- **Màn hình Bảng xếp hạng**: Hiển thị bằng `DataGridView`, hỗ trợ lọc theo chế độ chơi và sắp xếp theo Điểm số, Thời gian, Số lượt bắn; vinh danh huy chương 🥇, 🥈, 🥉.
+
+### 6. Màn Hình Hướng Dẫn & Thông Tin (`frmAbout`)
+- Gồm 4 mục trực quan:
+  - **Luật chơi**: Hướng dẫn chi tiết cách chơi cho người mới.
+  - **Đội tàu**: Thông số kích thước từng loại tàu chiến.
+  - **Chiến thuật**: Gợi ý mẹo bắn so le và tập trung hỏa lực.
+  - **Đội ngũ phát triển**: Hiển thị đầy đủ Họ tên, MSSV, Lớp và phân công nhiệm vụ của 3 thành viên nhóm WINDOWN.
+
+### 7. Cơ Chế Bẫy Lỗi (Exception Handling - try...catch)
+- Ứng dụng bọc bẫy lỗi ở tất cả các thao tác đọc/ghi file và nạp tài nguyên:
+  - Khi thiếu thư mục âm thanh `bg/`: Hiện thông báo cảnh báo và tự chuyển sang âm thanh mặc định của hệ thống.
+  - Khi thiếu thư mục ảnh `img/`: Hiện thông báo cảnh báo và tự vẽ logo dự phòng.
+  - Khi thiếu file `thanhtichs.txt`: Hiện thông báo cảnh báo và tự động tái tạo file mẫu ban đầu.
+- **Đảm bảo ứng dụng không bị văng (crash)** khi kiểm thử thực tế.
 
 ---
 
-## 🏛️ Kiến Trúc Hệ Thống (3-Tier Architecture)
-
-Dự án được tổ chức chuẩn mực theo mô hình 3 lớp của Windows Forms:
+## 🏛️ Cấu Trúc Dự Án
 
 ```
-battleship-fsm-game/        # THƯ MỤC GỐC REPOSITORY GITHUB
+battleship-fsm-game/
 │
-├── bg/                     # THƯ MỤC ÂM THANH & BACKGROUND (Chuẩn đề bài)
-│   ├── bgm_battle.wav      # Nhạc nền trận chiến
+├── bg/                     # Thư mục chứa âm thanh (.wav)
+│   ├── bgm_battle.wav      # Nhạc nền trận đấu
 │   ├── true.wav            # Âm thanh bắn trúng (Hit)
 │   ├── false.wav           # Âm thanh bắn trượt (Miss)
 │   └── shot.wav, sunk.wav, victory.wav, defeat.wav, radar.wav, airstrike.wav
 │
-├── img/                    # THƯ MỤC HÌNH ẢNH & LOGO (Chuẩn đề bài)
-│   └── logo.png            # Logo huy hiệu hải quân (Tactical Naval Insignia)
+├── img/                    # Thư mục hình ảnh
+│   └── logo.png            # Logo hải quân của nhóm
 │
-├── thanhtichs.txt          # FILE LƯU TRỮ BẢNG XẾP HẠNG MẪU (Clone về có sẵn)
-├── BattleshipGame.sln      # File Solution mở bằng Visual Studio 2022
-├── docs/                   # Tài liệu báo cáo, đề cương môn học
+├── thanhtichs.txt          # File lưu thành tích người chơi
+├── BattleshipGame.sln      # File Solution Visual Studio
+├── docs/                   # Tài liệu đồ án
 │
-└── src/BattleshipGame/     # MÃ NGUỒN DỰ ÁN WINFORMS (.NET 8.0)
-    │
-    ├── Properties/         # CẤU HÌNH DỰ ÁN WINFORMS (Chuẩn 5 files Visual Studio)
-    │   ├── AssemblyInfo.cs     # Metadata, bản quyền Nhóm 10 WINDOWN, version 1.0.0.0
-    │   ├── Resources.resx      # XML quản lý chuỗi tài nguyên
-    │   ├── Resources.Designer.cs # Code-behind sinh tự động cho Resources
-    │   ├── Settings.settings   # XML cấu hình thiết lập người dùng
-    │   └── Settings.Designer.cs # Code-behind sinh tự động cho Settings
-    │
-    ├── Models/             # TẦNG DỮ LIỆU (Data Entities & Enums)
-│   ├── Enums.cs            # Khai báo các enum: TrangThaiO, HuongTau, LoaiTau, KetQuaBan, CheDoChoi
-│   ├── cO.cs               # Thực thể ô cờ (tọa độ X, Y, trạng thái, tàu chiếm giữ)
-│   ├── cTau.cs             # Thực thể chiến hạm (kích thước, hướng, danh sách tọa độ, kiểm tra chìm)
-│   └── ThanhTichItem.cs    # Đối tượng bản ghi thành tích lịch sử đấu
-│
-├── Logic/                  # TẦNG NGHIỆP VỤ (Business Logic & Core Engine)
-│   ├── cBanCo.cs           # Quản lý không gian ma trận 10x10, thuật toán kiểm tra biên & va chạm
-│   ├── cMayBanAI.cs        # Trí tuệ nhân tạo Bot AI (FSM: Hunt Parity & Target Lock Mode)
-│   ├── cQuanLyVanDau.cs    # Trình quản lý luồng ván đấu, lượt bắn, điều kiện thắng/thua, tính điểm
-│   └── cAmThanh.cs         # Quản lý phát nhạc nền BGM và các hiệu ứng âm thanh SFX
-│
-├── DataAccess/             # TẦNG LƯU TRỮ (Data Access Layer - DAO)
-│   └── cThanhTichDAO.cs    # Đọc, ghi, tìm kiếm, lọc và sắp xếp dữ liệu file thanhtichs.txt
-│
-└── Views/                  # TẦNG GIAO DIỆN (Presentation & Custom UI Controls)
-    ├── frmMenu.cs          # Màn hình chính (sảnh chờ, chọn chế độ chơi, cấu hình Đô đốc)
-    ├── frmBanTau.cs        # Màn hình chiến đấu chính (2 bàn cờ 10x10, hạm đội, bảng điều khiển)
-    ├── frmThanhTich.cs     # Màn hình Bảng xếp hạng và lịch sử vinh danh (DataGridView)
-    ├── frmAbout.cs         # Màn hình hướng dẫn luật chơi chi tiết & thông tin nhóm
-    ├── frmKetQuaTranDau.cs # Hộp thoại thông báo thắng / bại phong cách Hải quân
-    ├── TacticalMessageBox.cs # Hộp thoại quân sự tùy biến thay thế MessageBox.Show
-    ├── TacticalVolumeSlider.cs # Control tùy biến thanh kéo chỉnh âm lượng toàn cục
-    ├── TacticalBoardControl.cs # Control bàn cờ đồ họa vector
-    ├── SonarScannerControl.cs  # Control hiệu ứng radar xoay góc
-    ├── TacticalButton.cs   # Nút bấm phong cách quân sự viền bo góc sắc nét
-    └── UITheme.cs          # Bảng mã màu, kiểu chữ và tiện ích đồ họa dùng chung
+└── src/BattleshipGame/     # Mã nguồn C# WinForms
+    ├── Properties/         # Cấu hình dự án (AssemblyInfo, Resources, Settings)
+    ├── Models/             # Tầng dữ liệu: cO.cs, cTau.cs, ThanhTichItem.cs, Enums.cs
+    ├── Logic/              # Tầng nghiệp vụ: cBanCo.cs, cMayBanAI.cs, cQuanLyVanDau.cs, cAmThanh.cs
+    ├── DataAccess/         # Tầng lưu trữ: cThanhTichDAO.cs (đọc/ghi file System.IO)
+    └── Views/              # Tầng giao diện: frmMenu, frmBanTau, frmThanhTich, frmAbout, frmKetQuaTranDau
 ```
 
 ---
 
-## 💻 Yêu Cầu Hệ Thống & Hướng Dẫn Cài Đặt
+## 💻 Hướng Dẫn Cài Đặt & Chạy Game
 
 ### Yêu Cầu
-- **Hệ điều hành**: Windows 10 / Windows 11.
-- **Runtime**: [.NET 8.0 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0).
-- **Môi trường phát triển**: Visual Studio 2022 (chọn workload **.NET Desktop Development**).
+- Hệ điều hành: Windows 10 hoặc Windows 11.
+- Môi trường: Đã cài sẵn [.NET 8.0 SDK / Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) hoặc Visual Studio 2022.
 
-### Khởi Chạy Nhanh
+### Khởi Chạy
 ```bash
-# Clone repository
+# Clone repository về máy
 git clone https://github.com/iamtrihuynh/battleship-fsm-game.git
 cd battleship-fsm-game
 
-# Biên dịch và chạy
+# Chạy game trực tiếp bằng lệnh
 dotnet run --project src/BattleshipGame/BattleshipGame.csproj
 ```
+*Hoặc mở file `BattleshipGame.sln` bằng Visual Studio 2022 và nhấn **F5**.*
 
 ---
 
-## 🎮 Phím Tắt Tiện Ích Hỗ Trợ Báo Cáo & Live Demo
+## 🎮 Phím Tắt Tiện Ích Khi Báo Cáo
 
-- **`Space` hoặc `R`**: Xoay hướng tàu (Ngang ↔ Dọc) khi rê chuột đặt tàu.
-- **`F8`**: Bật/Tắt chế độ radar trinh sát (Soi vị trí tàu địch `⚓` phục vụ tester/giảng viên quan sát bot đặt tàu).
-- **`F12`**: **Kích hoạt Thắng nhanh Demo** (`KichHoatThangNhanhDemo`) — kết thúc ván đấu ngay lập tức để chuyển thẳng sang màn hình Lưu thành tích và Bảng xếp hạng trong 1 giây (tránh mất thời gian trong 10 phút báo cáo).
-
----
-
-## 📄 Bản Quyền & Tài Liệu Tham Khảo
-
-- Sơ đồ kiến trúc: [`docs/system_structure.md`](docs/system_structure.md).
-- Yêu cầu đề tài gốc: [`docs/requirements.docx`](docs/requirements.docx).
-- Giấy phép phân phối: Dự án mã nguồn mở phục vụ học phần 2611COMP101901.
+- **`Space` hoặc `R`**: Đổi chiều tàu (Dọc ↔ Ngang) khi đang đặt tàu.
+- **`F8`**: Bật/Tắt chế độ soi vị trí tàu của máy (hỗ trợ kiểm tra máy xếp tàu).
+- **`F12`**: **Kích hoạt Thắng nhanh Demo** — kết thúc ván thắng ngay lập tức để chuyển thẳng sang popup lưu tên và xem bảng xếp hạng trong 1 giây (tiết kiệm thời gian khi báo cáo 10 phút).
