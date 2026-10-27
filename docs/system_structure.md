@@ -1,62 +1,61 @@
-**CẤU TRÚC THƯ MỤC CỦA DỰ ÁN**
+# CẤU TRÚC HỆ THỐNG DỰ ÁN BATTLESHIP GAME (PHƯƠNG ÁN A - CLEAN CODE)
 
-BattleshipGame/                         \<--- Thư mục gốc Repo GitHub  
-├── docs/                               \<--- Tài liệu báo cáo, sơ đồ UML  
-│   ├── KE\_HOACH\_THIET\_KE.md  
-│   └── BaoCao\_DoAn.docx  
-│  
-├── src/                                		\<--- Thư mục chứa toàn bộ mã nguồn  
-│   ├── Battleship.sln                  \<--- File Solution mở bằng Visual Studio  
-│   └── BattleshipGame/                 \<--- Project Windows Forms App chính  
-│       │  
-│       ├── Properties/                 \<--- Cấu hình mặc định của Visual Studio  
-│       │  
-│       ├── Assets/                     \<--- Tài nguyên media của game  
-│       │   ├── Audio/                  \<--- Âm thanh (.wav): shot, hit, miss, sunk, bgm  
-│       │   └── Images/                 \<--- Icon, logo, avatar tàu chiến (.png, .ico)  
-│       │  
-│       ├── Models/                     \<--- TẦNG DỮ LIỆU (Data Entities & Enums)  
-│       │   ├── Enums.cs                \<--- Các enum: TrangThaiO, HuongTau, CheDoChoi  
-│       │   ├── cO.cs                   \<--- Thực thể 1 ô tọa độ (x, y, đã bắn chưa, có tàu không)  
-│       │   ├── cTau.cs                 \<--- Thực thể con tàu (Tên, độ dài, danh sách tọa độ)  
-│       │   └── ThanhTichItem.cs        \<--- Đối tượng lưu 1 dòng thành tích lịch sử  
-│       │  
-│       ├── Logic/                      \<--- TẦNG NGHIỆP VỤ (Business Logic & AI)  
-│       │   ├── cBanCo.cs               \<--- Xử lý ma trận 10x10, thuật toán kiểm tra va chạm  
-│       │   ├── cMayBanAI.cs            \<--- Thuật toán Bot AI (Hunt Mode & Target Mode)  
-│       │   ├── cQuanLyVanDau.cs        \<--- Điều phối lượt chơi, tính điểm, thắng/thua  
-│       │   └── cAmThanh.cs             \<--- Quản lý phát nhạc nền và hiệu ứng âm thanh  
-│       │  
-│       ├── DataAccess/                 \<--- TẦNG LƯU TRỮ (Data Access Layer \- DAO)  
-│       │   └── cThanhTichDAO.cs        \<--- Đọc/ghi dữ liệu file thanhtichs.txt  
-│       │  
-│       ├── Views/                      \<--- TẦNG GIAO DIỆN (UI Forms)  
-│       │   ├── frmMenu.cs              \<--- Màn hình chính (Chọn chế độ, Bắt đầu)  
-│       │   ├── frmBanTau.cs            \<--- Màn hình bàn cờ chiến đấu chính  
-│       │   ├── frmThanhTich.cs         \<--- Màn hình bảng xếp hạng (DataGridView)  
-│       │   └── frmAbout.cs             \<--- Màn hình giới thiệu thành viên & Luật chơi  
-│       │  
-│       ├── Program.cs                  \<--- Điểm bắt đầu chạy ứng dụng (Main Entry)  
-│       └── App.config  
-│  
-├── .gitignore                          \<--- File cấu hình bỏ qua file rác (Visual Studio template)  
-└── README.md                           \<--- File trang chủ giới thiệu dự án trên GitHub
-
-### **Giải thích nhanh các thư mục chính (Vì sao lại rất dễ dùng?):**
-
-1. **Models/ (Dữ liệu thuần túy):**
-
-   * Chỉ chứa các biến, thuộc tính (Properties). Rất nhẹ, code xong ngay trong ngày đầu tiên.  
-2. **Logic/ (Trái tim của Game):**
-
-   * Tách riêng toàn bộ thuật toán ra khỏi giao diện. Sau này sửa AI hay sửa quy tắc xếp tàu chỉ cần vào đây sửa, không sợ làm hỏng giao diện Form.  
-3. **Views/ (Giao diện Forms):**
-
-   * Gom tất cả các Form vào một nơi. Người làm giao diện chỉ cần làm việc trong thư mục này, không bị rối mắt với các file thuật toán.  
-4. **Assets/ (Âm thanh & Hình ảnh):**
-
-   * Khi thêm file âm thanh .wav vào thư mục Assets/Audio/, trong Visual Studio chỉ cần click chuột phải vào file →\\rightarrow→ Chọn **Properties** →\\rightarrow→ đặt **Copy to Output Directory \= Copy if newer** là khi build game sẽ tự động nhận diện file.  
-5. **DataAccess/ (Lưu file text):**
-
-   * Chứa duy nhất file quản lý việc đọc/ghi thanhtichs.txt, bọc try...catch cẩn thận để chống lỗi mất file.
-
+```
+BattleshipGame/                         <--- Thư mục gốc Repo GitHub
+├── docs/                               <--- Tài liệu báo cáo, sơ đồ thiết kế
+│   ├── requirements.docx               <--- Đề cương yêu cầu từ Giảng viên
+│   └── system_structure.md             <--- Tài liệu kiến trúc hệ thống
+│
+├── bg/                                 <--- Thư mục âm thanh (Duy nhất tại gốc, clone về thấy ngay)
+│   ├── bgm_battle.wav, shot.wav, sunk.wav, victory.wav, defeat.wav, radar.wav
+│   ├── true.wav                        <--- Âm thanh phát bắn trúng (alias hit.wav)
+│   └── false.wav                       <--- Âm thanh phát bắn trượt (alias miss.wav)
+│
+├── img/                                <--- Thư mục hình ảnh & logo (Duy nhất tại gốc, clone về thấy ngay)
+│   └── logo.png                        <--- Logo huy hiệu hải quân Nhóm 10 WINDOWN
+│
+├── thanhtichs.txt                      <--- Bảng thành tích dữ liệu mẫu ban đầu (Duy nhất tại gốc)
+│
+├── BattleshipGame.sln                  <--- File Solution mở bằng Visual Studio
+│
+└── src/                                <--- Thư mục chứa toàn bộ mã nguồn sạch
+    └── BattleshipGame/                 <--- Project Windows Forms App (.NET 8.0)
+        │
+        ├── Properties/                 <--- Cấu hình WinForms chuẩn (5 files theo Lab mẫu)
+        │   ├── AssemblyInfo.cs         <--- Metadata dự án Nhóm 10 WINDOWN (v1.0.0.0)
+        │   ├── Resources.resx          <--- Quản lý chuỗi tài nguyên XML
+        │   ├── Resources.Designer.cs   <--- Code-behind cho Resources
+        │   ├── Settings.settings       <--- Quản lý cấu hình người dùng
+        │   └── Settings.Designer.cs    <--- Code-behind cho Settings
+        │
+        ├── Models/                     <--- TẦNG DỮ LIỆU (Data Entities & Enums)
+        │   ├── Enums.cs                <--- Các enum: TrangThaiO, HuongTau, CheDoChoi, KetQuaBan
+        │   ├── cO.cs                   <--- Thực thể 1 ô tọa độ (X, Y, đã bắn chưa, có tàu không)
+        │   ├── cTau.cs                 <--- Thực thể chiến hạm (kích thước, hướng, tọa độ, kiểm tra chìm)
+        │   └── ThanhTichItem.cs        <--- Đối tượng lưu 1 dòng thành tích lịch sử đấu
+        │
+        ├── Logic/                      <--- TẦNG NGHIỆP VỤ (Business Logic & AI)
+        │   ├── cBanCo.cs               <--- Xử lý ma trận 10x10, thuật toán kiểm tra biên & va chạm
+        │   ├── cMayBanAI.cs            <--- Thuật toán FSM Bot AI (Hunt Parity & Target Mode)
+        │   ├── cQuanLyVanDau.cs        <--- Điều phối lượt chơi, đếm ngược 30s, tính điểm, thắng/thua
+        │   └── cAmThanh.cs             <--- Quản lý phát BGM qua winmm và SFX qua SoundPlayer
+        │
+        ├── DataAccess/                 <--- TẦNG LƯU TRỮ (Data Access Layer - DAO)
+        │   └── cThanhTichDAO.cs        <--- Đọc/ghi, lọc và sắp xếp thanhtichs.txt qua System.IO
+        │
+        ├── Views/                      <--- TẦNG GIAO DIỆN (UI Forms & Custom Controls)
+        │   ├── frmMenu.cs              <--- Màn hình chính (Chọn chế độ, sảnh chờ)
+        │   ├── frmBanTau.cs            <--- Màn hình bàn cờ chiến đấu 10x10 chính
+        │   ├── frmThanhTich.cs         <--- Màn hình bảng xếp hạng (DataGridView)
+        │   ├── frmAbout.cs             <--- Màn hình giới thiệu thành viên & Luật chơi (có logo nạp try...catch)
+        │   ├── frmKetQuaTranDau.cs     <--- Hộp thoại thông báo kết quả & nhập tên Đô đốc
+        │   ├── TacticalMessageBox.cs   <--- Hộp thoại quân sự tùy biến thay thế MessageBox
+        │   ├── TacticalVolumeSlider.cs <--- Control kéo chỉnh âm lượng thời gian thực
+        │   ├── TacticalBoardControl.cs <--- Control bàn cờ đồ họa
+        │   ├── SonarScannerControl.cs  <--- Control radar xoay góc GDI+
+        │   ├── TacticalButton.cs       <--- Nút bấm phong cách quân sự viền neon
+        │   └── UITheme.cs              <--- Bảng mã màu & font chữ dùng chung
+        │
+        ├── Program.cs                  <--- Điểm bắt đầu chạy ứng dụng (Main Entry)
+        └── BattleshipGame.csproj       <--- Cấu hình link tài nguyên gốc và build dự án
+```
