@@ -132,7 +132,7 @@ namespace BattleshipGame.Views
             this.lblGameSubtitle.Font = new Font("Segoe UI", 11f, FontStyle.Regular);
             this.lblGameSubtitle.ForeColor = UITheme.PrimaryCyan;
             this.lblGameSubtitle.TextAlign = ContentAlignment.MiddleCenter;
-            this.lblGameSubtitle.Text = "Chiến thuật hải chiến cùng trí tuệ nhân tạo (AI)";
+            this.lblGameSubtitle.Text = "Tư duy chiến thuật và bắt đầu chiến đấu";
             this.Controls.Add(this.lblGameSubtitle);
 
             this.pnlButtonContainer.BackColor = UITheme.BackgroundDark;

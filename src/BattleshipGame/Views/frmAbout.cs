@@ -788,33 +788,33 @@ namespace BattleshipGame.Views
             var danhSachThanhVien = new (string VaiTro, string HoTen, string MSSV, string NhiemVuChinh, Color AccentColor, string Icon)[]
             {
                 (
-                    "Thành viên 1 - Trưởng nhóm / Backend & AI Lead",
+                    "Trưởng nhóm / Backend & Game Logic",
                     "Huỳnh Minh Trí",
                     "51.01.104.105",
-                    "• Thiết kế kiến trúc Model: cO.cs, cTau.cs, cBanCo.cs.\n• Thuật toán kiểm tra va chạm và xếp tàu tự động hợp lệ.\n• Thuật toán trí tuệ nhân tạo Bot AI (Hunt Mode Parity & Target Mode bám đuổi).\n• Điều phối ván đấu cQuanLyVanDau.cs và công thức tính điểm.",
+                    "• Thiết kế kiến trúc mô hình dữ liệu (Models) và bàn cờ 10x10.\n\n• Lập trình thuật toán Bot bắn tự động FSM (Hunt & Target Mode).\n\n• Xử lý kiểm tra va chạm xếp tàu và điều phối luồng ván đấu.",
                     UITheme.AccentNeon,
                     "👑"
                 ),
                 (
-                    "Thành viên 2 - Frontend & UI/UX Lead",
+                    "Frontend & UI/UX Lead",
                     "Trần Trọng Hưng",
                     "51.01.104.132",
-                    "• Thiết kế toàn bộ giao diện WinForms chuẩn phong cách Hải quân hiện đại.\n• Xử lý đồ họa 2 bàn cờ, hiệu ứng bóng mờ (Preview Shadow) khi bố trí tàu.\n• Đồ họa phát bắn (Sóng nước •, Lửa đỏ X, Tro tàn chìm tàu viền đậm 2px).\n• Thiết kế giao diện Hướng dẫn tác chiến trực quan, tối ưu trải nghiệm người dùng.",
+                    "• Thiết kế toàn bộ giao diện WinForms phong cách hải quân.\n\n• Lập trình đồ họa bàn cờ, hiệu ứng đặt tàu và phát bắn.\n\n• Xây dựng màn hình Hướng dẫn và tối ưu trải nghiệm người dùng.",
                     UITheme.PrimaryCyan,
                     "🎨"
                 ),
                 (
-                    "Thành viên 3 - System I/O, Audio & QA/Tester",
+                    "System I/O, Audio & QA/Tester",
                     "Trần Vũ Hòa Phát",
                     "51.01.104.072",
-                    "• Tích hợp hệ thống âm thanh đa luồng: Nhạc nền mciSendString và SFX SoundPlayer.\n• Quản lý lưu trữ/đọc bảng xếp hạng thanhtichs.txt qua cThanhTichDAO.cs.\n• Cơ chế bẫy lỗi toàn diện phòng chống ngoại lệ.\n• Soạn thảo bộ kịch bản kiểm thử, tài liệu báo cáo đồ án và video demo.",
+                    "• Tích hợp hệ thống âm thanh (nhạc nền và hiệu ứng chiến đấu).\n\n• Đọc/ghi dữ liệu bảng xếp hạng thanhtichs.txt qua System.IO.\n\n• Xây dựng cơ chế bẫy lỗi try...catch và thực hiện video demo.",
                     UITheme.WarningAmber,
                     "🔊"
                 )
             };
 
             int startY = 16;
-            int cardH = 158;
+            int cardH = 176;
 
             for (int i = 0; i < danhSachThanhVien.Length; i++)
             {
@@ -840,31 +840,44 @@ namespace BattleshipGame.Views
                     using (GraphicsPath path = UITheme.CreateRoundedPath(cardRect, 8))
                     {
                         using (SolidBrush bg = new SolidBrush(Color.FromArgb(15, 23, 42))) g.FillPath(bg, path);
-                        using (Pen pen = new Pen(accentColor, 1.2f)) g.DrawPath(pen, path);
+                        using (Pen pen = new Pen(accentColor, 1.4f)) g.DrawPath(pen, path);
                     }
 
-                    using (Font roleFont = new Font("Segoe UI", 9.5f, FontStyle.Bold))
-                    using (Font nameFont = new Font("Segoe UI", 13.5f, FontStyle.Bold))
-                    using (Font mssvFont = new Font("Consolas", 11.5f, FontStyle.Bold))
+                    // Vach ngan phan chia giua cot thong tin va cot nhiem vu
+                    int taskStartX = 420;
+                    using (Pen divPen = new Pen(Color.FromArgb(40, 255, 255, 255), 1f))
                     {
-                        Rectangle roleRect = new Rectangle(16, 12, 380, 22);
+                        g.DrawLine(divPen, taskStartX - 24, 18, taskStartX - 24, ctl.Height - 18);
+                    }
+
+                    // Cot trai: Thong tin ca nhan (Font chu to hon, gian cach thoang dang)
+                    using (Font roleFont = new Font("Segoe UI", 10.5f, FontStyle.Bold))
+                    using (Font nameFont = new Font("Segoe UI", 15.5f, FontStyle.Bold))
+                    using (Font mssvFont = new Font("Consolas", 12.5f, FontStyle.Bold))
+                    using (Font classFont = new Font("Segoe UI", 10.5f, FontStyle.Regular))
+                    {
+                        Rectangle roleRect = new Rectangle(20, 16, 370, 26);
                         TextRenderer.DrawText(g, $"{icon}  {vaiTro}", roleFont, roleRect, accentColor, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
 
-                        Rectangle nameRect = new Rectangle(16, 38, 380, 28);
+                        Rectangle nameRect = new Rectangle(20, 48, 370, 34);
                         TextRenderer.DrawText(g, hoTen, nameFont, nameRect, Color.White, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
 
-                        Rectangle mssvRect = new Rectangle(16, 68, 380, 24);
+                        Rectangle mssvRect = new Rectangle(20, 88, 370, 28);
                         TextRenderer.DrawText(g, $"MSSV: {mssv}", mssvFont, mssvRect, UITheme.GoldAccent, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
 
-                        Rectangle classRect = new Rectangle(16, 96, 380, 22);
-                        TextRenderer.DrawText(g, "Lớp: 2611COMP101901  •  Nhóm 10: WINDOWN", roleFont, classRect, UITheme.PrimaryCyan, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+                        Rectangle classRect = new Rectangle(20, 122, 370, 26);
+                        TextRenderer.DrawText(g, "Lớp: 2611COMP101901  •  Nhóm 10: WINDOWN", classFont, classRect, UITheme.PrimaryCyan, TextFormatFlags.Left | TextFormatFlags.NoPrefix);
                     }
 
-                    int taskStartX = 410;
-                    Rectangle taskRect = new Rectangle(taskStartX, 12, ctl.Width - taskStartX - 16, ctl.Height - 20);
-                    using (Font taskFont = new Font("Segoe UI", 9.25f, FontStyle.Regular))
+                    // Cot phai: Nhiem vu WBS (Tieu de dam + Noi dung gian cach thoai mai)
+                    using (Font headerFont = new Font("Segoe UI", 11f, FontStyle.Bold))
+                    using (Font taskFont = new Font("Segoe UI", 10.25f, FontStyle.Regular))
                     {
-                        TextRenderer.DrawText(g, $"Phân công nhiệm vụ chi tiết (WBS):\n{nhiemVu}", taskFont, taskRect, UITheme.TextPrimary, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix);
+                        Rectangle headerRect = new Rectangle(taskStartX, 16, ctl.Width - taskStartX - 20, 26);
+                        TextRenderer.DrawText(g, "📋  Phân công nhiệm vụ chính (WBS):", headerFont, headerRect, Color.FromArgb(203, 213, 225), TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+
+                        Rectangle taskRect = new Rectangle(taskStartX, 48, ctl.Width - taskStartX - 20, ctl.Height - 56);
+                        TextRenderer.DrawText(g, nhiemVu, taskFont, taskRect, UITheme.TextPrimary, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix);
                     }
                 };
 
