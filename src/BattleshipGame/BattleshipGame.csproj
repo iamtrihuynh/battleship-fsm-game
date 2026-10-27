@@ -9,13 +9,21 @@
     <LangVersion>latest</LangVersion>
     <ApplicationIcon />
     <StartupObject>BattleshipGame.Program</StartupObject>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Assets\Audio\*.wav">
+    <!-- Lien ket truc tiep tai nguyen tu thu muc goc cua Repository sang thu muc thuc thi bin -->
+    <None Include="..\..\bg\**">
+      <Link>bg\%(RecursiveDir)%(FileName)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\Data\thanhtichs.txt">
+    <None Include="..\..\img\**">
+      <Link>img\%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\thanhtichs.txt">
+      <Link>thanhtichs.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

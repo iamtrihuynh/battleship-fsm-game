@@ -40,21 +40,22 @@ namespace BattleshipGame.Logic
         {
             get
             {
-                if (string.IsNullOrEmpty(_audioDir))
+                if (string.IsNullOrEmpty(_audioDir) || !Directory.Exists(_audioDir))
                 {
                     string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                    string path1 = Path.Combine(baseDir, "Assets", "Audio");
-                    string path2 = Path.Combine(baseDir, "bg");
+                    string pathBg = Path.Combine(baseDir, "bg");
 
-                    if (Directory.Exists(path1)) _audioDir = path1;
-                    else if (Directory.Exists(path2)) _audioDir = path2;
+                    if (Directory.Exists(pathBg))
+                    {
+                        _audioDir = pathBg;
+                    }
                     else
                     {
                         string p = baseDir;
                         bool timThay = false;
                         for (int i = 0; i < 6; i++)
                         {
-                            string candidate = Path.Combine(p, "src", "BattleshipGame", "Assets", "Audio");
+                            string candidate = Path.Combine(p, "bg");
                             if (Directory.Exists(candidate))
                             {
                                 _audioDir = Path.GetFullPath(candidate);
@@ -66,7 +67,7 @@ namespace BattleshipGame.Logic
                             p = parent;
                         }
 
-                        if (!timThay) _audioDir = path1;
+                        if (!timThay) _audioDir = pathBg;
                     }
                 }
                 return _audioDir ?? "";
@@ -80,6 +81,29 @@ namespace BattleshipGame.Logic
 
             string ten = (file ?? "bgm_battle.wav").Replace("\"", "").Trim();
             string path = Path.Combine(ThuMucAudio, ten);
+                if (!File.Exists(path))
+                {
+                    if (ten.Equals("hit.wav", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string alt = Path.Combine(ThuMucAudio, "true.wav");
+                        if (File.Exists(alt)) path = alt;
+                    }
+                    else if (ten.Equals("true.wav", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string alt = Path.Combine(ThuMucAudio, "hit.wav");
+                        if (File.Exists(alt)) path = alt;
+                    }
+                    else if (ten.Equals("miss.wav", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string alt = Path.Combine(ThuMucAudio, "false.wav");
+                        if (File.Exists(alt)) path = alt;
+                    }
+                    else if (ten.Equals("false.wav", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string alt = Path.Combine(ThuMucAudio, "miss.wav");
+                        if (File.Exists(alt)) path = alt;
+                    }
+                }
             if (!File.Exists(path))
             {
                 if (ten.Equals("bgm_battle.wav", StringComparison.OrdinalIgnoreCase))

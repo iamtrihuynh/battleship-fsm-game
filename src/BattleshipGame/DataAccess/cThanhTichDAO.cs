@@ -30,50 +30,34 @@ namespace BattleshipGame.DataAccess
                 if (string.IsNullOrEmpty(_filePath))
                 {
                     string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                    string path1 = Path.Combine(baseDir, "Assets", "Data", "thanhtichs.txt");
-                    string path2 = Path.Combine(baseDir, "thanhtichs.txt");
+                    string pathFile = Path.Combine(baseDir, "thanhtichs.txt");
 
-                    if (File.Exists(path1))
+                    if (File.Exists(pathFile))
                     {
-                        _filePath = path1;
-                    }
-                    else if (File.Exists(path2))
-                    {
-                        _filePath = path2;
+                        _filePath = pathFile;
                     }
                     else
                     {
-                        try
+                        string p = baseDir;
+                        bool timThay = false;
+                        for (int i = 0; i < 6; i++)
                         {
-                            string dir = Path.Combine(baseDir, "Assets", "Data");
-                            if (!Directory.Exists(dir))
-                                Directory.CreateDirectory(dir);
-
-                            _filePath = path1;
-                            TaoFileMau(_filePath);
+                            string candidate = Path.Combine(p, "thanhtichs.txt");
+                            if (File.Exists(candidate))
+                            {
+                                _filePath = Path.GetFullPath(candidate);
+                                timThay = true;
+                                break;
+                            }
+                            string parent = Path.GetDirectoryName(p);
+                            if (string.IsNullOrEmpty(parent) || parent == p) break;
+                            p = parent;
                         }
-                        catch
+
+                        if (!timThay)
                         {
-                            try
-                            {
-                                _filePath = path2;
-                                TaoFileMau(_filePath);
-                            }
-                            catch
-                            {
-                                try
-                                {
-                                    string appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BattleshipGame");
-                                    if (!Directory.Exists(appData))
-                                        Directory.CreateDirectory(appData);
-                                    _filePath = Path.Combine(appData, "thanhtichs.txt");
-                                    TaoFileMau(_filePath);
-                                }
-                                catch
-                                {
-                                    _filePath = path2;
-                                }
-                            }
+                            _filePath = pathFile;
+                            TaoFileMau(_filePath);
                         }
                     }
                 }

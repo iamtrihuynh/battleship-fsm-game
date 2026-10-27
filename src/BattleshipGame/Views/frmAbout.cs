@@ -12,6 +12,7 @@ namespace BattleshipGame.Views
         public frmAbout()
         {
             InitializeComponent();
+            pnlTopContainer.SendToBack();
             DoubleBuffered = true;
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
 
@@ -42,6 +43,7 @@ namespace BattleshipGame.Views
 
             pnlHeader.Resize += (s, e) => {
                 btnClose.Location = new Point(pnlHeader.ClientSize.Width - btnClose.Width - 16, 8);
+                lblHeaderTitle.Location = new Point((pnlHeader.ClientSize.Width - lblHeaderTitle.Width) / 2, (pnlHeader.ClientSize.Height - lblHeaderTitle.Height) / 2);
             };
             this.KeyPreview = true;
             this.KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) this.Close(); };
@@ -58,8 +60,57 @@ namespace BattleshipGame.Views
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            pnlTopContainer.SendToBack();
             btnClose.Location = new Point(pnlHeader.ClientSize.Width - btnClose.Width - 16, 8);
             btnClose.BringToFront();
+            lblHeaderTitle.Location = new Point((pnlHeader.ClientSize.Width - lblHeaderTitle.Width) / 2, (pnlHeader.ClientSize.Height - lblHeaderTitle.Height) / 2);
+            lblHeaderTitle.TextAlign = ContentAlignment.MiddleCenter;
+            KiemTraVaNapLogo();
+        }
+
+        private void KiemTraVaNapLogo()
+        {
+            try
+            {
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar);
+                string imgDir = System.IO.Path.Combine(baseDir, "img");
+                if (!System.IO.Directory.Exists(imgDir))
+                {
+                    TacticalMessageBox.ShowWarning(
+                        this,
+                        "Bẫy lỗi tài nguyên (img/)",
+                        "Không tìm thấy thư mục hình ảnh img/! Hệ thống kích hoạt cơ chế bẫy lỗi và sử dụng logo vector dự phòng an toàn."
+                    );
+                    return;
+                }
+
+                string logoPath = System.IO.Path.Combine(imgDir, "logo.png");
+                if (!System.IO.File.Exists(logoPath))
+                {
+                    TacticalMessageBox.ShowWarning(
+                        this,
+                        "Bẫy lỗi tài nguyên (img/)",
+                        "Không tìm thấy file logo.png trong thư mục img/! Hệ thống kích hoạt cơ chế bẫy lỗi và chuyển sang giao diện dự phòng."
+                    );
+                    return;
+                }
+
+                if (picAboutLogo != null)
+                {
+                    using (var fs = new System.IO.FileStream(logoPath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                    {
+                        picAboutLogo.Image = Image.FromStream(fs);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TacticalMessageBox.ShowWarning(
+                    this,
+                    "Ngoại lệ tài nguyên ảnh",
+                    "Đã xảy ra sự cố khi nạp ảnh img: " + ex.Message
+                );
+            }
         }
 
         private static void EnableDoubleBuffering(Control c)

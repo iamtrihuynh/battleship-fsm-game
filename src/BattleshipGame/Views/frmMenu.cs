@@ -39,8 +39,8 @@ namespace BattleshipGame.Views
                 {
                     TacticalMessageBox.ShowWarning(
                         this,
-                        "Bẫy lỗi tài nguyên (try...catch)",
-                        "Không tìm thấy thư mục âm thanh Assets/Audio! Hệ thống tự động kích hoạt bẫy lỗi và chuyển sang âm thanh dự phòng của hệ điều hành."
+                        "Bẫy lỗi tài nguyên (bg/)",
+                        "Không tìm thấy thư mục âm thanh bg/! Hệ thống tự động kích hoạt bẫy lỗi và chuyển sang âm thanh dự phòng của hệ điều hành."
                     );
                 }
 
