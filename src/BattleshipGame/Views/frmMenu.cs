@@ -12,6 +12,7 @@ namespace BattleshipGame.Views
     {
 
         private string _tenNguoiChoi = "Người chơi";
+        private bool _heThongBiKhoa = false;
 
         public frmMenu()
         {
@@ -36,6 +37,19 @@ namespace BattleshipGame.Views
                 Activate();
                 CanChinhGiaoDien();
                 cAmThanh.DungSFX();
+
+                if (!KiemTraThuMucVaFileQuanTrong(out string thongBaoLoi))
+                {
+                    TacticalMessageBox.Show(
+                        this,
+                        "LỖI HỆ THỐNG - THIẾU TỆP/THƯ MỤC QUAN TRỌNG",
+                        thongBaoLoi,
+                        TacticalDialogType.Warning,
+                        MessageBoxButtons.OK
+                    );
+                    KhoaGiaoDienKhongChoVaoGame();
+                    return;
+                }
 
                 bool amThanhSanSang = KiemTraTaiNguyenVaCanhBao();
 
@@ -223,6 +237,19 @@ namespace BattleshipGame.Views
 
         private void btnPvE_Click(object sender, EventArgs e)
         {
+            if (_heThongBiKhoa || !KiemTraThuMucVaFileQuanTrong(out string thongBaoLoi))
+            {
+                TacticalMessageBox.Show(
+                    this,
+                    "KHÔNG CHO PHÉP VÀO GAME",
+                    "Không tìm thấy thư mục/tệp tin quan trọng (Logic,...). Trò chơi không thể khởi động!",
+                    TacticalDialogType.Warning,
+                    MessageBoxButtons.OK
+                );
+                KhoaGiaoDienKhongChoVaoGame();
+                return;
+            }
+
             pnlDifficultySelection.Visible = true;
             pnlDifficultySelection.BringToFront();
         }
@@ -300,6 +327,19 @@ namespace BattleshipGame.Views
 
         private void MoManHinhTranDau(string cheDo, string tenNguoiChoi = "Người chơi")
         {
+            if (_heThongBiKhoa || !KiemTraThuMucVaFileQuanTrong(out string thongBaoLoi))
+            {
+                TacticalMessageBox.Show(
+                    this,
+                    "KHÔNG CHO PHÉP VÀO GAME",
+                    "Không tìm thấy thư mục/tệp tin quan trọng (Logic,...). Trò chơi không cho phép vào game!",
+                    TacticalDialogType.Warning,
+                    MessageBoxButtons.OK
+                );
+                KhoaGiaoDienKhongChoVaoGame();
+                return;
+            }
+
             try
             {
                 Hide();
@@ -475,6 +515,133 @@ namespace BattleshipGame.Views
             }
             catch
             {
+                return false;
+            }
+        }
+
+        private void KhoaGiaoDienKhongChoVaoGame()
+        {
+            _heThongBiKhoa = true;
+            btnPvE.Enabled = false;
+            btnStartPvEEasy.Enabled = false;
+            btnStartPvEHard.Enabled = false;
+            pnlDifficultySelection.Visible = false;
+            lblGameSubtitle.Text = "⛔ ĐÃ KHÓA: Thiếu thư mục/tệp quan trọng (Logic,...) - Không thể vào game!";
+            lblGameSubtitle.ForeColor = UITheme.DangerRed;
+            btnPvE.Text = "🔒 Đã khóa (Thiếu file/folder)";
+            btnPvE.NormalTextColor = UITheme.MissGray;
+            btnPvE.BorderColor = UITheme.DangerRed;
+            btnPvE.Invalidate();
+        }
+
+        private static string? TimThuMucDuAn(string baseDir)
+        {
+            try
+            {
+                string p = baseDir;
+                for (int i = 0; i < 6; i++)
+                {
+                    if (File.Exists(Path.Combine(p, "BattleshipGame.csproj")))
+                    {
+                        return p;
+                    }
+                    string? parent = Path.GetDirectoryName(p);
+                    if (string.IsNullOrEmpty(parent) || parent == p) break;
+                    p = parent;
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        private static bool KiemTraThuMucVaFileQuanTrong(out string thongBaoLoi, string? customBaseDir = null)
+        {
+            thongBaoLoi = "";
+            try
+            {
+                string baseDir = (customBaseDir ?? AppDomain.CurrentDomain.BaseDirectory).TrimEnd(
+                    Path.DirectorySeparatorChar, 
+                    Path.AltDirectorySeparatorChar
+                );
+
+                string? repoRoot = TimThuMucGocRepo(baseDir);
+                string? projectDir = TimThuMucDuAn(baseDir);
+
+                var thieu = new System.Collections.Generic.List<string>();
+
+                string[] dsThuMucQuanTrong = new string[] { "Logic", "Models", "DataAccess", "Views" };
+
+                foreach (string folderName in dsThuMucQuanTrong)
+                {
+                    bool coThuMuc = false;
+
+                    if (!string.IsNullOrEmpty(projectDir))
+                    {
+                        string pathProj = Path.Combine(projectDir, folderName);
+                        if (Directory.Exists(pathProj) && CoTepTin(pathProj, "*.cs"))
+                        {
+                            coThuMuc = true;
+                        }
+                    }
+                    else
+                    {
+                        string pathBase = Path.Combine(baseDir, folderName);
+                        if (Directory.Exists(pathBase))
+                        {
+                            coThuMuc = true;
+                        }
+                    }
+
+                    if (!coThuMuc)
+                    {
+                        thieu.Add($"• Thư mục quan trọng: {folderName}/");
+                    }
+                }
+
+                bool coFileThanhTich = false;
+                if (File.Exists(Path.Combine(baseDir, "thanhtichs.txt")))
+                {
+                    coFileThanhTich = true;
+                }
+                else if (!string.IsNullOrEmpty(repoRoot) && File.Exists(Path.Combine(repoRoot, "thanhtichs.txt")))
+                {
+                    coFileThanhTich = true;
+                }
+                else if (!string.IsNullOrEmpty(projectDir) && File.Exists(Path.Combine(projectDir, "thanhtichs.txt")))
+                {
+                    coFileThanhTich = true;
+                }
+
+                if (!coFileThanhTich)
+                {
+                    thieu.Add("• Tệp tin dữ liệu: thanhtichs.txt");
+                }
+
+                string dllPath = Path.Combine(baseDir, "BattleshipGame.dll");
+                if (!File.Exists(dllPath))
+                {
+                    thieu.Add("• Tệp tin thư viện: BattleshipGame.dll");
+                }
+
+                if (thieu.Count > 0)
+                {
+                    var sb = new System.Text.StringBuilder();
+                    sb.AppendLine("Hệ thống phát hiện thiếu các tệp tin / thư mục quan trọng để vận hành trò chơi:\n");
+                    foreach (string item in thieu)
+                    {
+                        sb.AppendLine(item);
+                    }
+                    sb.AppendLine("\n⛔ Để đảm bảo an toàn, trò chơi KHÔNG CHO PHÉP VÀO GAME.");
+                    sb.AppendLine("Vui lòng khôi phục các tệp tin/thư mục trên trước khi khởi động lại!");
+                    thongBaoLoi = sb.ToString();
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                thongBaoLoi = "Lỗi khi kiểm tra tính toàn vẹn hệ thống: " + ex.Message;
                 return false;
             }
         }
