@@ -1,6 +1,8 @@
+#nullable enable
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Windows.Forms;
 
 namespace BattleshipGame.Views
@@ -72,9 +74,33 @@ namespace BattleshipGame.Views
         {
             try
             {
-                string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar);
-                string imgDir = System.IO.Path.Combine(baseDir, "img");
-                if (!System.IO.Directory.Exists(imgDir))
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                string? repoRoot = null;
+                string p = baseDir;
+                for (int i = 0; i < 6; i++)
+                {
+                    if (File.Exists(Path.Combine(p, "BattleshipGame.sln")) ||
+                        Directory.Exists(Path.Combine(p, ".git")))
+                    {
+                        repoRoot = p;
+                        break;
+                    }
+                    string? parent = Path.GetDirectoryName(p);
+                    if (string.IsNullOrEmpty(parent) || parent == p) break;
+                    p = parent;
+                }
+
+                string imgDir = Path.Combine(baseDir, "img");
+                bool localExists = Directory.Exists(imgDir) && Directory.GetFiles(imgDir).Length > 0;
+
+                bool rootExists = true;
+                if (!string.IsNullOrEmpty(repoRoot))
+                {
+                    string rootImg = Path.Combine(repoRoot, "img");
+                    rootExists = Directory.Exists(rootImg) && Directory.GetFiles(rootImg).Length > 0;
+                }
+
+                if (!localExists || !rootExists)
                 {
                     TacticalMessageBox.ShowWarning(
                         this,
@@ -84,8 +110,8 @@ namespace BattleshipGame.Views
                     return;
                 }
 
-                string logoPath = System.IO.Path.Combine(imgDir, "logo.png");
-                if (!System.IO.File.Exists(logoPath))
+                string logoPath = Path.Combine(imgDir, "logo.png");
+                if (!File.Exists(logoPath))
                 {
                     TacticalMessageBox.ShowWarning(
                         this,
@@ -97,7 +123,7 @@ namespace BattleshipGame.Views
 
                 if (picAboutLogo != null)
                 {
-                    using (var fs = new System.IO.FileStream(logoPath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                    using (var fs = new FileStream(logoPath, FileMode.Open, FileAccess.Read))
                     {
                         picAboutLogo.Image = Image.FromStream(fs);
                     }

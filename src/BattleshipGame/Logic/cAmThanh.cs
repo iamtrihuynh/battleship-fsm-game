@@ -36,16 +36,32 @@ namespace BattleshipGame.Logic
             _bgmLoopTimer = new System.Threading.Timer(KiemTraVaLapNhacNen, null, 1500, 1500);
         }
 
+        public static bool CoTepTinAudio(string? dir)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
+                    return false;
+
+                string[] files = Directory.GetFiles(dir, "*.wav");
+                return files != null && files.Length > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static string ThuMucAudio
         {
             get
             {
-                if (string.IsNullOrEmpty(_audioDir) || !Directory.Exists(_audioDir))
+                if (string.IsNullOrEmpty(_audioDir) || !Directory.Exists(_audioDir) || !CoTepTinAudio(_audioDir))
                 {
                     string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                     string pathBg = Path.Combine(baseDir, "bg");
 
-                    if (Directory.Exists(pathBg))
+                    if (Directory.Exists(pathBg) && CoTepTinAudio(pathBg))
                     {
                         _audioDir = pathBg;
                     }
@@ -56,7 +72,7 @@ namespace BattleshipGame.Logic
                         for (int i = 0; i < 6; i++)
                         {
                             string candidate = Path.Combine(p, "bg");
-                            if (Directory.Exists(candidate))
+                            if (Directory.Exists(candidate) && CoTepTinAudio(candidate))
                             {
                                 _audioDir = Path.GetFullPath(candidate);
                                 timThay = true;

@@ -13,18 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\bg\**">
-      <Link>bg\%(RecursiveDir)%(FileName)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="..\..\img\**">
       <Link>img\%(RecursiveDir)%(FileName)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\thanhtichs.txt">
-      <Link>thanhtichs.txt</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Compile Remove="bg\**" />
+    <EmbeddedResource Remove="bg\**" />
+    <None Remove="bg\**" />
   </ItemGroup>
 
 </Project>

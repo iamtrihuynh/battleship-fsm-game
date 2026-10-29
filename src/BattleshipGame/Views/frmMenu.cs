@@ -1,5 +1,7 @@
+#nullable enable
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using BattleshipGame.DataAccess;
 using BattleshipGame.Logic;
@@ -35,16 +37,12 @@ namespace BattleshipGame.Views
                 CanChinhGiaoDien();
                 cAmThanh.DungSFX();
 
-                if (!System.IO.Directory.Exists(cAmThanh.ThuMucAudio))
-                {
-                    TacticalMessageBox.ShowWarning(
-                        this,
-                        "Bẫy lỗi tài nguyên (bg/)",
-                        "Không tìm thấy thư mục âm thanh bg/! Hệ thống tự động kích hoạt bẫy lỗi và chuyển sang âm thanh dự phòng của hệ điều hành."
-                    );
-                }
+                bool amThanhSanSang = KiemTraTaiNguyenVaCanhBao();
 
-                cAmThanh.PhatNhacNen("bgm_battle.wav");
+                if (amThanhSanSang)
+                {
+                    cAmThanh.PhatNhacNen("bgm_battle.wav");
+                }
             };
         }
 
@@ -322,6 +320,162 @@ namespace BattleshipGame.Views
                     "Lỗi khởi động",
                     "Đã xảy ra sự cố khi tải trận đấu: " + ex.Message
                 );
+            }
+        }
+
+        private bool KiemTraTaiNguyenVaCanhBao()
+        {
+            try
+            {
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(
+                    Path.DirectorySeparatorChar, 
+                    Path.AltDirectorySeparatorChar
+                );
+
+                string? repoRoot = TimThuMucGocRepo(baseDir);
+
+                bool coBg = KiemTraThuMucAudio(baseDir, repoRoot);
+                bool coImg = KiemTraThuMucHinhAnh(baseDir, repoRoot);
+
+                if (!coBg && !coImg)
+                {
+                    cAmThanh.ThuMucAudio = "";
+                    cAmThanh.DungNhacNen();
+                    TacticalMessageBox.ShowWarning(
+                        this,
+                        "Bẫy lỗi tài nguyên (bg/ & img/)",
+                        "Không tìm thấy cả thư mục âm thanh bg/ và thư mục hình ảnh img/!\n\nHệ thống đã kích hoạt cơ chế bẫy lỗi (try...catch) an toàn:\n• Âm thanh: Tự động chuyển sang âm thanh dự phòng của hệ điều hành.\n• Giao diện: Tự động chuyển sang giao diện đồ họa vector dự phòng."
+                    );
+                    return false;
+                }
+                else if (!coBg)
+                {
+                    cAmThanh.ThuMucAudio = "";
+                    cAmThanh.DungNhacNen();
+                    TacticalMessageBox.ShowWarning(
+                        this,
+                        "Bẫy lỗi tài nguyên (bg/)",
+                        "Không tìm thấy thư mục âm thanh bg/! Hệ thống tự động kích hoạt bẫy lỗi và chuyển sang âm thanh dự phòng của hệ điều hành."
+                    );
+                    return false;
+                }
+                else if (!coImg)
+                {
+                    TacticalMessageBox.ShowWarning(
+                        this,
+                        "Bẫy lỗi tài nguyên (img/)",
+                        "Không tìm thấy thư mục hình ảnh img/! Hệ thống kích hoạt cơ chế bẫy lỗi và chuyển sang giao diện đồ họa dự phòng an toàn."
+                    );
+                    return true;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                TacticalMessageBox.ShowWarning(
+                    this,
+                    "Bẫy lỗi tài nguyên",
+                    "Đã xảy ra sự cố khi kiểm tra tài nguyên: " + ex.Message
+                );
+                return false;
+            }
+        }
+
+        private static string? TimThuMucGocRepo(string baseDir)
+        {
+            try
+            {
+                string p = baseDir;
+                for (int i = 0; i < 6; i++)
+                {
+                    if (File.Exists(Path.Combine(p, "BattleshipGame.sln")) ||
+                        Directory.Exists(Path.Combine(p, ".git")))
+                    {
+                        return p;
+                    }
+                    string? parent = Path.GetDirectoryName(p);
+                    if (string.IsNullOrEmpty(parent) || parent == p) break;
+                    p = parent;
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        private static bool KiemTraThuMucAudio(string baseDir, string? repoRoot)
+        {
+            try
+            {
+                string localBg = Path.Combine(baseDir, "bg");
+                bool localExists = Directory.Exists(localBg) && CoTepTin(localBg, "*.wav");
+
+                if (!string.IsNullOrEmpty(repoRoot))
+                {
+                    string rootBg = Path.Combine(repoRoot, "bg");
+                    bool rootExists = Directory.Exists(rootBg) && CoTepTin(rootBg, "*.wav");
+
+                    if (!rootExists || !localExists)
+                    {
+                        return false;
+                    }
+
+                    cAmThanh.ThuMucAudio = localBg;
+                    return true;
+                }
+
+                if (localExists)
+                {
+                    cAmThanh.ThuMucAudio = localBg;
+                    return true;
+                }
+            }
+            catch { }
+
+            return false;
+        }
+
+        private static bool KiemTraThuMucHinhAnh(string baseDir, string? repoRoot)
+        {
+            try
+            {
+                string localImg = Path.Combine(baseDir, "img");
+                bool localExists = Directory.Exists(localImg) && CoTepTin(localImg, "*.*");
+
+                if (!string.IsNullOrEmpty(repoRoot))
+                {
+                    string rootImg = Path.Combine(repoRoot, "img");
+                    bool rootExists = Directory.Exists(rootImg) && CoTepTin(rootImg, "*.*");
+
+                    if (!rootExists || !localExists)
+                    {
+                        return false;
+                    }
+
+                    return true;
+                }
+
+                if (localExists)
+                {
+                    return true;
+                }
+            }
+            catch { }
+
+            return false;
+        }
+
+        private static bool CoTepTin(string dir, string searchPattern)
+        {
+            try
+            {
+                if (!Directory.Exists(dir)) return false;
+                string[] files = Directory.GetFiles(dir, searchPattern);
+                return files != null && files.Length > 0;
+            }
+            catch
+            {
+                return false;
             }
         }
     }
